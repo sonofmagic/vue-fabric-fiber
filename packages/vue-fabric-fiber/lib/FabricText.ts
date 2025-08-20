@@ -1,5 +1,6 @@
 import * as fabric from 'fabric'
 import { defineComponent, inject, onBeforeUnmount, onMounted, watch } from 'vue'
+import { ContextKey } from './symbols'
 
 export const FabricText = defineComponent({
   name: 'FabricText',
@@ -30,11 +31,12 @@ export const FabricText = defineComponent({
     },
   },
   setup(props) {
-    const addObject = inject<(obj: fabric.Object) => void>('fabricAddObject')
-    const removeObject = inject<(obj: fabric.Object) => void>('fabricRemoveObject')
-    let textObj: fabric.Text | null = null
+    const ctx = inject(ContextKey)
+
+    let textObj: fabric.Text
 
     onMounted(() => {
+      // console.log('FabricText mounted')
       textObj = new fabric.FabricText(props.content, {
         left: props.left,
         top: props.top,
@@ -42,8 +44,9 @@ export const FabricText = defineComponent({
         fontSize: props.fontSize,
         fill: props.fill,
       })
-
-      addObject?.(textObj)
+      ctx?.addSequentialTask(() => {
+        ctx?.addObject?.(textObj)
+      })
     })
 
     watch(
@@ -66,7 +69,7 @@ export const FabricText = defineComponent({
 
     onBeforeUnmount(() => {
       if (textObj) {
-        removeObject?.(textObj)
+        ctx?.removeObject?.(textObj)
       }
     })
 

@@ -1,3 +1,11 @@
-import HelloWorld from './HelloWorld.vue'
+import { FabricCanvas } from './FabricCanvas'
+import { FabricImage } from './FabricImage'
+import { FabricText } from './FabricText'
+import { RenderGroup } from './RenderGroup'
 
-export { HelloWorld }
+export {
+  FabricCanvas,
+  FabricImage,
+  FabricText,
+  RenderGroup,
+}
