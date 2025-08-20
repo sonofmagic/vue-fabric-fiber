@@ -1,14 +1,17 @@
 <script setup lang="ts">
+import type { FabricTextModelValue } from '~/index'
+import JsonEditorVue from 'json-editor-vue'
 import { ref } from 'vue'
 import { FabricCanvas, FabricImage, FabricText, RenderGroup } from '~/index'
 
-const textArray = ref([
+const textArray = ref<Omit<FabricTextModelValue, 'clipPath' | 'canvas' | 'path'>[]>([
   {
-    text: 'Hello World',
+    text: '你好☄️Hello World',
     left: 100,
     top: 100,
-    fontSize: 100,
+    fontSize: 72,
     fill: 'white',
+    fontFamily: 'Roboto',
   },
   {
     text: 'Hello World',
@@ -49,9 +52,10 @@ const textArray = ref([
       </FabricCanvas>
     </div>
     <div>
-      <pre>
+      <JsonEditorVue v-model="textArray" />
+      <!-- <pre>
 {{ textArray }}
-      </pre>
+      </pre> -->
     </div>
   </div>
 </template>

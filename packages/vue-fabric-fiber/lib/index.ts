@@ -1,3 +1,4 @@
+import type { FabricTextModelValue } from './FabricText'
 import { FabricCanvas } from './FabricCanvas'
 import { FabricImage } from './FabricImage'
 import { FabricText } from './FabricText'
@@ -8,4 +9,8 @@ export {
   FabricImage,
   FabricText,
   RenderGroup,
+}
+
+export type {
+  FabricTextModelValue,
 }
