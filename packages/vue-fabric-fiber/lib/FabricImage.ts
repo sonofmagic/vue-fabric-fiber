@@ -10,6 +10,8 @@ export const FabricImage = defineComponent({
     top: { type: Number, default: 0 },
     width: { type: [Number, String], default: undefined },
     height: { type: [Number, String], default: undefined },
+    hasControls: { type: Boolean, default: true },
+    selectable: { type: Boolean, default: true },
   },
   setup(props) {
     const ctx = inject(ContextKey)
@@ -20,7 +22,16 @@ export const FabricImage = defineComponent({
       if (!props.src) {
         return
       }
-      const img = await fabric.FabricImage.fromURL(props.src)
+      const img = await fabric.FabricImage.fromURL(
+        props.src,
+        {
+
+        },
+        {
+          selectable: props.selectable,
+          hasControls: props.hasControls,
+        },
+      )
       img.set({
         left: props.left,
         top: props.top,

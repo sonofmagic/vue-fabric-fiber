@@ -4,14 +4,14 @@ import { FabricCanvas, FabricImage, FabricText, RenderGroup } from '~/index'
 
 const textArray = ref([
   {
-    content: 'Hello World',
+    text: 'Hello World',
     left: 100,
     top: 100,
-    fontSize: 20,
-    fill: 'red',
+    fontSize: 100,
+    fill: 'white',
   },
   {
-    content: 'Hello World',
+    text: 'Hello World',
     left: 200,
     top: 300,
     fontSize: 50,
@@ -24,11 +24,27 @@ const textArray = ref([
   <div class="flex justify-center">
     <div>
       <FabricCanvas class="w-200 h-200 border">
-        <FabricImage src="https://picsum.photos/200/200" :width="400" />
-        <FabricText v-for="(props, idx) in textArray" :key="idx" v-bind="props" />
+        <FabricImage src="https://picsum.photos/800/800" width="800" :has-controls="false" :selectable="false" />
+        <template v-for="(_, idx) in textArray" :key="idx">
+          <FabricText v-model="textArray[idx]" />
+        </template>
+
         <RenderGroup>
+          <FabricText
+            :model-value="{ text: '我在后面',
+                            left: 400,
+                            top: 400,
+                            fontSize: 100,
+                            fill: 'red' }"
+          />
           <FabricImage src="https://picsum.photos/200/200" :width="200" :left="400" :top="400" />
-          <FabricText v-for="(props, idx) in textArray" :key="idx" v-bind="props" :left="props.left + 150" :top="props.top + 100" />
+          <FabricText
+            :model-value="{ text: '你好',
+                            left: 400,
+                            top: 400,
+                            fontSize: 50,
+                            fill: 'white' }"
+          />
         </RenderGroup>
       </FabricCanvas>
     </div>
