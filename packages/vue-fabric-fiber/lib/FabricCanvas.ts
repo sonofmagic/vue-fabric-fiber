@@ -36,14 +36,6 @@ export const FabricCanvas = defineComponent({
           width: ctx.containerEl.clientWidth,
           height: ctx.containerEl.clientHeight,
         })
-
-        // 监听对象正在被拖动
-        // fabricCanvas.value.on('object:moving', (e) => {
-
-        // })
-        // fabricCanvas.value.on('object:modified', (e) => {
-
-        // })
       }
     })
 

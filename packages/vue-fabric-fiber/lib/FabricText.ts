@@ -1,12 +1,21 @@
+import type { PropType } from 'vue'
 import * as fabric from 'fabric'
 import { defineComponent, inject, onBeforeUnmount, onMounted, watch } from 'vue'
 import { ContextKey } from './symbols'
 
+export interface FabricTextProps {
+
+}
+
 export const FabricText = defineComponent({
   name: 'FabricText',
   props: {
+    modelValue: {
+      type: Object as PropType<fabric.Text>,
+      required: true,
+    },
     left: {
-      type: Number,
+      type: Number as PropType<number>,
       default: 0,
     },
     top: {
@@ -30,7 +39,12 @@ export const FabricText = defineComponent({
       default: '#000',
     },
   },
+  // emits: {
+  //   'update:modelValue': (value: fabric.Text) => undefined,
+  // },
   setup(props) {
+    // const modelValue = useModel(props, 'modelValue')
+    // emit('update:modelValue', 'x')
     const ctx = inject(ContextKey)
 
     let textObj: fabric.Text
@@ -44,6 +58,9 @@ export const FabricText = defineComponent({
         fontSize: props.fontSize,
         fill: props.fill,
       })
+      // textObj.on('moving', (e) => {
+      //   console.log('moving')
+      // })
       ctx?.addSequentialTask(() => {
         ctx?.addObject?.(textObj)
       })
