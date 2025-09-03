@@ -1,3 +1,4 @@
+import type { PropType } from 'vue'
 import type { Context } from './types'
 import * as fabric from 'fabric'
 import PQueue from 'p-queue'
@@ -6,7 +7,13 @@ import { ContextKey } from './symbols'
 
 export const FabricCanvas = defineComponent({
   name: 'FabricCanvas',
-  setup(_, { slots }) {
+  props: {
+    canvasOptions: {
+      type: Object as PropType<Partial<fabric.CanvasOptions>>,
+      default: () => ({}),
+    },
+  },
+  setup(props, { slots }) {
     const taskQueue = new PQueue({ concurrency: 1 })
     const ctx = shallowReactive<Partial<Context>>({
       taskQueue,
@@ -35,6 +42,7 @@ export const FabricCanvas = defineComponent({
         ctx.fabricCanvas = new fabric.Canvas(ctx.canvasEl, {
           width: ctx.containerEl.clientWidth,
           height: ctx.containerEl.clientHeight,
+          ...props.canvasOptions,
         })
       }
     })

@@ -26,7 +26,7 @@ const textArray = ref<Omit<FabricTextModelValue, 'clipPath' | 'canvas' | 'path'>
 <template>
   <div class="flex justify-center">
     <div>
-      <FabricCanvas class="w-200 h-200 border">
+      <FabricCanvas class="w-200 h-200 border" :canvas-options="{ selection: true }">
         <FabricImage src="https://picsum.photos/800/800" width="800" :has-controls="false" :selectable="false" />
         <template v-for="(_, idx) in textArray" :key="idx">
           <FabricText v-model="textArray[idx]" />
