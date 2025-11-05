@@ -14,7 +14,7 @@ import {
 import { ContextKey } from './symbols'
 import { removeUndefined } from './utils'
 
-export interface FabricTextModelValue extends Partial<Omit<TextProps, 'selectionBackgroundColor' | 'originX' | 'originY' | 'cornerStyle'>> {
+export interface FabricTextModelValue extends Partial<Omit<TextProps, 'selectionBackgroundColor' | 'originX' | 'originY' | 'cornerStyle' | 'clipPath' | 'canvas' | 'path' | 'styles'>> {
   text: string
 }
 
@@ -38,7 +38,6 @@ function keyReduce(newProps: FabricTextModelValue): FabricTextModelValue {
     borderDashArray: newProps.borderDashArray,
     borderOpacityWhenMoving: newProps.borderOpacityWhenMoving,
     borderScaleFactor: newProps.borderScaleFactor,
-    clipPath: newProps.clipPath,
     centeredRotation: newProps.centeredRotation,
     cornerColor: newProps.cornerColor,
     cornerDashArray: newProps.cornerDashArray,
@@ -93,17 +92,11 @@ function keyReduce(newProps: FabricTextModelValue): FabricTextModelValue {
     strokeWidth: newProps.strokeWidth,
     width: newProps.width,
     strokeMiterLimit: newProps.strokeMiterLimit,
-    styles: newProps.styles,
     textDecorationThickness: newProps.textDecorationThickness,
     touchCornerSize: newProps.touchCornerSize,
     transparentCorners: newProps.transparentCorners,
     underline: newProps.underline,
     visible: newProps.visible,
-    canvas: newProps.canvas,
-    noScaleCache: newProps.noScaleCache,
-    path: newProps.path,
-    snapAngle: newProps.snapAngle,
-    snapThreshold: newProps.snapThreshold,
   })
   // console.log(item)
   return item
