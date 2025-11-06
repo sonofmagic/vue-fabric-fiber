@@ -1,1 +1,55 @@
 @import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Inter', 'DM Sans', system-ui, -apple-system, blinkmacsystemfont, 'Segoe UI', sans-serif;
+  --font-display: 'DM Sans', 'Inter', system-ui, -apple-system, blinkmacsystemfont, 'Segoe UI', sans-serif;
+  --font-mono:
+    'JetBrains Mono', ui-monospace, sfmono-regular, menlo, monaco, consolas, 'Liberation Mono', 'Courier New', monospace;
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html {
+    font-family: var(--font-sans);
+
+    @apply bg-slate-950 text-slate-100;
+  }
+
+  body {
+    @apply min-h-screen bg-slate-950 text-slate-100 antialiased;
+
+    background-image:
+      radial-gradient(circle at 20% 20%, rgb(56 189 248 / 12%), transparent 58%),
+      radial-gradient(circle at 85% 0%, rgb(244 114 182 / 12%), transparent 55%),
+      radial-gradient(circle at 40% 90%, rgb(250 204 21 / 8%), transparent 60%);
+    background-attachment: fixed;
+  }
+
+  a {
+    @apply text-slate-100 no-underline;
+  }
+}
+
+@layer utilities {
+  .bg-grid-overlay {
+    background-image:
+      linear-gradient(to right, rgb(148 163 184 / 8%) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(148 163 184 / 8%) 1px, transparent 1px);
+    background-size: 52px 52px;
+  }
+
+  .surface-panel {
+    @apply border border-slate-800/70 bg-slate-950/70 backdrop-blur-[22px] shadow-[0_40px_110px_-60px_rgba(2,6,23,0.88)];
+  }
+
+  .surface-panel-muted {
+    @apply border border-slate-800/60 bg-slate-950/65 backdrop-blur-[16px] shadow-[0_30px_90px_-55px_rgba(15,23,42,0.85)];
+  }
+
+  .eyebrow {
+    @apply inline-flex items-center gap-2 rounded-full border border-slate-800/60 bg-slate-900/70 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.28em] text-slate-300;
+  }
+}

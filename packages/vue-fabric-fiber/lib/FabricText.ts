@@ -1,6 +1,5 @@
 import type { TextProps } from 'fabric'
 import type { PropType } from 'vue'
-import { pick } from 'es-toolkit'
 import * as fabric from 'fabric'
 import {
   computed,
@@ -11,96 +10,213 @@ import {
   useModel,
   watch,
 } from 'vue'
+import { normalizeKeySelection, pickDefinedOptions, pickFromUnknown } from './binding-helpers'
 import { ContextKey } from './symbols'
-import { removeUndefined } from './utils'
 
-export interface FabricTextModelValue extends Partial<Omit<TextProps, 'selectionBackgroundColor' | 'originX' | 'originY' | 'cornerStyle' | 'clipPath' | 'canvas' | 'path' | 'styles'>> {
+type ExcludedTextPropKeys
+  = | 'selectionBackgroundColor'
+    | 'originX'
+    | 'originY'
+    | 'cornerStyle'
+    | 'clipPath'
+    | 'canvas'
+    | 'path'
+    | 'styles'
+
+type BaseTextProps = Omit<TextProps, ExcludedTextPropKeys>
+
+export const FABRIC_TEXT_OPTION_KEYS = [
+  'left',
+  'top',
+  'fontFamily',
+  'fontSize',
+  'fill',
+  'absolutePositioned',
+  'fontWeight',
+  'fontStyle',
+  'textAlign',
+  'lineHeight',
+  'activeOn',
+  'angle',
+  'backgroundColor',
+  'borderColor',
+  'borderDashArray',
+  'borderOpacityWhenMoving',
+  'borderScaleFactor',
+  'centeredRotation',
+  'cornerColor',
+  'cornerDashArray',
+  'cornerSize',
+  'cornerStrokeColor',
+  'centeredScaling',
+  'charSpacing',
+  'direction',
+  'evented',
+  'excludeFromExport',
+  'fillRule',
+  'flipX',
+  'flipY',
+  'globalCompositeOperation',
+  'hasBorders',
+  'hasControls',
+  'height',
+  'hoverCursor',
+  'includeDefaultValues',
+  'inverted',
+  'linethrough',
+  'lockMovementX',
+  'lockMovementY',
+  'lockRotation',
+  'lockScalingFlip',
+  'lockScalingX',
+  'lockScalingY',
+  'lockSkewingX',
+  'lockSkewingY',
+  'minScaleLimit',
+  'moveCursor',
+  'objectCaching',
+  'opacity',
+  'overline',
+  'padding',
+  'paintFirst',
+  'pathAlign',
+  'pathSide',
+  'perPixelTargetFind',
+  'scaleX',
+  'scaleY',
+  'selectable',
+  'shadow',
+  'stroke',
+  'strokeDashArray',
+  'strokeDashOffset',
+  'strokeLineCap',
+  'strokeLineJoin',
+  'skewX',
+  'skewY',
+  'strokeUniform',
+  'strokeWidth',
+  'width',
+  'strokeMiterLimit',
+  'textDecorationThickness',
+  'touchCornerSize',
+  'transparentCorners',
+  'underline',
+  'visible',
+] as const satisfies readonly (keyof BaseTextProps)[]
+
+export type FabricTextOptionKey = typeof FABRIC_TEXT_OPTION_KEYS[number]
+
+export const FABRIC_TEXT_BINDABLE_KEYS = [
+  'text',
+  ...FABRIC_TEXT_OPTION_KEYS,
+] as const
+
+export type FabricTextBindableKey = typeof FABRIC_TEXT_BINDABLE_KEYS[number]
+
+const FABRIC_TEXT_BINDABLE_KEY_SET = new Set<FabricTextBindableKey>(FABRIC_TEXT_BINDABLE_KEYS)
+
+type FabricTextOptionalProps = Partial<Pick<BaseTextProps, FabricTextOptionKey>>
+
+export interface FabricTextModelValue extends FabricTextOptionalProps {
   text: string
 }
 
-function keyReduce(newProps: FabricTextModelValue): FabricTextModelValue {
-  const item = removeUndefined({
-    left: newProps.left,
-    top: newProps.top,
-    text: newProps.text,
-    fontFamily: newProps.fontFamily,
-    fontSize: newProps.fontSize,
-    fill: newProps.fill,
-    absolutePositioned: newProps.absolutePositioned,
-    fontWeight: newProps.fontWeight,
-    fontStyle: newProps.fontStyle,
-    textAlign: newProps.textAlign,
-    lineHeight: newProps.lineHeight,
-    activeOn: newProps.activeOn,
-    angle: newProps.angle,
-    backgroundColor: newProps.backgroundColor,
-    borderColor: newProps.borderColor,
-    borderDashArray: newProps.borderDashArray,
-    borderOpacityWhenMoving: newProps.borderOpacityWhenMoving,
-    borderScaleFactor: newProps.borderScaleFactor,
-    centeredRotation: newProps.centeredRotation,
-    cornerColor: newProps.cornerColor,
-    cornerDashArray: newProps.cornerDashArray,
-    cornerSize: newProps.cornerSize,
-    cornerStrokeColor: newProps.cornerStrokeColor,
-    centeredScaling: newProps.centeredScaling,
-    charSpacing: newProps.charSpacing,
-    direction: newProps.direction,
-    evented: newProps.evented,
-    excludeFromExport: newProps.excludeFromExport,
-    fillRule: newProps.fillRule,
-    flipX: newProps.flipX,
-    flipY: newProps.flipY,
-    globalCompositeOperation: newProps.globalCompositeOperation,
-    hasBorders: newProps.hasBorders,
-    hasControls: newProps.hasControls,
-    height: newProps.height,
-    hoverCursor: newProps.hoverCursor,
-    includeDefaultValues: newProps.includeDefaultValues,
-    inverted: newProps.inverted,
-    linethrough: newProps.linethrough,
-    lockMovementX: newProps.lockMovementX,
-    lockMovementY: newProps.lockMovementY,
-    lockRotation: newProps.lockRotation,
-    lockScalingFlip: newProps.lockScalingFlip,
-    lockScalingX: newProps.lockScalingX,
-    lockScalingY: newProps.lockScalingY,
-    lockSkewingX: newProps.lockSkewingX,
-    lockSkewingY: newProps.lockSkewingY,
-    minScaleLimit: newProps.minScaleLimit,
-    moveCursor: newProps.moveCursor,
-    objectCaching: newProps.objectCaching,
-    opacity: newProps.opacity,
-    overline: newProps.overline,
-    padding: newProps.padding,
-    paintFirst: newProps.paintFirst,
-    pathAlign: newProps.pathAlign,
-    pathSide: newProps.pathSide,
-    perPixelTargetFind: newProps.perPixelTargetFind,
-    scaleX: newProps.scaleX,
-    scaleY: newProps.scaleY,
-    selectable: newProps.selectable,
-    shadow: newProps.shadow,
-    stroke: newProps.stroke,
-    strokeDashArray: newProps.strokeDashArray,
-    strokeDashOffset: newProps.strokeDashOffset,
-    strokeLineCap: newProps.strokeLineCap,
-    strokeLineJoin: newProps.strokeLineJoin,
-    skewX: newProps.skewX,
-    skewY: newProps.skewY,
-    strokeUniform: newProps.strokeUniform,
-    strokeWidth: newProps.strokeWidth,
-    width: newProps.width,
-    strokeMiterLimit: newProps.strokeMiterLimit,
-    textDecorationThickness: newProps.textDecorationThickness,
-    touchCornerSize: newProps.touchCornerSize,
-    transparentCorners: newProps.transparentCorners,
-    underline: newProps.underline,
-    visible: newProps.visible,
-  })
-  // console.log(item)
-  return item
+export interface FabricTextPresetConfig {
+  label: string
+  /**
+   * Keys that should participate in two-way bindings for this preset.
+   * Falls back to a sensible default selection when omitted.
+   */
+  boundKeys?: readonly FabricTextBindableKey[]
+  /**
+   * Initial props applied when the FabricText is created.
+   * These act as defaults before modelValue overrides.
+   */
+  initial?: Partial<FabricTextModelValue>
 }
+
+const DEFAULT_BOUND_KEYS: readonly FabricTextBindableKey[] = [
+  'text',
+  'left',
+  'top',
+  'fontFamily',
+  'fontSize',
+  'fontWeight',
+  'fontStyle',
+  'fill',
+  'textAlign',
+  'lineHeight',
+  'scaleX',
+  'scaleY',
+  'angle',
+  'opacity',
+  'selectable',
+  'shadow',
+  'stroke',
+  'strokeWidth',
+  'width',
+  'padding',
+  'charSpacing',
+] as const
+
+export const FABRIC_TEXT_PRESETS = {
+  default: {
+    label: 'Default text',
+    boundKeys: DEFAULT_BOUND_KEYS,
+    initial: {
+      fontFamily: 'Inter',
+      fill: '#f8fafc',
+    },
+  },
+  headline: {
+    label: 'Headline',
+    boundKeys: [
+      'text',
+      'left',
+      'top',
+      'fontFamily',
+      'fontSize',
+      'fontWeight',
+      'fill',
+      'lineHeight',
+      'textAlign',
+      'width',
+      'selectable',
+    ],
+    initial: {
+      fontFamily: 'Inter',
+      fontWeight: '700',
+      fill: '#f1f5f9',
+      lineHeight: 1.1,
+    },
+  },
+  badge: {
+    label: 'Badge',
+    boundKeys: [
+      'text',
+      'left',
+      'top',
+      'fontFamily',
+      'fontSize',
+      'fontWeight',
+      'fill',
+      'padding',
+      'selectable',
+      'shadow',
+    ],
+    initial: {
+      fontFamily: 'DM Sans',
+      fontWeight: '600',
+      fill: '#0f172a',
+      padding: 8,
+      selectable: false,
+    },
+  },
+} as const satisfies Record<string, FabricTextPresetConfig>
+
+export type FabricTextPresetId = keyof typeof FABRIC_TEXT_PRESETS
+
+const DEFAULT_PRESET_ID: FabricTextPresetId = 'default'
 
 export const FabricText = defineComponent({
   name: 'FabricText',
@@ -109,8 +225,33 @@ export const FabricText = defineComponent({
       type: Object as PropType<FabricTextModelValue>,
       default: () => {
         return {
-        } as FabricTextModelValue
+          text: '',
+        } satisfies FabricTextModelValue
       },
+    },
+    /**
+     * Apply a preset to seed initial props and bound keys in bulk.
+     */
+    preset: {
+      type: String as PropType<FabricTextPresetId>,
+      default: DEFAULT_PRESET_ID,
+    },
+    /**
+     * Override or extend the initial props defined by the preset.
+     */
+    initial: {
+      type: Object as PropType<Partial<FabricTextModelValue>>,
+      default: () => {
+        return {}
+      },
+    },
+    /**
+     * Fine-tune the set of props that participate in v-model updates.
+     * When provided it overrides the preset keys.
+     */
+    boundKeys: {
+      type: Array as PropType<FabricTextBindableKey[]>,
+      default: undefined,
     },
   },
   emits: ['update:modelValue'],
@@ -119,42 +260,86 @@ export const FabricText = defineComponent({
 
     const ctx = inject(ContextKey)
 
-    let textObj: fabric.Text
+    let textObj: fabric.Text | undefined
+
+    const presetConfig = computed<FabricTextPresetConfig>(() => {
+      return FABRIC_TEXT_PRESETS[props.preset] ?? FABRIC_TEXT_PRESETS[DEFAULT_PRESET_ID]
+    })
+
+    const resolvedInitialProps = computed<Partial<FabricTextModelValue>>(() => {
+      return {
+        ...(pickDefinedOptions(presetConfig.value.initial, FABRIC_TEXT_OPTION_KEYS) as Partial<FabricTextModelValue>),
+        ...(pickDefinedOptions(props.initial, FABRIC_TEXT_OPTION_KEYS) as Partial<FabricTextModelValue>),
+      }
+    })
+
+    const resolvedBoundKeys = computed<readonly FabricTextBindableKey[]>(() => {
+      const base
+        = (props.boundKeys?.length ? props.boundKeys : undefined)
+          ?? (presetConfig.value.boundKeys?.length ? presetConfig.value.boundKeys : undefined)
+          ?? DEFAULT_BOUND_KEYS
+
+      const normalizedBase = normalizeKeySelection(base, FABRIC_TEXT_BINDABLE_KEY_SET)
+      const keys = new Set<FabricTextBindableKey>(normalizedBase)
+
+      normalizeKeySelection(Object.keys(modelValue.value), FABRIC_TEXT_BINDABLE_KEY_SET).forEach(key => keys.add(key))
+      keys.add('text')
+
+      return Array.from(keys)
+    })
 
     const disposerCollection: VoidFunction[] = []
-    const selectedKeys = computed(() => {
-      return Object.keys(modelValue.value)
-    })
+
     onMounted(() => {
-      textObj = new fabric.FabricText(modelValue.value.text, modelValue.value)
+      const creationOptions = {
+        ...resolvedInitialProps.value,
+        ...(pickDefinedOptions(modelValue.value, FABRIC_TEXT_OPTION_KEYS) as Partial<FabricTextModelValue>),
+      }
+
+      textObj = new fabric.FabricText(
+        modelValue.value.text,
+        creationOptions as Partial<TextProps>,
+      )
 
       disposerCollection.push(
-        textObj.on('modified', (e) => {
-          const target = e.target as fabric.FabricText
-          emit('update:modelValue', keyReduce(
-            pick(
-              target,
-              selectedKeys.value as (keyof FabricTextModelValue)[],
-            ),
-          ))
+        textObj.on('modified', (event) => {
+          const target = event.target as fabric.FabricText | undefined
+          if (!target) {
+            return
+          }
+
+          const next = pickFromUnknown(target, resolvedBoundKeys.value) as Partial<FabricTextModelValue>
+          next.text = typeof target.text === 'string' ? target.text : modelValue.value.text
+
+          emit('update:modelValue', {
+            ...modelValue.value,
+            ...next,
+          } as FabricTextModelValue)
         }),
       )
 
       ctx?.addSequentialTask(() => {
-        ctx?.addObject?.(textObj)
+        ctx?.addObject?.(textObj!)
       })
     })
 
     watch(
       modelValue,
-      (newProps) => {
-        if (textObj) {
-          textObj.set(
-            keyReduce(newProps),
-          )
-          textObj.canvas?.renderAll()
+      (newValue) => {
+        if (!textObj) {
+          return
         }
+
+        const payload = pickDefinedOptions(newValue, resolvedBoundKeys.value) as Partial<FabricTextModelValue>
+
+        if (payload.text === undefined) {
+          payload.text = newValue.text
+        }
+
+        textObj.set(payload as Record<string, unknown>)
+        textObj.canvas?.renderAll()
       },
+      { deep: true },
     )
 
     onBeforeUnmount(() => {
@@ -166,6 +351,6 @@ export const FabricText = defineComponent({
       disposerCollection.length = 0
     })
 
-    return () => null // 不渲染任何 DOM
+    return () => null
   },
 })
