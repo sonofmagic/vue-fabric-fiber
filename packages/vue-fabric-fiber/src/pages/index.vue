@@ -6,6 +6,7 @@ import { RouterLink } from 'vue-router'
 import { FabricCanvas, FabricImage, FabricText, RenderGroup } from '~/index'
 
 import { demoCards } from './demos/cards'
+
 const featuredDemos = demoCards.slice(0, 4)
 
 const textArray = ref<Omit<FabricTextModelValue, 'clipPath' | 'canvas' | 'path'>[]>([

@@ -52,4 +52,3 @@ import { demoCards } from './cards'
     </section>
   </div>
 </template>
-
