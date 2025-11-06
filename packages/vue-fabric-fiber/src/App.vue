@@ -4,11 +4,7 @@ import { RouterLink, RouterView, useRoute } from 'vue-router'
 
 const navLinks = [
   { to: '/', label: 'Overview' },
-  { to: '/demos/basic', label: 'Hero Banner' },
-  { to: '/demos/text-playground', label: 'Typography' },
-  { to: '/demos/playground', label: 'Code Playground' },
-  { to: '/demos/composite', label: 'Layered Canvas' },
-  { to: '/demos/shapes', label: 'Shape Toolkit' },
+  { to: '/demos', label: 'Demos' },
 ]
 
 const route = useRoute()
@@ -42,7 +38,7 @@ function closeMobileNav() {
     </div>
 
     <div class="relative z-10 flex min-h-screen flex-col">
-      <header class="sticky top-0 z-30 border-b border-slate-800/40 bg-slate-950/70 backdrop-blur-xl">
+      <header class="fixed top-0 left-0 right-0 z-40 border-b border-slate-800/40 bg-slate-950/80 backdrop-blur-xl">
         <div class="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
           <RouterLink to="/" class="flex items-center gap-3" @click="closeMobileNav">
             <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-400/80 via-blue-500/70 to-purple-500/80 text-sm font-semibold text-slate-950 shadow-[0_18px_50px_-20px_rgba(59,130,246,0.7)]">
@@ -113,7 +109,10 @@ function closeMobileNav() {
           </button>
         </div>
 
-        <div v-if="showMobileNav" class="border-t border-slate-800/40 bg-slate-950/80 px-4 pb-6 pt-2 md:hidden">
+        <div
+          v-if="showMobileNav"
+          class="absolute left-0 right-0 top-full border-t border-slate-800/40 bg-slate-950/95 px-4 pb-6 pt-2 md:hidden"
+        >
           <nav class="flex flex-col gap-1 text-sm font-medium">
             <RouterLink
               v-for="link in navLinks"
@@ -140,7 +139,7 @@ function closeMobileNav() {
         </div>
       </header>
 
-      <main class="relative z-10 flex-1 px-4 pb-16 pt-12 sm:px-6">
+      <main class="relative z-10 flex-1 px-4 pb-16 pt-28 sm:px-6 sm:pt-32">
         <RouterView />
       </main>
 

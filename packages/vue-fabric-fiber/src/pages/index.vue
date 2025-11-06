@@ -5,33 +5,8 @@ import { ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import { FabricCanvas, FabricImage, FabricText, RenderGroup } from '~/index'
 
-const cardRoutes = [
-  {
-    to: '/demos/basic',
-    title: 'Basic Hero Banner',
-    description: 'Layer text on top of asynchronous imagery and tweak layout controls in real time.',
-  },
-  {
-    to: '/demos/playground',
-    title: 'Code Playground',
-    description: 'Edit scene blueprints and instantly render Fabric components from JSON-driven instructions.',
-  },
-  {
-    to: '/demos/text-playground',
-    title: 'Interactive Typography',
-    description: 'Directly bind fabric text props to form inputs and keep canvas edits in sync.',
-  },
-  {
-    to: '/demos/composite',
-    title: 'Layered Composition',
-    description: 'Combine RenderGroup queues to orchestrate complex scenes with toggled layers.',
-  },
-  {
-    to: '/demos/shapes',
-    title: 'Shape Toolkit',
-    description: 'Rectangles, polylines, paths, and more using the Fabric shape components.',
-  },
-]
+import { demoCards } from './demos/cards'
+const featuredDemos = demoCards.slice(0, 4)
 
 const textArray = ref<Omit<FabricTextModelValue, 'clipPath' | 'canvas' | 'path'>[]>([
   {
@@ -219,23 +194,32 @@ const heroStats = [
       </div>
     </section>
 
-    <section class="space-y-5">
-      <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+    <section class="space-y-6">
+      <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <span class="eyebrow">Explore</span>
           <h2 class="mt-3 text-2xl font-semibold text-slate-100">
             Demo gallery
           </h2>
         </div>
-        <p class="max-w-lg text-xs leading-relaxed text-slate-400">
-          Dive into specialised canvases to test typography bindings, layer async assets, or compose geometric primitives. Each demo
-          mirrors production-grade configurations.
-        </p>
+        <div class="flex flex-col gap-3 text-xs leading-relaxed text-slate-400 sm:text-sm">
+          <p class="max-w-xl">
+            Dive into specialised canvases to test typography bindings, layer async assets, or compose geometric primitives. Each demo
+            mirrors production-grade configurations.
+          </p>
+          <RouterLink
+            class="group inline-flex w-fit items-center gap-2 rounded-full border border-slate-700/60 bg-slate-900/70 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-200 transition hover:border-slate-600 hover:text-slate-100"
+            to="/demos"
+          >
+            View all demos
+            <span aria-hidden="true" class="transition group-hover:translate-x-0.5">→</span>
+          </RouterLink>
+        </div>
       </div>
 
       <div class="grid gap-5 md:grid-cols-2">
         <RouterLink
-          v-for="route in cardRoutes"
+          v-for="route in featuredDemos"
           :key="route.to"
           :to="route.to"
           class="group relative flex h-full flex-col justify-between overflow-hidden rounded-[28px] border border-slate-800/60 bg-slate-950/70 p-6 transition hover:-translate-y-1 hover:border-slate-600 hover:bg-slate-900/70"
