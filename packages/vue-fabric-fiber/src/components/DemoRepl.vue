@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { Repl, ReplStore } from '@vue/repl'
+import { Repl, useStore } from '@vue/repl'
 import Codemirror from '@vue/repl/codemirror-editor'
 import { computed, onMounted, ref, shallowRef, version as vueVersion } from 'vue'
 import { loadLibraryFiles } from '@/repl/library-files'
 import appStyleUrl from '@/style.css?url'
 import '@vue/repl/style.css'
-import '@vue/repl/codemirror-editor.css'
 
 const props = withDefaults(defineProps<{
   source: string
@@ -16,7 +15,7 @@ const props = withDefaults(defineProps<{
   height: '720px',
 })
 
-const store = shallowRef<ReplStore>()
+const store = shallowRef<ReturnType<typeof useStore>>()
 const isLoading = ref(true)
 const errorMessage = ref<string | null>(null)
 
@@ -63,23 +62,22 @@ async function bootstrapStore() {
       [demoFile]: props.source.trim(),
     }
 
-    const replStore = new ReplStore({
-      showOutput: true,
-      outputMode: 'preview',
-      defaultVueRuntimeURL: runtimeUrl,
-      defaultVueServerRendererURL: ssrUrl,
+    const replStore = useStore({
+      showOutput: ref(true),
+      outputMode: ref('preview'),
     })
-    replStore.useTs = true
 
     await replStore.setFiles(files, demoFile)
     replStore.setImportMap({
       imports: {
         'vue': runtimeUrl,
+        'vue/server-renderer': ssrUrl,
         'vue-fabric-fiber': './vue-fabric-fiber/index.ts',
         'fabric': fabricUrl,
         'p-queue': pQueueUrl,
       },
-    })
+    }, true)
+    replStore.init()
     store.value = replStore
   }
   catch (error) {
