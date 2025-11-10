@@ -243,14 +243,44 @@ function resolveDimensionValue(
   return undefined
 }
 
-function applyDimensionProps(
+function applyDimensionIntent(
   instance: fabric.FabricImage,
-  value: FabricImageModelValue,
+  value: Pick<FabricImageModelValue, 'width' | 'height'>,
   canvasWidth?: number,
   canvasHeight?: number,
 ) {
   const currentWidth = instance.getScaledWidth()
   const currentHeight = instance.getScaledHeight()
+
+  const intrinsicWidth = (
+    typeof instance.width === 'number'
+    && Number.isFinite(instance.width)
+    && instance.width > 0
+  )
+    ? instance.width
+    : (
+        typeof instance.scaleX === 'number'
+        && Number.isFinite(instance.scaleX)
+        && instance.scaleX !== 0
+        && Number.isFinite(currentWidth)
+      )
+        ? currentWidth / instance.scaleX
+        : undefined
+
+  const intrinsicHeight = (
+    typeof instance.height === 'number'
+    && Number.isFinite(instance.height)
+    && instance.height > 0
+  )
+    ? instance.height
+    : (
+        typeof instance.scaleY === 'number'
+        && Number.isFinite(instance.scaleY)
+        && instance.scaleY !== 0
+        && Number.isFinite(currentHeight)
+      )
+        ? currentHeight / instance.scaleY
+        : undefined
 
   const resolvedWidth = resolveDimensionValue(
     value.width,
@@ -263,21 +293,49 @@ function applyDimensionProps(
     currentHeight,
   )
 
-  let changed = false
-
-  if (resolvedWidth !== undefined && Number.isFinite(resolvedWidth)) {
-    instance.scaleToWidth(resolvedWidth)
-    changed = true
+  if (resolvedWidth === undefined && resolvedHeight === undefined) {
+    return
   }
 
-  if (resolvedHeight !== undefined && Number.isFinite(resolvedHeight)) {
-    instance.scaleToHeight(resolvedHeight)
-    changed = true
+  const nextScale: Partial<Record<'scaleX' | 'scaleY', number>> = {}
+
+  if (
+    resolvedWidth !== undefined
+    && intrinsicWidth !== undefined
+    && Number.isFinite(intrinsicWidth)
+    && intrinsicWidth !== 0
+  ) {
+    const scaleX = resolvedWidth / intrinsicWidth
+    if (Number.isFinite(scaleX)) {
+      nextScale.scaleX = scaleX
+    }
   }
 
-  if (changed) {
-    instance.setCoords()
+  if (
+    resolvedHeight !== undefined
+    && intrinsicHeight !== undefined
+    && Number.isFinite(intrinsicHeight)
+    && intrinsicHeight !== 0
+  ) {
+    const scaleY = resolvedHeight / intrinsicHeight
+    if (Number.isFinite(scaleY)) {
+      nextScale.scaleY = scaleY
+    }
   }
+
+  if (nextScale.scaleX === undefined && nextScale.scaleY !== undefined) {
+    nextScale.scaleX = nextScale.scaleY
+  }
+  else if (nextScale.scaleY === undefined && nextScale.scaleX !== undefined) {
+    nextScale.scaleY = nextScale.scaleX
+  }
+
+  if (nextScale.scaleX === undefined && nextScale.scaleY === undefined) {
+    return
+  }
+
+  instance.set(nextScale as Record<string, unknown>)
+  instance.setCoords()
 }
 
 function getCanvasDimensions(ctx?: Context) {
@@ -345,9 +403,17 @@ export const FabricImage = defineComponent({
 
     const disposerCollection: VoidFunction[] = []
 
+    function enqueueTask(task: () => Promise<void> | void) {
+      if (ctx?.addSequentialTask) {
+        return ctx.addSequentialTask(task)
+      }
+      return Promise.resolve().then(() => task())
+    }
+
     function cleanupImage() {
       if (imageObj) {
         ctx?.removeObject?.(imageObj)
+        ctx?.fabricCanvas?.requestRenderAll?.()
       }
       disposerCollection.forEach(disposer => disposer())
       disposerCollection.length = 0
@@ -361,54 +427,63 @@ export const FabricImage = defineComponent({
       }
     }
 
+    function bindFabricEvent(
+      instance: fabric.FabricImage,
+      eventName: string,
+      handler: (event: any) => void,
+    ) {
+      instance.on(eventName as never, handler as never)
+      disposerCollection.push(() => {
+        instance.off(eventName as never, handler as never)
+      })
+    }
+
+    function emitModelSnapshot(target: fabric.FabricImage) {
+      const next = pickFromUnknown(target, resolvedBoundKeys.value) as Partial<FabricImageModelValue>
+
+      if (resolvedBoundKeys.value.includes('src')) {
+        next.src = target.getSrc()
+      }
+
+      if (resolvedBoundKeys.value.includes('crossOrigin')) {
+        next.crossOrigin = target.getCrossOrigin() as TCrossOrigin
+      }
+
+      if (resolvedBoundKeys.value.includes('width')) {
+        next.width = target.getScaledWidth()
+      }
+
+      if (resolvedBoundKeys.value.includes('height')) {
+        next.height = target.getScaledHeight()
+      }
+
+      emit('update:modelValue', {
+        ...modelValue.value,
+        ...next,
+      } as FabricImageModelValue)
+    }
+
     function attachEventListeners(instance: fabric.FabricImage) {
-      disposerCollection.push(
-        instance.on('modified', (event) => {
-          const target = event.target as fabric.FabricImage | undefined
-          if (!target) {
-            return
-          }
-
-          const next = pickFromUnknown(target, resolvedBoundKeys.value) as Partial<FabricImageModelValue>
-
-          if (resolvedBoundKeys.value.includes('src')) {
-            next.src = target.getSrc()
-          }
-
-          if (resolvedBoundKeys.value.includes('crossOrigin')) {
-            next.crossOrigin = target.getCrossOrigin() as TCrossOrigin
-          }
-
-          if (resolvedBoundKeys.value.includes('width')) {
-            next.width = target.getScaledWidth()
-          }
-
-          if (resolvedBoundKeys.value.includes('height')) {
-            next.height = target.getScaledHeight()
-          }
-
-          emit('update:modelValue', {
-            ...modelValue.value,
-            ...next,
-          } as FabricImageModelValue)
-        }),
-      )
+      bindFabricEvent(instance, 'modified', (event) => {
+        const target = event.target as fabric.FabricImage | undefined
+        if (!target) {
+          return
+        }
+        emitModelSnapshot(target)
+      })
     }
 
     async function instantiateImage(value: FabricImageModelValue) {
       if (!value?.src) {
+        cleanupImage()
         return
       }
 
       abortPendingLoad()
       cleanupImage()
 
-      activeAbortController = new AbortController()
-
-      const optionPayload = {
-        ...resolvedInitialProps.value,
-        ...(pickDefinedOptions(value, FABRIC_IMAGE_OPTION_KEYS) as Partial<FabricImageModelValue>),
-      }
+      const controller = new AbortController()
+      activeAbortController = controller
 
       const resolvedCrossOrigin = (
         value.crossOrigin
@@ -418,25 +493,38 @@ export const FabricImage = defineComponent({
 
       const loadOptions = {
         crossOrigin: resolvedCrossOrigin ?? undefined,
-        signal: activeAbortController.signal,
+        signal: controller.signal,
       }
 
       try {
         const instance = await fabric.FabricImage.fromURL(
           value.src,
           loadOptions,
-          optionPayload as Partial<ImageProps>,
+          {
+            ...resolvedInitialProps.value,
+            ...(pickDefinedOptions(value, FABRIC_IMAGE_OPTION_KEYS) as Partial<FabricImageModelValue>),
+          } as Partial<ImageProps>,
         )
 
-        instance.set(optionPayload as Record<string, unknown>)
+        if (controller.signal.aborted) {
+          return
+        }
+
+        const latestValue = modelValue.value.src === value.src ? modelValue.value : value
+        const hydratedOptions = {
+          ...resolvedInitialProps.value,
+          ...(pickDefinedOptions(latestValue, FABRIC_IMAGE_OPTION_KEYS) as Partial<FabricImageModelValue>),
+        }
+
+        instance.set(hydratedOptions as Record<string, unknown>)
 
         const { width: canvasWidth, height: canvasHeight } = getCanvasDimensions(ctx)
-        applyDimensionProps(instance, value, canvasWidth, canvasHeight)
+        applyDimensionIntent(instance, latestValue, canvasWidth, canvasHeight)
 
         attachEventListeners(instance)
 
-        ctx?.addObject?.(instance)
         imageObj = instance
+        ctx?.addObject?.(instance)
         ctx?.fabricCanvas?.requestRenderAll?.()
       }
       catch (error: unknown) {
@@ -445,37 +533,53 @@ export const FabricImage = defineComponent({
         }
         console.error('[FabricImage] Failed to load image', error)
       }
+      finally {
+        if (activeAbortController === controller) {
+          activeAbortController = undefined
+        }
+      }
     }
 
     onMounted(() => {
-      ctx?.addSequentialTask?.(() => instantiateImage(modelValue.value))
+      enqueueTask(() => instantiateImage(modelValue.value))
     })
 
     watch(
       modelValue,
       (newValue, oldValue) => {
+        const srcChanged
+          = newValue.src !== oldValue?.src
+            || newValue.crossOrigin !== oldValue?.crossOrigin
+
         if (!imageObj) {
+          if (srcChanged || !activeAbortController) {
+            enqueueTask(() => instantiateImage(newValue))
+          }
           return
         }
 
-        if (
-          newValue.src !== oldValue?.src
-          || newValue.crossOrigin !== oldValue?.crossOrigin
-        ) {
-          ctx?.addSequentialTask?.(() => instantiateImage(newValue))
+        if (srcChanged) {
+          enqueueTask(() => instantiateImage(newValue))
           return
         }
 
         const nextOptions = pickDefinedOptions(newValue, resolvedBoundKeys.value) as Partial<FabricImageModelValue>
 
         delete nextOptions.src
+        delete nextOptions.crossOrigin
+        if (Object.prototype.hasOwnProperty.call(nextOptions, 'width')) {
+          delete nextOptions.width
+        }
+        if (Object.prototype.hasOwnProperty.call(nextOptions, 'height')) {
+          delete nextOptions.height
+        }
 
         if (Object.keys(nextOptions).length > 0) {
           imageObj.set(nextOptions as Record<string, unknown>)
         }
 
         const { width: canvasWidth, height: canvasHeight } = getCanvasDimensions(ctx)
-        applyDimensionProps(imageObj, newValue, canvasWidth, canvasHeight)
+        applyDimensionIntent(imageObj, newValue, canvasWidth, canvasHeight)
 
         imageObj.canvas?.requestRenderAll?.()
       },
