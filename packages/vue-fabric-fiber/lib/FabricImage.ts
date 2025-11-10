@@ -403,6 +403,13 @@ export const FabricImage = defineComponent({
 
     const disposerCollection: VoidFunction[] = []
 
+    function emitImageLoadError(error: unknown) {
+      ctx?.fabricCanvas?.fire?.('fabric:image-error', {
+        error,
+        src: modelValue.value.src,
+      })
+    }
+
     function enqueueTask(task: () => Promise<void> | void) {
       if (ctx?.addSequentialTask) {
         return ctx.addSequentialTask(task)
@@ -531,7 +538,7 @@ export const FabricImage = defineComponent({
         if (error instanceof DOMException && error.name === 'AbortError') {
           return
         }
-        console.error('[FabricImage] Failed to load image', error)
+        emitImageLoadError(error)
       }
       finally {
         if (activeAbortController === controller) {

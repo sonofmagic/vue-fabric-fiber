@@ -1,15 +1,38 @@
 <script setup lang="ts">
-import type { Shadow } from 'fabric'
+import type { Canvas, Shadow } from 'fabric'
 import type { FabricCircleModelValue, FabricImageModelValue, FabricRectModelValue, FabricTextModelValue } from '~/index'
-import { computed, ref, watch } from 'vue'
-import { RouterLink } from 'vue-router'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { RouterLink } from 'vue-router'
 import { buildCanonicalUrl, SITE_NAME, usePageSeo } from '@/seo'
+import { bindCanvasDragBounds } from '@/utils/canvasBounds'
 import { FabricCanvas, FabricCircle, FabricImage, FabricRect, FabricText, RenderGroup } from '~/index'
 
 import { demoCards } from './demos/cards'
 
 const { t, tm, locale } = useI18n()
+
+const HERO_CANVAS_DIMENSIONS = {
+  width: 720,
+  height: 520,
+} as const
+
+const heroCanvasStyle = {
+  aspectRatio: `${HERO_CANVAS_DIMENSIONS.width} / ${HERO_CANVAS_DIMENSIONS.height}`,
+  minHeight: `${HERO_CANVAS_DIMENSIONS.height}px`,
+  width: '100%',
+} as const
+
+const detachHeroCanvasBounds = ref<VoidFunction | null>(null)
+
+function handleHeroCanvasReady(canvas: Canvas) {
+  detachHeroCanvasBounds.value?.()
+  detachHeroCanvasBounds.value = bindCanvasDragBounds(canvas)
+}
+
+onBeforeUnmount(() => {
+  detachHeroCanvasBounds.value?.()
+})
 
 const featuredDefinitions = demoCards.slice(0, 4)
 const featuredDemos = computed(() => {
@@ -20,8 +43,8 @@ const featuredDemos = computed(() => {
   }))
 })
 
-const heroHighlights = computed(() => tm('home.hero.highlights') as { title: string; description: string }[])
-const heroStats = computed(() => tm('home.hero.stats') as { label: string; value: string }[])
+const heroHighlights = computed(() => tm('home.hero.highlights') as { title: string, description: string }[])
+const heroStats = computed(() => tm('home.hero.stats') as { label: string, value: string }[])
 
 const heroTitleShadow = {
   color: 'rgba(15,23,42,0.65)',
@@ -98,8 +121,8 @@ const renderGroupGreeting = ref<FabricTextModelValue>({
 
 const heroCanvasImage = ref<FabricImageModelValue>({
   src: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80',
-  width: 720,
-  height: 520,
+  width: HERO_CANVAS_DIMENSIONS.width,
+  height: HERO_CANVAS_DIMENSIONS.height,
   selectable: false,
   hasControls: false,
 })
@@ -273,9 +296,9 @@ usePageSeo({
   keywords: () => tm('home.meta.keywords') as string[],
   structuredData: () => ({
     '@type': 'WebSite',
-    name: SITE_NAME,
-    url: buildCanonicalUrl('/'),
-    description: t('home.meta.description'),
+    'name': SITE_NAME,
+    'url': buildCanonicalUrl('/'),
+    'description': t('home.meta.description'),
   }),
 })
 </script>
@@ -428,10 +451,13 @@ usePageSeo({
             ]"
           >
             <div
-              class="relative overflow-hidden rounded-[28px] border border-slate-800/60 bg-slate-950/90 shadow-[0_40px_90px_-45px_rgba(15,23,42,0.9)]"
-              :class="isInteractiveMode ? 'h-[520px]' : ''"
+              class="canvas-shell relative overflow-hidden rounded-[28px] border border-slate-800/60 bg-slate-950/90 shadow-[0_40px_90px_-45px_rgba(15,23,42,0.9)]"
+              :style="heroCanvasStyle"
             >
-              <FabricCanvas :canvas-options="{ width: 720, height: 520, preserveObjectStacking: true }">
+              <FabricCanvas
+                :canvas-options="{ width: HERO_CANVAS_DIMENSIONS.width, height: HERO_CANVAS_DIMENSIONS.height, preserveObjectStacking: true }"
+                @ready="handleHeroCanvasReady"
+              >
                 <FabricImage v-model="heroCanvasImage" preset="background" />
                 <FabricCircle v-model="haloCircle" />
                 <template v-for="(_, idx) in layoutPanels" :key="`panel-${idx}`">

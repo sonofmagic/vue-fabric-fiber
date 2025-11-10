@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { RouterLink } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { RouterLink } from 'vue-router'
 import { buildCanonicalUrl, usePageSeo } from '@/seo'
 import { demoCards } from './cards'
 
 const { t, tm } = useI18n()
 
 const cards = computed(() => {
-  return demoCards.map((card) => ({
+  return demoCards.map(card => ({
     ...card,
     title: t(card.titleKey),
     description: t(card.descriptionKey),
@@ -23,9 +23,9 @@ usePageSeo({
   keywords: () => tm('demos.meta.keywords') as string[],
   structuredData: () => ({
     '@type': 'CollectionPage',
-    name: t('demos.hero.title'),
-    url: buildCanonicalUrl('/demos'),
-    description: t('demos.hero.description'),
+    'name': t('demos.hero.title'),
+    'url': buildCanonicalUrl('/demos'),
+    'description': t('demos.hero.description'),
   }),
 })
 </script>

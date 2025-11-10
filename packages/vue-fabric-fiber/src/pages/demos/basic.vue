@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import type { DemoCardSlug } from './cards'
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import DemoRepl from '@/components/DemoRepl.vue'
 import BasicSource from '@/repl/examples/basic.vue?raw'
 import { buildCanonicalUrl, usePageSeo } from '@/seo'
-import { useI18n } from 'vue-i18n'
-import { demoCards, type DemoCardSlug } from './cards'
+import { demoCards } from './cards'
 
 const slug: DemoCardSlug = 'basic'
 const definition = demoCards.find(entry => entry.slug === slug)
@@ -24,7 +25,7 @@ const card = computed(() => ({
 }))
 
 const helperText = computed(() => t(`demos.detail.helpers.${slug}`))
-const note = computed(() => tm(`demos.detail.notes.${slug}`) as { intro: string; outro: string })
+const note = computed(() => tm(`demos.detail.notes.${slug}`) as { intro: string, outro: string })
 
 usePageSeo({
   title: () => card.value.title,
@@ -33,10 +34,10 @@ usePageSeo({
   keywords: () => card.value.tags,
   structuredData: () => ({
     '@type': 'TechArticle',
-    name: card.value.title,
-    headline: card.value.title,
-    description: `${card.value.description} ${helperText.value}`.trim(),
-    url: buildCanonicalUrl(definition.to),
+    'name': card.value.title,
+    'headline': card.value.title,
+    'description': `${card.value.description} ${helperText.value}`.trim(),
+    'url': buildCanonicalUrl(definition.to),
   }),
 })
 </script>

@@ -3,7 +3,7 @@
   "changelog": [
     "@changesets/changelog-github",
     {
-      "repo": "sonofmagic/fabric-ports"
+      "repo": "sonofmagic/vue-fabric-fiber"
     }
   ],
   "commit": false,

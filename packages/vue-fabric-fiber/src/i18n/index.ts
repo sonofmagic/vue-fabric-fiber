@@ -3,9 +3,21 @@ import en from './locales/en'
 import zh from './locales/zh'
 
 export const SUPPORTED_LOCALES = ['en', 'zh'] as const
-export type SupportedLocale = typeof SUPPORTED_LOCALES[number]
+export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number]
+
+const localeMessages = {
+  en,
+  zh,
+} as const satisfies Record<SupportedLocale, typeof en>
+
+export type MessageSchema = typeof localeMessages['en']
+export const messages: Record<SupportedLocale, MessageSchema> = localeMessages
 
 const STORAGE_KEY = 'fabric-ports-locale'
+
+export function isSupportedLocale(value: unknown): value is SupportedLocale {
+  return typeof value === 'string' && SUPPORTED_LOCALES.includes(value as SupportedLocale)
+}
 
 function resolveInitialLocale(): SupportedLocale {
   if (typeof window === 'undefined') {
@@ -32,19 +44,12 @@ function resolveInitialLocale(): SupportedLocale {
   return 'en'
 }
 
-export const i18n = createI18n({
+export const i18n = createI18n<MessageSchema, SupportedLocale, false>({
   legacy: false,
   locale: resolveInitialLocale(),
   fallbackLocale: 'en',
-  messages: {
-    en,
-    zh,
-  },
+  messages,
 })
-
-export function isSupportedLocale(value: unknown): value is SupportedLocale {
-  return typeof value === 'string' && SUPPORTED_LOCALES.includes(value as SupportedLocale)
-}
 
 export function rememberLocale(locale: SupportedLocale) {
   if (typeof window === 'undefined') {

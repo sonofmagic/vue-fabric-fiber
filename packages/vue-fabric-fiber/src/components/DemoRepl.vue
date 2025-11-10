@@ -2,9 +2,9 @@
 import { Repl, useStore } from '@vue/repl'
 import Codemirror from '@vue/repl/codemirror-editor'
 import { computed, onMounted, ref, shallowRef, version as vueVersion } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { loadLibraryFiles } from '@/repl/library-files'
 import appStyleUrl from '@/style.css?url'
-import { useI18n } from 'vue-i18n'
 import '@vue/repl/style.css'
 
 const props = withDefaults(defineProps<{

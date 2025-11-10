@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import type { Canvas } from 'fabric'
 import type {
   FabricCircleModelValue,
   FabricImageModelValue,
   FabricRectModelValue,
   FabricTextModelValue,
 } from 'vue-fabric-fiber'
-import { computed, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import {
   FabricCanvas,
   FabricCircle,
@@ -14,6 +15,7 @@ import {
   FabricText,
   RenderGroup,
 } from 'vue-fabric-fiber'
+import { bindCanvasDragBounds } from '@/utils/canvasBounds'
 
 type NodeType = 'text' | 'image' | 'rect' | 'circle'
 
@@ -455,6 +457,28 @@ catch (error) {
   parseError.value = formatError(error)
 }
 
+const PLAYGROUND_CANVAS_DIMENSIONS = {
+  width: 720,
+  height: 480,
+} as const
+
+const playgroundCanvasStyle = {
+  aspectRatio: `${PLAYGROUND_CANVAS_DIMENSIONS.width} / ${PLAYGROUND_CANVAS_DIMENSIONS.height}`,
+  minHeight: `${PLAYGROUND_CANVAS_DIMENSIONS.height}px`,
+  width: '100%',
+} as const
+
+const detachPlaygroundCanvasBounds = ref<VoidFunction | null>(null)
+
+function handlePlaygroundCanvasReady(canvas: Canvas) {
+  detachPlaygroundCanvasBounds.value?.()
+  detachPlaygroundCanvasBounds.value = bindCanvasDragBounds(canvas)
+}
+
+onBeforeUnmount(() => {
+  detachPlaygroundCanvasBounds.value?.()
+})
+
 const supportedLegend = computed(() => [
   { label: 'text', component: '<FabricText />' },
   { label: 'image', component: '<FabricImage />' },
@@ -572,8 +596,18 @@ const supportedLegend = computed(() => [
             </p>
           </header>
 
-          <div class="overflow-hidden rounded-3xl border border-slate-800/60 bg-slate-950/80 shadow-[0_40px_90px_-48px_rgba(15,23,42,0.9)]">
-            <FabricCanvas :canvas-options="{ width: 720, height: 480, preserveObjectStacking: true }">
+          <div
+            class="canvas-shell overflow-hidden rounded-3xl border border-slate-800/60 bg-slate-950/80 shadow-[0_40px_90px_-48px_rgba(15,23,42,0.9)]"
+            :style="playgroundCanvasStyle"
+          >
+            <FabricCanvas
+              :canvas-options="{
+                width: PLAYGROUND_CANVAS_DIMENSIONS.width,
+                height: PLAYGROUND_CANVAS_DIMENSIONS.height,
+                preserveObjectStacking: true,
+              }"
+              @ready="handlePlaygroundCanvasReady"
+            >
               <RenderGroup>
                 <template v-for="node in canvasNodes" :key="node.id">
                   <FabricText v-if="node.type === 'text'" v-model="node.props" />

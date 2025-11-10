@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { RouterLink, RouterView, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { RouterLink, RouterView, useRoute } from 'vue-router'
+import { isSupportedLocale, rememberLocale, SUPPORTED_LOCALES } from '@/i18n'
 import { usePageSeo } from '@/seo'
-import { SUPPORTED_LOCALES, isSupportedLocale, rememberLocale } from '@/i18n'
 
 const { t, locale } = useI18n()
 
