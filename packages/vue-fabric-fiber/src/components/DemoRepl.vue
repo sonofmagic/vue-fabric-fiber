@@ -4,6 +4,7 @@ import Codemirror from '@vue/repl/codemirror-editor'
 import { computed, onMounted, ref, shallowRef, version as vueVersion } from 'vue'
 import { loadLibraryFiles } from '@/repl/library-files'
 import appStyleUrl from '@/style.css?url'
+import { useI18n } from 'vue-i18n'
 import '@vue/repl/style.css'
 
 const props = withDefaults(defineProps<{
@@ -18,6 +19,7 @@ const props = withDefaults(defineProps<{
 const store = shallowRef<ReturnType<typeof useStore>>()
 const isLoading = ref(true)
 const errorMessage = ref<string | null>(null)
+const { t } = useI18n()
 
 const runtimeUrl = `https://cdn.jsdelivr.net/npm/vue@${vueVersion}/dist/vue.esm-browser.js`
 const ssrUrl = `https://cdn.jsdelivr.net/npm/@vue/server-renderer@${vueVersion}/dist/server-renderer.esm-browser.js`
@@ -96,7 +98,7 @@ onMounted(() => {
 <template>
   <div class="demo-repl surface-panel rounded-[32px] border border-slate-800/60 bg-slate-950/75 p-3" :style="shellStyle">
     <div v-if="errorMessage" class="flex min-h-[200px] items-center justify-center rounded-2xl border border-red-400/30 bg-red-500/10 px-6 py-12 text-center text-sm text-red-200">
-      Failed to load playground:
+      {{ t('components.demoRepl.errorTitle') }}
       <br>
       {{ errorMessage }}
     </div>
@@ -105,7 +107,7 @@ onMounted(() => {
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
         <path class="opacity-75" d="M4 12a8 8 0 0 1 8-8" stroke="currentColor" stroke-linecap="round" stroke-width="4" />
       </svg>
-      Preparing interactive playground…
+      {{ t('components.demoRepl.loading') }}
     </div>
     <Repl
       v-else-if="store"

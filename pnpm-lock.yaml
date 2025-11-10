@@ -134,6 +134,9 @@ importers:
       p-queue:
         specifier: ^9.0.0
         version: 9.0.0
+      vue-i18n:
+        specifier: ^9.14.5
+        version: 9.14.5(vue@3.5.23(typescript@5.9.3))
     devDependencies:
       '@tailwindcss/vite':
         specifier: ^4.1.16
@@ -1297,6 +1300,18 @@ packages:
     peerDependenciesMeta:
       '@types/node':
         optional: true
+
+  '@intlify/core-base@9.14.5':
+    resolution: {integrity: sha512-5ah5FqZG4pOoHjkvs8mjtv+gPKYU0zCISaYNjBNNqYiaITxW8ZtVih3GS/oTOqN8d9/mDLyrjD46GBApNxmlsA==}
+    engines: {node: '>= 16'}
+
+  '@intlify/message-compiler@9.14.5':
+    resolution: {integrity: sha512-IHzgEu61/YIpQV5Pc3aRWScDcnFKWvQA9kigcINcCBXN8mbW+vk9SK+lDxA6STzKQsVJxUPg9ACC52pKKo3SVQ==}
+    engines: {node: '>= 16'}
+
+  '@intlify/shared@9.14.5':
+    resolution: {integrity: sha512-9gB+E53BYuAEMhbCAxVgG38EZrk59sxBtv3jSizNL2hEWlgjBjAw1AwpLHtNaeda12pe6W20OGEa0TwuMSRbyQ==}
+    engines: {node: '>= 16'}
 
   '@isaacs/balanced-match@4.0.1':
     resolution: {integrity: sha512-yzMTt9lEb8Gv7zRioUilSglI0c0smZ9k5D65677DLWLtWJaXIS3CqcGyUFByYKlnUj6TkjLVs54fBl6+TiGQDQ==}
@@ -8234,6 +8249,12 @@ packages:
     peerDependencies:
       eslint: '>=6.0.0'
 
+  vue-i18n@9.14.5:
+    resolution: {integrity: sha512-0jQ9Em3ymWngyiIkj0+c/k7WgaPO+TNzjKSNq9BvBQaKJECqn9cd9fL4tkDhB5G1QBskGl9YxxbDAhgbFtpe2g==}
+    engines: {node: '>= 16'}
+    peerDependencies:
+      vue: ^3.0.0
+
   vue-router@4.6.3:
     resolution: {integrity: sha512-ARBedLm9YlbvQomnmq91Os7ck6efydTSpRP3nuOKCvgJOHNrhRoJDSKtee8kcL1Vf7nz6U+PMBL+hTvR3bTVQg==}
     peerDependencies:
@@ -9729,6 +9750,18 @@ snapshots:
   '@inquirer/type@3.0.9(@types/node@24.10.0)':
     optionalDependencies:
       '@types/node': 24.10.0
+
+  '@intlify/core-base@9.14.5':
+    dependencies:
+      '@intlify/message-compiler': 9.14.5
+      '@intlify/shared': 9.14.5
+
+  '@intlify/message-compiler@9.14.5':
+    dependencies:
+      '@intlify/shared': 9.14.5
+      source-map-js: 1.2.1
+
+  '@intlify/shared@9.14.5': {}
 
   '@isaacs/balanced-match@4.0.1': {}
 
@@ -18100,6 +18133,13 @@ snapshots:
       semver: 7.7.3
     transitivePeerDependencies:
       - supports-color
+
+  vue-i18n@9.14.5(vue@3.5.23(typescript@5.9.3)):
+    dependencies:
+      '@intlify/core-base': 9.14.5
+      '@intlify/shared': 9.14.5
+      '@vue/devtools-api': 6.6.4
+      vue: 3.5.23(typescript@5.9.3)
 
   vue-router@4.6.3(vue@3.5.23(typescript@5.9.3)):
     dependencies:

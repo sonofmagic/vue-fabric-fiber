@@ -1,45 +1,75 @@
+export type DemoCardSlug
+  = | 'basic'
+    | 'animatingCrosses'
+    | 'playground'
+    | 'textPlayground'
+    | 'composite'
+    | 'shapes'
+
+export type DemoTagKey
+  = | 'text'
+    | 'image'
+    | 'reactive'
+    | 'animation'
+    | 'customObject'
+    | 'json'
+    | 'dynamicScenes'
+    | 'typography'
+    | 'bindings'
+    | 'renderGroup'
+    | 'layers'
+    | 'shapes'
+    | 'primitives'
+
 export interface DemoCard {
+  slug: DemoCardSlug
   to: string
-  title: string
-  description: string
-  tags?: string[]
+  titleKey: `demos.cards.${DemoCardSlug}.title`
+  descriptionKey: `demos.cards.${DemoCardSlug}.description`
+  tagKeys?: DemoTagKey[]
 }
 
 export const demoCards: DemoCard[] = [
   {
+    slug: 'basic',
     to: '/demos/basic',
-    title: 'Basic Hero Banner',
-    description: 'Layer text on top of asynchronous imagery and tweak layout controls in real time.',
-    tags: ['Text', 'Image', 'Reactive'],
+    titleKey: 'demos.cards.basic.title',
+    descriptionKey: 'demos.cards.basic.description',
+    tagKeys: ['text', 'image', 'reactive'],
   },
   {
+    slug: 'animatingCrosses',
     to: '/demos/animating-crosses',
-    title: 'Animating Crosses',
-    description: 'Recreate Fabric’s classic cross animation with component-driven objects and palette controls.',
-    tags: ['Animation', 'Custom Object'],
+    titleKey: 'demos.cards.animatingCrosses.title',
+    descriptionKey: 'demos.cards.animatingCrosses.description',
+    tagKeys: ['animation', 'customObject'],
   },
   {
+    slug: 'playground',
     to: '/demos/playground',
-    title: 'Code Playground',
-    description: 'Edit scene blueprints and instantly render Fabric components from JSON-driven instructions.',
-    tags: ['JSON', 'Dynamic Scenes'],
+    titleKey: 'demos.cards.playground.title',
+    descriptionKey: 'demos.cards.playground.description',
+    tagKeys: ['json', 'dynamicScenes'],
   },
   {
+    slug: 'textPlayground',
     to: '/demos/text-playground',
-    title: 'Interactive Typography',
-    description: 'Directly bind fabric text props to form inputs and keep canvas edits in sync.',
-    tags: ['Typography', 'Bindings'],
+    titleKey: 'demos.cards.textPlayground.title',
+    descriptionKey: 'demos.cards.textPlayground.description',
+    tagKeys: ['typography', 'bindings'],
   },
   {
+    slug: 'composite',
     to: '/demos/composite',
-    title: 'Layered Composition',
-    description: 'Combine RenderGroup queues to orchestrate complex scenes with toggled layers.',
-    tags: ['RenderGroup', 'Layers'],
+    titleKey: 'demos.cards.composite.title',
+    descriptionKey: 'demos.cards.composite.description',
+    tagKeys: ['renderGroup', 'layers'],
   },
   {
+    slug: 'shapes',
     to: '/demos/shapes',
-    title: 'Shape Toolkit',
-    description: 'Rectangles, polylines, paths, and more using the Fabric shape components.',
-    tags: ['Shapes', 'Primitives'],
+    titleKey: 'demos.cards.shapes.title',
+    descriptionKey: 'demos.cards.shapes.description',
+    tagKeys: ['shapes', 'primitives'],
   },
 ]

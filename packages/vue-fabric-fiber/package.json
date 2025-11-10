@@ -47,7 +47,8 @@
   },
   "dependencies": {
     "fabric": "^6.7.1",
-    "p-queue": "^9.0.0"
+    "p-queue": "^9.0.0",
+    "vue-i18n": "^9.14.5"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.16",

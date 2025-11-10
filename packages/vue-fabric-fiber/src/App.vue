@@ -1,12 +1,18 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { RouterLink, RouterView, useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { usePageSeo } from '@/seo'
+import { SUPPORTED_LOCALES, isSupportedLocale, rememberLocale } from '@/i18n'
 
-const navLinks = [
-  { to: '/', label: 'Overview' },
-  { to: '/demos', label: 'Demos' },
-]
+const { t, locale } = useI18n()
+
+const navLinks = computed(() => [
+  { to: '/', label: t('app.nav.overview') },
+  { to: '/demos', label: t('app.nav.demos') },
+])
+
+const localeOptions = SUPPORTED_LOCALES
 
 const route = useRoute()
 const showMobileNav = ref(false)
@@ -27,6 +33,12 @@ function toggleMobileNav() {
 function closeMobileNav() {
   showMobileNav.value = false
 }
+
+watch(locale, (next) => {
+  if (isSupportedLocale(next)) {
+    rememberLocale(next)
+  }
+})
 
 usePageSeo()
 </script>
@@ -52,7 +64,7 @@ usePageSeo()
                 Fabric Ports
               </p>
               <span class="text-[11px] uppercase tracking-[0.28em] text-slate-400">
-                Demo Studio
+                {{ t('app.brand.tagline') }}
               </span>
             </div>
           </RouterLink>
@@ -84,13 +96,30 @@ usePageSeo()
                 fill-rule="evenodd"
               />
             </svg>
-            GitHub
+            {{ t('app.nav.github') }}
           </a>
+
+          <div class="hidden items-center gap-2 md:flex">
+            <label class="sr-only" for="site-language-desktop">{{ t('locale.label') }}</label>
+            <select
+              id="site-language-desktop"
+              v-model="locale"
+              class="rounded-xl border border-slate-800/60 bg-slate-950/70 px-3 py-2 text-xs font-medium text-slate-300 focus:border-slate-600 focus:outline-none"
+            >
+              <option
+                v-for="code in localeOptions"
+                :key="code"
+                :value="code"
+              >
+                {{ t(`locale.options.${code}`) }}
+              </option>
+            </select>
+          </div>
 
           <button
             class="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-800/60 bg-slate-950/70 text-slate-300 transition hover:border-slate-700 hover:text-slate-100 md:hidden"
             type="button"
-            aria-label="Toggle navigation"
+            :aria-label="t('app.nav.toggle')"
             @click="toggleMobileNav"
           >
             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -136,8 +165,24 @@ usePageSeo()
               target="_blank"
               @click="closeMobileNav"
             >
-              GitHub
+              {{ t('app.nav.github') }}
             </a>
+            <div class="mt-3">
+              <label class="sr-only" for="site-language-mobile">{{ t('locale.label') }}</label>
+              <select
+                id="site-language-mobile"
+                v-model="locale"
+                class="w-full rounded-lg border border-slate-800/60 bg-slate-900/70 px-3 py-2 text-xs font-medium text-slate-300 focus:border-slate-600 focus:outline-none"
+              >
+                <option
+                  v-for="code in localeOptions"
+                  :key="`mobile-${code}`"
+                  :value="code"
+                >
+                  {{ t(`locale.options.${code}`) }}
+                </option>
+              </select>
+            </div>
           </nav>
         </div>
       </header>
@@ -149,10 +194,10 @@ usePageSeo()
       <footer class="relative z-10 border-t border-slate-800/40 bg-slate-950/70">
         <div class="mx-auto flex w-full max-w-6xl flex-col gap-3 px-4 py-6 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <p class="text-xs text-slate-400">
-            Built with Fabric.js bindings for Vue.
+            {{ t('app.footer.builtWith') }}
           </p>
           <p class="text-[11px] uppercase tracking-[0.32em] text-slate-600">
-            © {{ year }} Fabric Ports
+            {{ t('app.footer.copyright', { year }) }}
           </p>
         </div>
       </footer>
