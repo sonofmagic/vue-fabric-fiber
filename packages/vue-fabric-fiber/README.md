@@ -113,6 +113,6 @@ Routes:
 
 ## SEO configuration
 
-- Set `VITE_SITE_URL` in your `.env` (for example `https://fabric-ports.netlify.app`) so canonical links, JSON-LD, and social cards point to the correct domain.
+- Set `VITE_SITE_URL` in your `.env` (for example `https://fabric.icebreaker.top`) so canonical links, JSON-LD, and social cards point to the correct domain.
 - Update `public/sitemap.xml` whenever you add or rename demo routes.
 - Robots and favicons live in `public/robots.txt` and `public/favicon.svg`; tweak them to match your deployment before shipping.

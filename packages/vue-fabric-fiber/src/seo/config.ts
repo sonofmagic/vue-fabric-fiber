@@ -1,4 +1,4 @@
-const FALLBACK_SITE_URL = 'https://fabric-ports.netlify.app'
+const FALLBACK_SITE_URL = 'https://fabric.icebreaker.top'
 
 function sanitizeSiteUrl(raw?: string) {
   if (!raw || typeof raw !== 'string') {

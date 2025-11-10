@@ -1,49 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://fabric-ports.netlify.app/</loc>
+    <loc>https://fabric.icebreaker.top/</loc>
     <lastmod>2025-02-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://fabric-ports.netlify.app/demos</loc>
+    <loc>https://fabric.icebreaker.top/demos</loc>
     <lastmod>2025-02-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://fabric-ports.netlify.app/demos/basic</loc>
+    <loc>https://fabric.icebreaker.top/demos/basic</loc>
     <lastmod>2025-02-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://fabric-ports.netlify.app/demos/animating-crosses</loc>
+    <loc>https://fabric.icebreaker.top/demos/animating-crosses</loc>
     <lastmod>2025-02-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://fabric-ports.netlify.app/demos/playground</loc>
+    <loc>https://fabric.icebreaker.top/demos/playground</loc>
     <lastmod>2025-02-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://fabric-ports.netlify.app/demos/text-playground</loc>
+    <loc>https://fabric.icebreaker.top/demos/text-playground</loc>
     <lastmod>2025-02-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://fabric-ports.netlify.app/demos/composite</loc>
+    <loc>https://fabric.icebreaker.top/demos/composite</loc>
     <lastmod>2025-02-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://fabric-ports.netlify.app/demos/shapes</loc>
+    <loc>https://fabric.icebreaker.top/demos/shapes</loc>
     <lastmod>2025-02-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
