@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import DemoRepl from '@/components/DemoRepl.vue'
 import ShapesSource from '@/repl/examples/shapes.vue?raw'
+import { buildCanonicalUrl, usePageSeo } from '@/seo'
 import { demoCards } from './cards'
 
 const card = demoCards.find(entry => entry.to === '/demos/shapes')
@@ -11,6 +12,22 @@ if (!card) {
 
 const codePath = 'src/repl/examples/shapes.vue'
 const helperText = 'Every primitive—from rectangles and polygons to custom paths—runs through the same Fabric bindings so you can remix them safely.'
+
+if (card) {
+  usePageSeo({
+    title: card.title,
+    description: `${card.description} ${helperText}`,
+    canonicalPath: card.to,
+    keywords: card.tags,
+    structuredData: () => ({
+      '@type': 'TechArticle',
+      name: card.title,
+      headline: card.title,
+      description: `${card.description} ${helperText}`,
+      url: buildCanonicalUrl(card.to),
+    }),
+  })
+}
 </script>
 
 <template>

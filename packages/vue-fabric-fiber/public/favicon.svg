@@ -1,0 +1,15 @@
+<svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="fpGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop stop-color="#22d3ee" offset="0%"/>
+      <stop stop-color="#8b5cf6" offset="100%"/>
+    </linearGradient>
+    <filter id="fpShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#0f172a" flood-opacity="0.55"/>
+    </filter>
+  </defs>
+  <rect width="88" height="88" x="4" y="4" rx="24" fill="#020617" stroke="url(#fpGradient)" stroke-width="2"/>
+  <text x="50%" y="56%" text-anchor="middle" font-family="Inter, 'Segoe UI', system-ui, -apple-system, sans-serif" font-size="40" font-weight="700" fill="url(#fpGradient)" filter="url(#fpShadow)">
+    FP
+  </text>
+</svg>

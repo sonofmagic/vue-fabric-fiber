@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import DemoRepl from '@/components/DemoRepl.vue'
 import BasicSource from '@/repl/examples/basic.vue?raw'
+import { buildCanonicalUrl, usePageSeo } from '@/seo'
 import { demoCards } from './cards'
 
 const card = demoCards.find(entry => entry.to === '/demos/basic')
@@ -11,6 +12,22 @@ if (!card) {
 
 const codePath = 'src/repl/examples/basic.vue'
 const helperText = 'Swap hero art, typography, and selection props in the editor while the Fabric canvas stays reactive.'
+
+if (card) {
+  usePageSeo({
+    title: card.title,
+    description: `${card.description} ${helperText}`,
+    canonicalPath: card.to,
+    keywords: card.tags,
+    structuredData: () => ({
+      '@type': 'TechArticle',
+      name: card.title,
+      headline: card.title,
+      description: `${card.description} ${helperText}`,
+      url: buildCanonicalUrl(card.to),
+    }),
+  })
+}
 </script>
 
 <template>

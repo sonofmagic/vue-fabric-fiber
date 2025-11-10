@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { RouterLink, RouterView, useRoute } from 'vue-router'
+import { usePageSeo } from '@/seo'
 
 const navLinks = [
   { to: '/', label: 'Overview' },
@@ -26,6 +27,8 @@ function toggleMobileNav() {
 function closeMobileNav() {
   showMobileNav.value = false
 }
+
+usePageSeo()
 </script>
 
 <template>

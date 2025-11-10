@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import DemoRepl from '@/components/DemoRepl.vue'
 import AnimatingCrossesSource from '@/repl/examples/animating-crosses.vue?raw'
+import { buildCanonicalUrl, usePageSeo } from '@/seo'
 import { demoCards } from './cards'
 
 const card = demoCards.find(entry => entry.to === '/demos/animating-crosses')
@@ -11,6 +12,22 @@ if (!card) {
 
 const codePath = 'src/repl/examples/animating-crosses.vue'
 const helperText = 'This port recreates Fabric’s classic animation with custom objects, palette controls, and canvas level watchers.'
+
+if (card) {
+  usePageSeo({
+    title: card.title,
+    description: `${card.description} ${helperText}`,
+    canonicalPath: card.to,
+    keywords: card.tags,
+    structuredData: () => ({
+      '@type': 'TechArticle',
+      name: card.title,
+      headline: card.title,
+      description: `${card.description} ${helperText}`,
+      url: buildCanonicalUrl(card.to),
+    }),
+  })
+}
 </script>
 
 <template>

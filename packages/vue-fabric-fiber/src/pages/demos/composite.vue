@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import DemoRepl from '@/components/DemoRepl.vue'
 import CompositeSource from '@/repl/examples/composite.vue?raw'
+import { buildCanonicalUrl, usePageSeo } from '@/seo'
 import { demoCards } from './cards'
 
 const card = demoCards.find(entry => entry.to === '/demos/composite')
@@ -11,6 +12,22 @@ if (!card) {
 
 const codePath = 'src/repl/examples/composite.vue'
 const helperText = 'RenderGroup queues, async imagery, and toggled layers stay in sync so you can study how the bindings orchestrate complex scenes.'
+
+if (card) {
+  usePageSeo({
+    title: card.title,
+    description: `${card.description} ${helperText}`,
+    canonicalPath: card.to,
+    keywords: card.tags,
+    structuredData: () => ({
+      '@type': 'TechArticle',
+      name: card.title,
+      headline: card.title,
+      description: `${card.description} ${helperText}`,
+      url: buildCanonicalUrl(card.to),
+    }),
+  })
+}
 </script>
 
 <template>

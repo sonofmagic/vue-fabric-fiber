@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import DemoRepl from '@/components/DemoRepl.vue'
 import TextPlaygroundSource from '@/repl/examples/text-playground.vue?raw'
+import { buildCanonicalUrl, usePageSeo } from '@/seo'
 import { demoCards } from './cards'
 
 const card = demoCards.find(entry => entry.to === '/demos/text-playground')
@@ -11,6 +12,22 @@ if (!card) {
 
 const codePath = 'src/repl/examples/text-playground.vue'
 const helperText = 'Bind range sliders, inputs, and toggles straight into FabricText props and see edits reflected on every keystroke.'
+
+if (card) {
+  usePageSeo({
+    title: card.title,
+    description: `${card.description} ${helperText}`,
+    canonicalPath: card.to,
+    keywords: card.tags,
+    structuredData: () => ({
+      '@type': 'TechArticle',
+      name: card.title,
+      headline: card.title,
+      description: `${card.description} ${helperText}`,
+      url: buildCanonicalUrl(card.to),
+    }),
+  })
+}
 </script>
 
 <template>

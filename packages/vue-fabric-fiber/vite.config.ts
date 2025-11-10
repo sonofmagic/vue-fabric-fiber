@@ -1,27 +1,19 @@
 import type { UserConfig } from 'vite'
-import Tailwindcss from '@tailwindcss/vite'
-import Vue from '@vitejs/plugin-vue'
 import path from 'pathe'
-import VueRouter from 'unplugin-vue-router/vite'
 import { mergeConfig } from 'vite'
 import DTS from 'vite-plugin-dts'
+import { createVitePlugins } from './vite.plugins'
 import { sharedConfig } from './vite.shared.config'
 
 export default mergeConfig(sharedConfig, {
   plugins: [
-    VueRouter(
-      {
-        dts: path.relative(import.meta.dirname, './types/typed-router.d.ts'),
-      },
-    ),
-    Vue(),
+    ...createVitePlugins(),
     DTS(
       {
         tsconfigPath: './tsconfig.app.json',
         entryRoot: './lib',
       },
     ),
-    Tailwindcss(),
   ],
   // https://vite.dev/guide/build.html#library-mode
   build: {

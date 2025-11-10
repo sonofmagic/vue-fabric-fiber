@@ -1,6 +1,20 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
+import { buildCanonicalUrl, usePageSeo } from '@/seo'
 import { demoCards } from './cards'
+
+usePageSeo({
+  title: 'Demo gallery',
+  description: 'Browse curated Fabric.js demos rebuilt with Vue bindings, covering layered scenes, typography props, and JSON-driven canvases.',
+  canonicalPath: '/demos',
+  keywords: ['fabric.js demos', 'vue canvas examples', 'rendergroup gallery'],
+  structuredData: () => ({
+    '@type': 'CollectionPage',
+    name: 'Fabric Ports demo gallery',
+    url: buildCanonicalUrl('/demos'),
+    description: 'Interactive Fabric.js demos powered by vue-fabric-fiber.',
+  }),
+})
 </script>
 
 <template>

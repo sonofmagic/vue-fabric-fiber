@@ -4,6 +4,7 @@ import JsonEditorVue from 'json-editor-vue'
 import { ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import { FabricCanvas, FabricImage, FabricText, RenderGroup } from '~/index'
+import { SITE_DESCRIPTION, SITE_NAME, buildCanonicalUrl, usePageSeo } from '@/seo'
 
 import { demoCards } from './demos/cards'
 
@@ -86,6 +87,18 @@ const heroStats = [
   { label: 'DX Focus', value: 'Vue 3 + TypeScript' },
   { label: 'Interaction', value: 'Realtime sync' },
 ]
+
+usePageSeo({
+  title: 'Overview',
+  description: 'Compose Fabric.js canvases with Vue-first ergonomics, typed bindings, and live JSON editors powered by Fabric Ports.',
+  keywords: ['fabric.js', 'vue 3', 'canvas bindings', 'rendergroup', 'json editor', 'design tooling'],
+  structuredData: () => ({
+    '@type': 'WebSite',
+    name: SITE_NAME,
+    url: buildCanonicalUrl('/'),
+    description: SITE_DESCRIPTION,
+  }),
+})
 </script>
 
 <template>

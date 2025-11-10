@@ -105,3 +105,14 @@ Routes:
 - `/demos/text-playground` — text props playground
 - `/demos/composite` — layered scenes with `RenderGroup`
 - `/demos/shapes` — shape toolkit covering all primitives
+
+## Build targets
+
+- `pnpm build` — type-checks via `vue-tsc -b` and bundles the component library in `dist/`.
+- `pnpm build:site` — runs the Vite app build (output lives in `dist-site/`) so you can deploy the marketing/demo website separately from the library artifacts.
+
+## SEO configuration
+
+- Set `VITE_SITE_URL` in your `.env` (for example `https://fabric-ports.netlify.app`) so canonical links, JSON-LD, and social cards point to the correct domain.
+- Update `public/sitemap.xml` whenever you add or rename demo routes.
+- Robots and favicons live in `public/robots.txt` and `public/favicon.svg`; tweak them to match your deployment before shipping.

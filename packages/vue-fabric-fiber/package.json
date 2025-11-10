@@ -24,6 +24,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
+    "build:site": "vite build --config ./vite.site.config.ts",
     "preview": "vite preview",
     "test": "vitest run",
     "test:dev": "vitest",
@@ -50,6 +51,7 @@
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.16",
+    "@unhead/vue": "^2.0.0",
     "@vitejs/plugin-vue": "^6.0.1",
     "@vue/repl": "^4.7.0",
     "@vue/test-utils": "^2.4.6",
