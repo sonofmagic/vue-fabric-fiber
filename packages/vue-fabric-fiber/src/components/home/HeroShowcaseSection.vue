@@ -1,16 +1,35 @@
 <script setup lang="ts">
 import type { HeroInspectorLayer } from '@/composables/useHeroScene'
 import type { HomeHeroHighlight, HomeHeroStat } from '@/types/home'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { RouterLink } from 'vue-router'
 
+type ListSource<T> = T[] | { value: T[] }
+
 interface HeroShowcaseProps {
-  heroStats: HomeHeroStat[]
-  heroHighlights: HomeHeroHighlight[]
-  inspectorLayers: HeroInspectorLayer[]
+  heroStats?: ListSource<HomeHeroStat>
+  heroHighlights?: ListSource<HomeHeroHighlight>
+  inspectorLayers?: ListSource<HeroInspectorLayer>
 }
 
-const props = defineProps<HeroShowcaseProps>()
+const props = withDefaults(defineProps<HeroShowcaseProps>(), {
+  heroStats: () => [],
+  heroHighlights: () => [],
+  inspectorLayers: () => [],
+})
+
+function normalizeList<T>(source?: ListSource<T>) {
+  if (!source) {
+    return [] as T[]
+  }
+  const list = Array.isArray(source) ? source : source.value
+  return Array.isArray(list) ? list.filter(Boolean) : []
+}
+
+const safeStats = computed(() => normalizeList(props.heroStats))
+const safeHighlights = computed(() => normalizeList(props.heroHighlights))
+const safeInspectorLayers = computed(() => normalizeList(props.inspectorLayers))
 
 const { t } = useI18n()
 </script>
@@ -47,7 +66,7 @@ const { t } = useI18n()
         </div>
         <dl class="grid gap-4 text-sm text-slate-300 sm:grid-cols-2 lg:grid-cols-3">
           <div
-            v-for="stat in props.heroStats"
+            v-for="stat in safeStats"
             :key="stat.label"
             class="rounded-2xl border border-slate-800/60 bg-slate-900/55 px-4 py-5 shadow-[0_24px_60px_-42px_rgba(15,23,42,0.85)]"
           >
@@ -66,7 +85,7 @@ const { t } = useI18n()
         </h2>
         <ul class="space-y-4 text-sm text-slate-300">
           <li
-            v-for="highlight in props.heroHighlights"
+            v-for="highlight in safeHighlights"
             :key="highlight.title"
             class="rounded-2xl border border-slate-800/50 bg-slate-900/60 p-4"
           >
@@ -83,11 +102,11 @@ const { t } = useI18n()
       <div class="mt-6 rounded-3xl border border-slate-800/60 bg-slate-950/50 p-4 shadow-inner shadow-slate-950/40">
         <div class="flex items-center justify-between text-xs uppercase tracking-[0.32em] text-slate-400">
           <span>{{ t('home.hero.inspectorLabel') }}</span>
-          <span>{{ props.inspectorLayers.length }}</span>
+          <span>{{ safeInspectorLayers.length }}</span>
         </div>
         <div class="mt-4 grid max-h-[320px] gap-3 overflow-auto pr-1 sm:grid-cols-2">
           <div
-            v-for="layer in props.inspectorLayers"
+            v-for="layer in safeInspectorLayers"
             :key="layer.id"
             class="rounded-2xl border border-slate-800/40 bg-slate-950/70 p-3"
           >
