@@ -62,7 +62,7 @@ const label = ref<FabricTextModelValue>({
 | Component       | Description                                                                                                                                                                                                 |
 | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `FabricCanvas`  | Root context provider. Creates the `fabric.Canvas` instance and injects control helpers for child objects.                                                                                                  |
-| `RenderGroup`   | Nested task queue/scoping. Useful for grouping async loads or delaying render until the canvas is ready.                                                                                                    |
+| `RenderGroup`   | Nested task queue/scoping. Useful for grouping async loads or delaying render until the canvas is ready; supports queue `priority` and `disableQueue` tuning.                                               |
 | Object wrappers | `FabricImage`, `FabricText`, `FabricRect`, `FabricCircle`, `FabricEllipse`, `FabricTriangle`, `FabricLine`, `FabricPath`, `FabricPolyline`, `FabricPolygon`. Each offers two-way binding through `v-model`. |
 
 ### Object Props
@@ -81,6 +81,11 @@ Complex additions or async loads should wrap content in `RenderGroup` so the tas
   </RenderGroup>
 </FabricCanvas>
 ```
+
+`RenderGroup` also exposes a couple of props for advanced orchestration:
+
+- `priority` — queue priority passed to `p-queue`, letting you mix sequential ordering with a manual stack/z-index plan.
+- `disableQueue` — skips the sequential queue entirely so lightweight objects can attach to the canvas immediately.
 
 ## Type Exports
 

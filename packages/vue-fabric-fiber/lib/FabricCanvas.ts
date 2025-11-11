@@ -1,5 +1,5 @@
 import type { PropType } from 'vue'
-import type { Context } from './types'
+import type { AddSequentialTaskOptions, Context, SequentialTask } from './types'
 import * as fabric from 'fabric'
 import PQueue from 'p-queue'
 import {
@@ -164,8 +164,20 @@ export const FabricCanvas = defineComponent({
       ctx.fabricCanvas?.remove(obj)
     }
 
-    async function addSequentialTask(task: () => Promise<void> | void) {
-      return taskQueue.add(() => task())
+    function runTaskImmediately(task: SequentialTask) {
+      return Promise.resolve().then(() => task())
+    }
+
+    async function addSequentialTask(task: SequentialTask, options?: AddSequentialTaskOptions) {
+      if (!ctx.taskQueue || options?.bypassQueue) {
+        return runTaskImmediately(task)
+      }
+
+      const queueOptions = options?.priority !== undefined
+        ? { priority: options.priority }
+        : undefined
+
+      return ctx.taskQueue.add(() => task(), queueOptions)
     }
 
     ctx.addObject = addObject
