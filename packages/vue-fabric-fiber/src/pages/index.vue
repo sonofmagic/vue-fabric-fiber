@@ -42,7 +42,6 @@ usePageSeo({
     <HeroShowcaseSection
       :hero-highlights="heroHighlights"
       :hero-stats="heroStats"
-      :inspector-layers="heroScene.inspectorLayers"
     />
 
     <InteractiveComposer :scene="heroScene" />

@@ -67,7 +67,6 @@ const zh = {
         { label: '延迟', value: '小于 16ms 更新' },
         { label: '预设', value: '5 套画布方案' },
       ],
-      inspectorLabel: '活动图层',
       layerTypes: {
         image: '图像',
         text: '文字',

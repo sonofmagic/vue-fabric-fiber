@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { HeroInspectorLayer } from '@/composables/useHeroScene'
 import type { HomeHeroHighlight, HomeHeroStat } from '@/types/home'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -10,13 +9,11 @@ type ListSource<T> = T[] | { value: T[] }
 interface HeroShowcaseProps {
   heroStats?: ListSource<HomeHeroStat>
   heroHighlights?: ListSource<HomeHeroHighlight>
-  inspectorLayers?: ListSource<HeroInspectorLayer>
 }
 
 const props = withDefaults(defineProps<HeroShowcaseProps>(), {
   heroStats: () => [],
   heroHighlights: () => [],
-  inspectorLayers: () => [],
 })
 
 function normalizeList<T>(source?: ListSource<T>) {
@@ -29,7 +26,6 @@ function normalizeList<T>(source?: ListSource<T>) {
 
 const safeStats = computed(() => normalizeList(props.heroStats))
 const safeHighlights = computed(() => normalizeList(props.heroHighlights))
-const safeInspectorLayers = computed(() => normalizeList(props.inspectorLayers))
 
 const { t } = useI18n()
 </script>
@@ -97,30 +93,6 @@ const { t } = useI18n()
             </p>
           </li>
         </ul>
-      </div>
-
-      <div class="mt-6 rounded-3xl border border-slate-800/60 bg-slate-950/50 p-4 shadow-inner shadow-slate-950/40">
-        <div class="flex items-center justify-between text-xs uppercase tracking-[0.32em] text-slate-400">
-          <span>{{ t('home.hero.inspectorLabel') }}</span>
-          <span>{{ safeInspectorLayers.length }}</span>
-        </div>
-        <div class="mt-4 grid max-h-[320px] gap-3 overflow-auto pr-1 sm:grid-cols-2">
-          <div
-            v-for="layer in safeInspectorLayers"
-            :key="layer.id"
-            class="rounded-2xl border border-slate-800/40 bg-slate-950/70 p-3"
-          >
-            <p class="text-sm font-semibold text-slate-100">
-              {{ layer.label }}
-            </p>
-            <p class="text-[11px] uppercase tracking-[0.34em] text-slate-500">
-              {{ layer.type }}
-            </p>
-            <p class="mt-2 line-clamp-2 text-xs text-slate-400">
-              {{ layer.summary }}
-            </p>
-          </div>
-        </div>
       </div>
     </div>
   </section>

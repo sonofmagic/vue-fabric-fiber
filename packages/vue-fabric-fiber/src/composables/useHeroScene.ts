@@ -11,13 +11,6 @@ import type {
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { bindCanvasDragBounds } from '@/utils/canvasBounds'
 
-export interface HeroInspectorLayer {
-  id: string
-  label: string
-  type: string
-  summary: string
-}
-
 export interface HeroSceneState {
   heroCanvasDimensions: { width: number, height: number }
   heroCanvasStyle: { aspectRatio: string, minHeight: string, width: string }
@@ -28,7 +21,6 @@ export interface HeroSceneState {
   textArray: Ref<HeroTextLayer[]>
   renderGroupTitle: Ref<FabricTextModelValue>
   renderGroupGreeting: Ref<FabricTextModelValue>
-  inspectorLayers: ComputedRef<HeroInspectorLayer[]>
   selectedTextIndex: Ref<number>
   activeTextLayer: ComputedRef<HeroTextLayer | null>
   textLayerOptions: ComputedRef<Array<{ label: string, value: number, preview: string }>>
@@ -212,66 +204,6 @@ export function useHeroScene({ t, tm, locale }: UseHeroSceneOptions): HeroSceneS
     hasControls: true,
   })
 
-  const inspectorLayers = computed<HeroInspectorLayer[]>(() => {
-    const layers: HeroInspectorLayer[] = [
-      {
-        id: 'hero-image',
-        label: t('home.hero.layerLabels.heroImage'),
-        type: t('home.hero.layerTypes.image'),
-        summary: heroCanvasImage.value.src?.split('?')[0] ?? t('home.hero.layerSummaries.heroFallback'),
-      },
-      {
-        id: 'accent-portrait',
-        label: t('home.hero.layerLabels.accentPortrait'),
-        type: t('home.hero.layerTypes.image'),
-        summary: accentPortraitImage.value.src?.split('?')[0] ?? t('home.hero.layerSummaries.accentFallback'),
-      },
-      {
-        id: 'render-group-title',
-        label: t('home.hero.layerLabels.renderGroupTitle'),
-        type: t('home.hero.layerTypes.text'),
-        summary: renderGroupTitle.value.text,
-      },
-      {
-        id: 'render-group-greeting',
-        label: t('home.hero.layerLabels.renderGroupGreeting'),
-        type: t('home.hero.layerTypes.text'),
-        summary: renderGroupGreeting.value.text,
-      },
-    ]
-
-    layoutPanels.value.forEach((panel, index) => {
-      layers.push({
-        id: `glow-tile-${index}`,
-        label: t('home.hero.layerLabels.glowTile', { index: index + 1 }),
-        type: t('home.hero.layerTypes.rect'),
-        summary: t('home.hero.layerSummaries.glowTile', {
-          width: `${panel.width ?? 0}×${panel.height ?? 0}px`,
-          left: panel.left ?? 0,
-          top: panel.top ?? 0,
-        }),
-      })
-    })
-
-    layers.push({
-      id: 'halo-circle',
-      label: t('home.hero.layerLabels.halo'),
-      type: t('home.hero.layerTypes.circle'),
-      summary: t('home.hero.layerSummaries.halo', { radius: haloCircle.value.radius ?? 0 }),
-    })
-
-    textArray.value.forEach((entry, index) => {
-      layers.push({
-        id: `copy-${index}`,
-        label: t('home.hero.layerLabels.copyLayer', { index: index + 1 }),
-        type: t('home.hero.layerTypes.text'),
-        summary: entry.text,
-      })
-    })
-
-    return layers
-  })
-
   const selectedTextIndex = ref(0)
   const activeTextLayer = computed<HeroTextLayer | null>(() => {
     return textArray.value[selectedTextIndex.value] ?? textArray.value[0] ?? null
@@ -315,7 +247,6 @@ export function useHeroScene({ t, tm, locale }: UseHeroSceneOptions): HeroSceneS
     textArray,
     renderGroupTitle,
     renderGroupGreeting,
-    inspectorLayers,
     selectedTextIndex,
     activeTextLayer,
     textLayerOptions,

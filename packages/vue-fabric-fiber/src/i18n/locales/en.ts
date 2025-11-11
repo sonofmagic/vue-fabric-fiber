@@ -71,7 +71,6 @@ const en = {
         { label: 'Latency', value: '< 16ms updates' },
         { label: 'Presets', value: '5 canvas recipes' },
       ],
-      inspectorLabel: 'Active layers',
       layerTypes: {
         image: 'Image',
         text: 'Text',
