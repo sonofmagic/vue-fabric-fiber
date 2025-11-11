@@ -13,7 +13,7 @@ function clampObjectWithinCanvas(canvas: Canvas, target: FabricObject) {
   }
 
   target.setCoords()
-  const bounds = target.getBoundingRect(true, true)
+  const bounds = target.getBoundingRect()
   if (!bounds) {
     return
   }

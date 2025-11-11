@@ -1,7 +1,5 @@
 import type { Canvas } from 'fabric'
 import type { ComputedRef, Ref } from 'vue'
-import type { Composer } from 'vue-i18n'
-import type { MessageSchema, SupportedLocale } from '@/i18n'
 import type {
   FabricImageModelValue,
   FabricTextModelValue,
@@ -26,9 +24,9 @@ export interface HeroSceneState {
 }
 
 interface UseHeroSceneOptions {
-  t: Composer<MessageSchema, SupportedLocale>['t']
-  tm: Composer<MessageSchema, SupportedLocale>['tm']
-  locale: Composer<MessageSchema, SupportedLocale>['locale']
+  t: (key: string, ...args: any[]) => string
+  tm: (...args: any[]) => unknown
+  locale: Ref<string>
 }
 
 type HeroTextLayer = Omit<FabricTextModelValue, 'clipPath' | 'canvas' | 'path'>
@@ -71,8 +69,6 @@ export function useHeroScene({ t, tm, locale }: UseHeroSceneOptions): HeroSceneS
     height: 420,
     left: baseWidth * 0.78,
     top: baseHeight * 0.52,
-    originX: 'center',
-    originY: 'center',
     angle: -10,
     selectable: true,
     hasControls: true,
@@ -97,12 +93,14 @@ export function useHeroScene({ t, tm, locale }: UseHeroSceneOptions): HeroSceneS
   }
 
   const initialHeadlines = getHeadlineTexts()
-  const fallbackHeadlines = [
+  const fallbackHeadlines: [string, string, string, string] = [
     initialHeadlines[0] ?? 'Fabric Ports Studio',
     initialHeadlines[1] ?? 'Declarative canvas operating system',
     initialHeadlines[2] ?? 'Live bindings · Scene graph · Render queues',
     initialHeadlines[3] ?? 'Adaptive render queues at scale',
   ]
+  const centerHeadlineWidth = baseWidth * 0.52
+  const lowerBodyWidth = baseWidth * 0.7
 
   const textArray = ref<HeroTextLayer[]>([
     {
@@ -119,22 +117,22 @@ export function useHeroScene({ t, tm, locale }: UseHeroSceneOptions): HeroSceneS
     },
     {
       text: fallbackHeadlines[1],
-      left: baseWidth * 0.5,
+      left: (baseWidth - centerHeadlineWidth) / 2,
       top: baseHeight * 0.38,
-      originX: 'center',
       fontSize: 60,
       fill: '#cbd5f5',
       fontFamily: 'Inter',
       fontWeight: '500',
       textAlign: 'center',
+      width: centerHeadlineWidth,
       selectable: true,
       hasControls: true,
     },
     {
       text: fallbackHeadlines[2],
-      left: baseWidth * 0.2,
+      left: (baseWidth - lowerBodyWidth) / 2,
       top: baseHeight * 0.68,
-      width: baseWidth * 0.6,
+      width: lowerBodyWidth,
       fontSize: 48,
       fill: '#e2e8f0',
       fontFamily: 'Inter',
@@ -146,13 +144,13 @@ export function useHeroScene({ t, tm, locale }: UseHeroSceneOptions): HeroSceneS
     },
     {
       text: fallbackHeadlines[3],
-      left: baseWidth * 0.78,
+      left: (baseWidth - centerHeadlineWidth) / 2,
       top: baseHeight * 0.78,
-      originX: 'center',
       fontSize: 40,
       fill: '#38bdf8',
       fontFamily: 'Inter',
       fontWeight: '600',
+      width: centerHeadlineWidth,
       textAlign: 'center',
       selectable: true,
       hasControls: true,
@@ -161,26 +159,28 @@ export function useHeroScene({ t, tm, locale }: UseHeroSceneOptions): HeroSceneS
 
   const renderGroupTitle = ref<FabricTextModelValue>({
     text: t('home.hero.canvasCopy.queueTitle'),
-    left: baseWidth * 0.52,
+    left: (baseWidth - lowerBodyWidth) / 2,
     top: baseHeight * 0.58,
-    originX: 'center',
     fontSize: 44,
     fill: '#fbbf24',
     fontFamily: 'Inter',
     fontWeight: '600',
+    width: lowerBodyWidth,
+    textAlign: 'center',
     selectable: true,
     hasControls: true,
   })
 
   const renderGroupGreeting = ref<FabricTextModelValue>({
     text: t('home.hero.canvasCopy.queueStatus'),
-    left: baseWidth * 0.52,
+    left: (baseWidth - lowerBodyWidth) / 2,
     top: baseHeight * 0.66,
-    originX: 'center',
     fontSize: 34,
     fill: '#f8fafc',
     fontFamily: 'Inter',
     fontWeight: '500',
+    width: lowerBodyWidth,
+    textAlign: 'center',
     selectable: true,
     hasControls: true,
   })

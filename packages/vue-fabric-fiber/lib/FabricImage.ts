@@ -404,10 +404,17 @@ export const FabricImage = defineComponent({
     const disposerCollection: VoidFunction[] = []
 
     function emitImageLoadError(error: unknown) {
-      ctx?.fabricCanvas?.fire?.('fabric:image-error', {
-        error,
-        src: modelValue.value.src,
-      })
+      const fabricCanvas = ctx?.fabricCanvas
+      if (!fabricCanvas?.fire) {
+        return
+      }
+      (fabricCanvas.fire as (eventName: string, options?: unknown) => void)(
+        'fabric:image-error',
+        {
+          error,
+          src: modelValue.value.src,
+        },
+      )
     }
 
     function enqueueTask(task: () => Promise<void> | void) {

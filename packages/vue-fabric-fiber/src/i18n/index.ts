@@ -8,10 +8,10 @@ export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number]
 const localeMessages = {
   en,
   zh,
-} as const satisfies Record<SupportedLocale, typeof en>
+} as const
 
 export type MessageSchema = typeof localeMessages['en']
-export const messages: Record<SupportedLocale, MessageSchema> = localeMessages
+export const messages = localeMessages as unknown as Record<SupportedLocale, MessageSchema>
 
 const STORAGE_KEY = 'fabric-ports-locale'
 
