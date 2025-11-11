@@ -104,7 +104,7 @@ const zh = {
         closeLabel: '关闭',
         panel: {
           title: '画布检查器',
-          description: '调整图像、辉光图块、光环效果与文案。输入与 Fabric 引用直接映射，每次改动都会实时刷新主视觉。',
+          description: '调整图像、队列文案与标题层。输入与 Fabric 引用直接映射，每次改动都会实时刷新主视觉。',
         },
         portrait: {
           title: '肖像叠加',
@@ -129,21 +129,10 @@ const zh = {
           },
           empty: '添加一个标题图层即可开始编辑文案。',
         },
-        tiles: {
-          title: '辉光图块',
-          type: '矩形',
-          cardLabel: '图块 {index}',
-          fields: {
-            width: '宽度',
-            height: '高度',
-            opacity: '不透明度',
-          },
-        },
         halo: {
           title: '光环与队列文案',
           type: '组合',
           fields: {
-            radius: '光环半径',
             queueTitle: '队列标题',
             titleColor: '标题颜色',
             queueStatus: '队列状态',

@@ -93,7 +93,62 @@ function extractCanvasOptions(source?: FabricCanvasOptions) {
   return removeUndefined(source)
 }
 
-function applyCanvasOptions(canvas: fabric.Canvas, options: FabricCanvasOptions) {
+function getDevicePixelRatio(explicit?: number) {
+  if (typeof explicit === 'number' && Number.isFinite(explicit)) {
+    return Math.max(explicit, 1)
+  }
+  if (typeof window === 'undefined') {
+    return 1
+  }
+  return Math.max(window.devicePixelRatio || 1, 1)
+}
+
+interface SyncResolutionOptions {
+  render?: boolean
+  pixelRatio?: number
+}
+
+function syncCanvasResolution(
+  canvas: fabric.Canvas,
+  width: number,
+  height: number,
+  options?: SyncResolutionOptions,
+) {
+  const resolvedRatio = options?.pixelRatio ?? getDevicePixelRatio()
+  const ratio = canvas.enableRetinaScaling === false ? 1 : resolvedRatio
+  const targetWidth = Math.max(Math.round(width), 1)
+  const targetHeight = Math.max(Math.round(height), 1)
+
+  if (ratio !== 1) {
+    canvas.setDimensions(
+      {
+        width: Math.round(targetWidth * ratio),
+        height: Math.round(targetHeight * ratio),
+      },
+      { backstoreOnly: true },
+    )
+    canvas.setDimensions(
+      {
+        width: targetWidth,
+        height: targetHeight,
+      },
+      { cssOnly: true },
+    )
+  }
+  else {
+    canvas.setDimensions({
+      width: targetWidth,
+      height: targetHeight,
+    })
+  }
+
+  canvas.calcOffset?.()
+  if (options?.render !== false) {
+    canvas.requestRenderAll()
+  }
+}
+
+function applyCanvasOptions(canvas: fabric.Canvas, options: FabricCanvasOptions, pixelRatio: number) {
   const {
     width,
     height,
@@ -104,10 +159,7 @@ function applyCanvasOptions(canvas: fabric.Canvas, options: FabricCanvasOptions)
   if (width !== undefined || height !== undefined) {
     const nextWidth = width ?? canvas.getWidth()
     const nextHeight = height ?? canvas.getHeight()
-    canvas.setDimensions({
-      width: nextWidth,
-      height: nextHeight,
-    })
+    syncCanvasResolution(canvas, nextWidth, nextHeight, { render: false, pixelRatio })
   }
 
   if (backgroundColor !== undefined) {
@@ -146,10 +198,17 @@ export const FabricCanvas = defineComponent({
       type: Boolean,
       default: true,
     },
+    pixelRatio: {
+      type: Number,
+      default: undefined,
+    },
   },
   emits: ['update:canvasOptions', 'ready'],
   setup(props, { slots, emit }) {
     const canvasOptions = useModel(props, 'canvasOptions')
+    const resolvedPixelRatio = computed(() => {
+      return getDevicePixelRatio(props.pixelRatio)
+    })
 
     const taskQueue = new PQueue({ concurrency: 1 })
     const ctx = shallowReactive<Partial<Context>>({
@@ -228,11 +287,7 @@ export const FabricCanvas = defineComponent({
           return
         }
         const { width, height } = entry.contentRect
-        canvas.setDimensions({
-          width: Math.round(width),
-          height: Math.round(height),
-        })
-        canvas.requestRenderAll()
+        syncCanvasResolution(canvas, width, height, { pixelRatio: resolvedPixelRatio.value })
       })
       resizeObserver.observe(container)
     }
@@ -253,7 +308,14 @@ export const FabricCanvas = defineComponent({
         ...rest,
       })
 
-      applyCanvasOptions(ctx.fabricCanvas, resolvedOptions.value)
+      syncCanvasResolution(
+        ctx.fabricCanvas,
+        width ?? containerWidth,
+        height ?? containerHeight,
+        { render: false, pixelRatio: resolvedPixelRatio.value },
+      )
+
+      applyCanvasOptions(ctx.fabricCanvas, resolvedOptions.value, resolvedPixelRatio.value)
 
       if (shouldAutoResize.value) {
         setupResizeObserver()
@@ -268,10 +330,19 @@ export const FabricCanvas = defineComponent({
         if (!ctx.fabricCanvas) {
           return
         }
-        applyCanvasOptions(ctx.fabricCanvas, next)
+        applyCanvasOptions(ctx.fabricCanvas, next, resolvedPixelRatio.value)
       },
       { deep: true },
     )
+
+    watch(resolvedPixelRatio, (ratio) => {
+      if (!ctx.fabricCanvas) {
+        return
+      }
+      syncCanvasResolution(ctx.fabricCanvas, ctx.fabricCanvas.getWidth(), ctx.fabricCanvas.getHeight(), {
+        pixelRatio: ratio,
+      })
+    })
 
     watch(shouldAutoResize, (enabled) => {
       if (!ctx.fabricCanvas) {

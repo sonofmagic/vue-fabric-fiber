@@ -61,7 +61,7 @@ const label = ref<FabricTextModelValue>({
 
 | Component       | Description                                                                                                                                                                                                 |
 | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `FabricCanvas`  | Root context provider. Creates the `fabric.Canvas` instance and injects control helpers for child objects.                                                                                                  |
+| `FabricCanvas`  | Root context provider. Creates the `fabric.Canvas` instance, injects control helpers for child objects, and accepts a `pixel-ratio` prop to override the detected `devicePixelRatio`.                       |
 | `RenderGroup`   | Nested task queue/scoping. Useful for grouping async loads or delaying render until the canvas is ready; supports queue `priority` and `disableQueue` tuning.                                               |
 | Object wrappers | `FabricImage`, `FabricText`, `FabricRect`, `FabricCircle`, `FabricEllipse`, `FabricTriangle`, `FabricLine`, `FabricPath`, `FabricPolyline`, `FabricPolygon`. Each offers two-way binding through `v-model`. |
 

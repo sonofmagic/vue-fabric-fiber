@@ -114,7 +114,7 @@ const en = {
         panel: {
           title: 'Canvas inspector',
           description:
-            'Adjust imagery, glow tiles, halo effects, and copy. Inputs map directly to Fabric refs, so every tweak updates the hero in real time.',
+            'Adjust imagery, queue copy, and layered text. Inputs map directly to Fabric refs, so every tweak updates the hero in real time.',
         },
         portrait: {
           title: 'Portrait overlay',
@@ -139,21 +139,10 @@ const en = {
           },
           empty: 'Add a headline layer to start editing copy.',
         },
-        tiles: {
-          title: 'Glow tiles',
-          type: 'Rects',
-          cardLabel: 'Tile {index}',
-          fields: {
-            width: 'Width',
-            height: 'Height',
-            opacity: 'Opacity',
-          },
-        },
         halo: {
           title: 'Halo & queue copy',
           type: 'Mixed',
           fields: {
-            radius: 'Halo radius',
             queueTitle: 'Queue title',
             titleColor: 'Title color',
             queueStatus: 'Queue status',

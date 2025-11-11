@@ -2,7 +2,7 @@
 import type { HeroSceneState } from '@/composables/useHeroScene'
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { FabricCanvas, FabricCircle, FabricImage, FabricRect, FabricText, RenderGroup } from '~/index'
+import { FabricCanvas, FabricImage, FabricText, RenderGroup } from '~/index'
 
 interface InteractiveComposerProps {
   scene: HeroSceneState
@@ -12,12 +12,10 @@ const props = defineProps<InteractiveComposerProps>()
 
 const { t } = useI18n()
 const {
-  heroCanvasDimensions,
   heroCanvasStyle,
+  heroCanvasPixelRatio,
   heroCanvasImage,
   accentPortraitImage,
-  layoutPanels,
-  haloCircle,
   textArray,
   renderGroupTitle,
   renderGroupGreeting,
@@ -75,14 +73,11 @@ function closeInteractiveMode() {
         :style="heroCanvasStyle"
       >
         <FabricCanvas
-          :canvas-options="{ width: heroCanvasDimensions.width, height: heroCanvasDimensions.height, preserveObjectStacking: true }"
+          :canvas-options="{ preserveObjectStacking: true }"
+          :pixel-ratio="heroCanvasPixelRatio"
           @ready="handleHeroCanvasReady"
         >
           <FabricImage v-model="heroCanvasImage" preset="background" />
-          <FabricCircle v-model="haloCircle" />
-          <template v-for="(_, idx) in layoutPanels" :key="`panel-${idx}`">
-            <FabricRect v-model="layoutPanels[idx]" />
-          </template>
           <template v-for="(_, idx) in textArray" :key="idx">
             <FabricText v-model="textArray[idx]" />
           </template>
@@ -117,14 +112,11 @@ function closeInteractiveMode() {
               :style="heroCanvasStyle"
             >
               <FabricCanvas
-                :canvas-options="{ width: heroCanvasDimensions.width, height: heroCanvasDimensions.height, preserveObjectStacking: true }"
+                :canvas-options="{ preserveObjectStacking: true }"
+                :pixel-ratio="heroCanvasPixelRatio"
                 @ready="handleHeroCanvasReady"
               >
                 <FabricImage v-model="heroCanvasImage" preset="background" />
-                <FabricCircle v-model="haloCircle" />
-                <template v-for="(_, idx) in layoutPanels" :key="`panel-${idx}`">
-                  <FabricRect v-model="layoutPanels[idx]" />
-                </template>
                 <template v-for="(_, idx) in textArray" :key="idx">
                   <FabricText v-model="textArray[idx]" />
                 </template>
@@ -281,72 +273,10 @@ function closeInteractiveMode() {
 
               <section class="rounded-2xl border border-slate-800/60 bg-slate-950/70 p-3">
                 <div class="flex items-center justify-between text-[10px] uppercase tracking-[0.28em] text-slate-400">
-                  <span>{{ t('home.hero.interactive.tiles.title') }}</span>
-                  <span>{{ t('home.hero.interactive.tiles.type') }}</span>
-                </div>
-                <div class="mt-3 grid gap-2 md:grid-cols-3">
-                  <div
-                    v-for="(panel, idx) in layoutPanels"
-                    :key="`panel-controls-${idx}`"
-                    class="rounded-xl border border-slate-800/60 bg-slate-900/60 p-3 text-[10px] text-slate-300"
-                  >
-                    <p class="text-[10px] uppercase tracking-[0.26em] text-slate-500">
-                      {{ t('home.hero.interactive.tiles.cardLabel', { index: idx + 1 }) }}
-                    </p>
-                    <label class="mt-2 flex flex-col gap-1">
-                      <span>{{ t('home.hero.interactive.tiles.fields.width') }}</span>
-                      <input
-                        v-model.number="panel.width"
-                        class="rounded-lg border border-slate-800/60 bg-slate-950/60 px-2 py-1.5 text-xs text-slate-100"
-                        max="280"
-                        min="80"
-                        step="2"
-                        type="number"
-                      >
-                    </label>
-                    <label class="mt-2 flex flex-col gap-1">
-                      <span>{{ t('home.hero.interactive.tiles.fields.height') }}</span>
-                      <input
-                        v-model.number="panel.height"
-                        class="rounded-lg border border-slate-800/60 bg-slate-950/60 px-2 py-1.5 text-xs text-slate-100"
-                        max="220"
-                        min="80"
-                        step="2"
-                        type="number"
-                      >
-                    </label>
-                    <label class="mt-2 flex flex-col gap-1">
-                      <span>{{ t('home.hero.interactive.tiles.fields.opacity') }}</span>
-                      <input
-                        v-model.number="panel.opacity"
-                        class="rounded-lg border border-slate-800/60 bg-slate-950/60 px-2 py-1.5 text-xs text-slate-100"
-                        max="1"
-                        min="0.2"
-                        step="0.05"
-                        type="number"
-                      >
-                    </label>
-                  </div>
-                </div>
-              </section>
-
-              <section class="rounded-2xl border border-slate-800/60 bg-slate-950/70 p-3">
-                <div class="flex items-center justify-between text-[10px] uppercase tracking-[0.28em] text-slate-400">
                   <span>{{ t('home.hero.interactive.halo.title') }}</span>
                   <span>{{ t('home.hero.interactive.halo.type') }}</span>
                 </div>
                 <div class="mt-3 space-y-3">
-                  <label class="flex flex-col gap-1 text-[10px] uppercase tracking-[0.26em] text-slate-500">
-                    {{ t('home.hero.interactive.halo.fields.radius') }}
-                    <input
-                      v-model.number="haloCircle.radius"
-                      class="accent-cyan-300"
-                      max="240"
-                      min="80"
-                      step="1"
-                      type="range"
-                    >
-                  </label>
                   <label class="flex flex-col gap-1 text-[10px] uppercase tracking-[0.26em] text-slate-500">
                     {{ t('home.hero.interactive.halo.fields.queueTitle') }}
                     <input
