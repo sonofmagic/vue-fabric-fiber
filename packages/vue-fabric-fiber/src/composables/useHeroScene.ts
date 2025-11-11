@@ -6,6 +6,7 @@ import type {
   FabricImageModelValue,
   FabricTextModelValue,
 } from '~/index'
+import { Shadow } from 'fabric'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { bindCanvasDragBounds } from '@/utils/canvasBounds'
 
@@ -37,6 +38,8 @@ export function useHeroScene({ t, tm, locale }: UseHeroSceneOptions): HeroSceneS
     width: 720,
     height: 520,
   } as const
+  const baseWidth = heroCanvasDimensions.width
+  const baseHeight = heroCanvasDimensions.height
 
   const heroCanvasPixelRatio
     = typeof window === 'undefined'
@@ -50,38 +53,43 @@ export function useHeroScene({ t, tm, locale }: UseHeroSceneOptions): HeroSceneS
   } as const
 
   const heroCanvasImage = ref<FabricImageModelValue>({
-    src: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80',
+    src: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=2000&q=80',
     width: '100%',
     height: '100%',
     left: 0,
     top: 0,
+    scaleX: 1.1,
+    scaleY: 1.1,
     selectable: false,
     hasControls: false,
     evented: false,
   })
 
   const accentPortraitImage = ref<FabricImageModelValue>({
-    src: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=500&q=80',
-    width: 220,
-    left: 420,
-    top: 150,
-    angle: -4,
+    src: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=900&q=80',
+    width: 360,
+    height: 420,
+    left: baseWidth * 0.78,
+    top: baseHeight * 0.52,
+    originX: 'center',
+    originY: 'center',
+    angle: -10,
     selectable: true,
     hasControls: true,
-    shadow: {
-      color: 'rgba(2,6,23,0.55)',
-      blur: 18,
+    shadow: new Shadow({
+      color: 'rgba(2,6,23,0.45)',
+      blur: 26,
       offsetX: 0,
-      offsetY: 16,
-    },
+      offsetY: 22,
+    }),
   })
 
-  const heroTitleShadow = {
+  const heroTitleShadow = new Shadow({
     color: 'rgba(15,23,42,0.65)',
-    blur: 14,
-    offsetX: 2,
-    offsetY: 2,
-  }
+    blur: 18,
+    offsetX: 0,
+    offsetY: 0,
+  })
 
   function getHeadlineTexts(): string[] {
     const values = tm('home.hero.canvasCopy.headline')
@@ -89,13 +97,19 @@ export function useHeroScene({ t, tm, locale }: UseHeroSceneOptions): HeroSceneS
   }
 
   const initialHeadlines = getHeadlineTexts()
+  const fallbackHeadlines = [
+    initialHeadlines[0] ?? 'Fabric Ports Studio',
+    initialHeadlines[1] ?? 'Declarative canvas operating system',
+    initialHeadlines[2] ?? 'Live bindings · Scene graph · Render queues',
+    initialHeadlines[3] ?? 'Adaptive render queues at scale',
+  ]
 
   const textArray = ref<HeroTextLayer[]>([
     {
-      text: initialHeadlines[0] ?? '',
-      left: 66,
-      top: 120,
-      fontSize: 64,
+      text: fallbackHeadlines[0],
+      left: baseWidth * 0.18,
+      top: baseHeight * 0.16,
+      fontSize: 86,
       fill: '#f8fafc',
       fontFamily: 'Inter',
       fontWeight: '700',
@@ -104,24 +118,42 @@ export function useHeroScene({ t, tm, locale }: UseHeroSceneOptions): HeroSceneS
       hasControls: true,
     },
     {
-      text: initialHeadlines[1] ?? '',
-      left: 70,
-      top: 205,
-      fontSize: 30,
+      text: fallbackHeadlines[1],
+      left: baseWidth * 0.5,
+      top: baseHeight * 0.38,
+      originX: 'center',
+      fontSize: 60,
       fill: '#cbd5f5',
       fontFamily: 'Inter',
       fontWeight: '500',
+      textAlign: 'center',
       selectable: true,
       hasControls: true,
     },
     {
-      text: initialHeadlines[2] ?? '',
-      left: 70,
-      top: 265,
-      fontSize: 22,
+      text: fallbackHeadlines[2],
+      left: baseWidth * 0.2,
+      top: baseHeight * 0.68,
+      width: baseWidth * 0.6,
+      fontSize: 48,
+      fill: '#e2e8f0',
+      fontFamily: 'Inter',
+      fontWeight: '600',
+      lineHeight: 1.4,
+      textAlign: 'left',
+      selectable: true,
+      hasControls: true,
+    },
+    {
+      text: fallbackHeadlines[3],
+      left: baseWidth * 0.78,
+      top: baseHeight * 0.78,
+      originX: 'center',
+      fontSize: 40,
       fill: '#38bdf8',
       fontFamily: 'Inter',
       fontWeight: '600',
+      textAlign: 'center',
       selectable: true,
       hasControls: true,
     },
@@ -129,9 +161,10 @@ export function useHeroScene({ t, tm, locale }: UseHeroSceneOptions): HeroSceneS
 
   const renderGroupTitle = ref<FabricTextModelValue>({
     text: t('home.hero.canvasCopy.queueTitle'),
-    left: 420,
-    top: 360,
-    fontSize: 30,
+    left: baseWidth * 0.52,
+    top: baseHeight * 0.58,
+    originX: 'center',
+    fontSize: 44,
     fill: '#fbbf24',
     fontFamily: 'Inter',
     fontWeight: '600',
@@ -141,9 +174,10 @@ export function useHeroScene({ t, tm, locale }: UseHeroSceneOptions): HeroSceneS
 
   const renderGroupGreeting = ref<FabricTextModelValue>({
     text: t('home.hero.canvasCopy.queueStatus'),
-    left: 430,
-    top: 410,
-    fontSize: 28,
+    left: baseWidth * 0.52,
+    top: baseHeight * 0.66,
+    originX: 'center',
+    fontSize: 34,
     fill: '#f8fafc',
     fontFamily: 'Inter',
     fontWeight: '500',

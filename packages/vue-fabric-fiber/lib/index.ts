@@ -101,3 +101,5 @@ export {
   FABRIC_TEXT_OPTION_KEYS,
   FABRIC_TEXT_PRESETS,
 }
+
+export { Canvas, Shadow } from 'fabric'
