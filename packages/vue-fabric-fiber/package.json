@@ -2,18 +2,26 @@
   "name": "vue-fabric-fiber",
   "type": "module",
   "version": "0.0.0",
-  "description": "vue lib vite lib mode template",
+  "description": "Composable Vue wrappers around Fabric.js primitives.",
   "author": "ice breaker <1324318532@qq.com>",
-  "license": "ISC",
+  "license": "MIT",
+  "homepage": "https://fabric.icebreaker.top",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sonofmagic/monorepo-template.git",
-    "directory": "packages/vue-lib-template"
+    "url": "git+https://github.com/sonofmagic/vue-fabric-fiber.git",
+    "directory": "packages/vue-fabric-fiber"
   },
   "bugs": {
-    "url": "https://github.com/sonofmagic/monorepo-template/issues"
+    "url": "https://github.com/sonofmagic/vue-fabric-fiber/issues"
   },
-  "keywords": [],
+  "keywords": [
+    "vue",
+    "fabric",
+    "canvas",
+    "renderer",
+    "fiber",
+    "graphics"
+  ],
   "sideEffects": false,
   "exports": {
     ".": "./lib/index.ts"
@@ -21,6 +29,9 @@
   "files": [
     "dist"
   ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",

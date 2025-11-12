@@ -1,31 +1,29 @@
-# monorepo-template
+# vue-fabric-fiber
 
-[![codecov](https://codecov.io/gh/sonofmagic/monorepo-template/branch/main/graph/badge.svg?token=mWA3D53rSl)](https://codecov.io/gh/sonofmagic/monorepo-template)
+## Packages
 
-[Documention](https://monorepo.icebreaker.top/)
+- [vue-fabric-fiber](packages/vue-fabric-fiber) - vue lib vite lib mode template
 
-use pnpm, turborepo and changeset to manage your monorepo
+## Contributing
 
-## How to use ?
+Contributions Welcome! You can contribute in the following ways.
 
-click use `Use this template` button right side, and add your project.
+- Create an Issue - Propose a new feature. Report a bug.
+- Pull Request - Fix a bug and typo. Refactor the code.
+- Create third-party middleware - Instruct below.
+- Share - Share your thoughts on the Blog, X, and others.
+- Make your application - Please try to use vue-fabric-fiber.
 
-Then run `npm run script:clean` to remove some pkgs
+For more details, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## Npm publish
+## Contributors
 
-add `secrets.NPM_TOKEN` (created by npm) to your `Github` `Actions secrets and variables` and then
+Thanks to [all contributors](https://github.com/sonofmagic/vue-fabric-fiber/graphs/contributors)!
 
-if you push changes into the `main` branch, GitHub action will automatically publish the changed (with version changes like `1.0.0` -> `1.1.0`) packages.
+## Authors
 
-## Changelog
+ice breaker <1324318532@qq.com>
 
-use `@changesets/changelog-github` to generate changelog.
+## License
 
-remember to update the `"changelog": ["@changesets/changelog-github", { "repo": "<org>/<repo>" }]` in `.changeset/config.json`
-
-## Upgrade Template
-
-run `npx @icebreakers/monorepo@latest`
-
-More Options See [Documention](https://monorepo.icebreaker.top/)
+Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
