@@ -120,7 +120,7 @@ usePageSeo()
           <div class="hidden items-center gap-2 lg:flex">
             <a
               class="inline-flex items-center gap-2 rounded-xl border border-slate-800/60 bg-slate-950/70 px-3 py-2 text-xs font-medium text-slate-300 transition hover:border-slate-700 hover:text-slate-100"
-              href="https://github.com/icebreaker/fabric-ports"
+              href="https://github.com/sonofmagic/vue-fabric-fiber"
               rel="noreferrer"
               target="_blank"
             >
@@ -206,7 +206,7 @@ usePageSeo()
             </RouterLink>
             <a
               class="rounded-lg px-3 py-2 text-slate-400 transition hover:bg-slate-900/70 hover:text-slate-100"
-              href="https://github.com/icebreaker/fabric-ports"
+              href="https://github.com/sonofmagic/vue-fabric-fiber"
               rel="noreferrer"
               target="_blank"
               @click="closeMobileNav"
