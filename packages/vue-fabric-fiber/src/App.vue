@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import type { ThemeName } from '@/constants/theme'
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { RouterLink, RouterView, useRoute } from 'vue-router'
-import { dispatchThemeChange, resolveInitialTheme, THEME_STORAGE_KEY, type ThemeName } from '@/constants/theme'
+import { dispatchThemeChange, resolveInitialTheme, THEME_STORAGE_KEY } from '@/constants/theme'
 import { isSupportedLocale, rememberLocale, SUPPORTED_LOCALES } from '@/i18n'
 import { usePageSeo } from '@/seo'
 

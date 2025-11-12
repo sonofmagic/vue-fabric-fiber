@@ -6,7 +6,7 @@ import { useI18n } from 'vue-i18n'
 import appStyleUrl from '@/style.css?url'
 import '@vue/repl/style.css'
 
-const props = withDefaults(defineProps<{ 
+const props = withDefaults(defineProps<{
   source: string
   filename?: string
   height?: number | string

@@ -24,7 +24,9 @@ function cleanupObserver() {
 
 function scrollToSection(id: string) {
   const el = document.getElementById(id)
-  if (!el) return
+  if (!el) {
+    return
+  }
   el.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 
@@ -84,7 +86,9 @@ onBeforeUnmount(() => {
 <template>
   <aside class="docs-toc hidden text-xs lg:sticky lg:top-24 lg:block lg:self-start">
     <div class="flex flex-col gap-4 rounded-2xl border border-slate-800/60 bg-slate-950/80 p-4">
-      <p class="text-[11px] tracking-[0.28em] text-slate-500">TOC</p>
+      <p class="text-[11px] tracking-[0.28em] text-slate-500">
+        TOC
+      </p>
       <nav class="flex flex-col gap-2">
         <button
           v-for="section in sections"

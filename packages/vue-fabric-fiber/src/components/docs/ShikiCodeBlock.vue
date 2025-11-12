@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import type { ThemeName } from '@/constants/theme'
 import { codeToHtml } from 'shiki/bundle/web'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { THEME_EVENT_NAME, readThemeFromDocument, type ThemeName } from '@/constants/theme'
+import { readThemeFromDocument, THEME_EVENT_NAME } from '@/constants/theme'
 
 interface ShikiCodeBlockProps {
   code: string
@@ -110,7 +111,7 @@ watch(
     <div v-else-if="errorMessage" class="text-xs text-rose-300">
       {{ errorMessage }}
     </div>
-    <div v-else v-html="highlighted" class="shiki-output" />
+    <div v-else class="shiki-output" v-html="highlighted" />
   </div>
 </template>
 
