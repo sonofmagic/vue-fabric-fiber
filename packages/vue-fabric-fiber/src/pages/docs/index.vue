@@ -1,25 +1,19 @@
 <script setup lang="ts">
+import type { DocsSection, RichText } from '@/types/docs'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import DocsFloatingToc from '@/components/docs/DocsFloatingToc.vue'
+import DocsRichText from '@/components/docs/DocsRichText.vue'
 import ShikiCodeBlock from '@/components/docs/ShikiCodeBlock.vue'
 import { buildCanonicalUrl, usePageSeo } from '@/seo'
-
-interface DocsSection {
-  id: string
-  title: string
-  description: string
-  points: string[]
-  codeTitle?: string
-  code?: string
-  codeLang?: string
-  footnotes?: string[]
-  apiList?: string[]
-}
 
 const { t, tm } = useI18n()
 
 const sections = computed(() => tm('docs.sections') as DocsSection[])
+
+function getRichTextKey(value: RichText) {
+  return value.map(segment => `${segment.type}:${segment.value}`).join('|')
+}
 
 usePageSeo({
   title: () => t('docs.meta.title'),
@@ -80,9 +74,11 @@ usePageSeo({
             <h2 class="text-2xl font-semibold text-slate-100">
               {{ section.title }}
             </h2>
-            <p class="text-sm leading-relaxed text-slate-300">
-              {{ section.description }}
-            </p>
+            <DocsRichText
+              class="text-sm leading-relaxed text-slate-300"
+              tag="p"
+              :value="section.description"
+            />
           </div>
 
           <div v-if="section.apiList?.length" class="flex flex-wrap gap-2">
@@ -96,9 +92,9 @@ usePageSeo({
           </div>
 
           <ul class="space-y-2 text-sm leading-relaxed text-slate-300">
-            <li v-for="point in section.points" :key="point" class="flex gap-2">
+            <li v-for="point in section.points" :key="getRichTextKey(point)" class="flex gap-2">
               <span aria-hidden="true" class="mt-1 text-cyan-400">•</span>
-              <span>{{ point }}</span>
+              <DocsRichText class="flex-1" :value="point" />
             </li>
           </ul>
 
@@ -110,9 +106,12 @@ usePageSeo({
           />
 
           <div v-if="section.footnotes?.length" class="space-y-2 rounded-2xl border border-slate-800/40 bg-slate-900/40 p-4 text-xs text-slate-400">
-            <p v-for="note in section.footnotes" :key="note">
-              {{ note }}
-            </p>
+            <DocsRichText
+              v-for="note in section.footnotes"
+              :key="getRichTextKey(note)"
+              tag="p"
+              :value="note"
+            />
           </div>
         </div>
       </section>

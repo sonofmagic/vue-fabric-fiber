@@ -1,3 +1,5 @@
+import { code, plainRichText, richText, text } from '../richText'
+
 const en = {
   locale: {
     label: 'Language',
@@ -286,12 +288,23 @@ const en = {
       {
         id: 'getting-started',
         title: 'Getting started',
-        description:
+        description: plainRichText(
           'Install the bindings, create reactive model values, and drop Fabric components into any Vue tree—everything is written as standard SFCs.',
+        ),
         points: [
-          'Install with `pnpm add vue-fabric-fiber` and import only the components you render; each export is tree-shakable.',
-          'Scene state lives in refs typed like `FabricImageModelValue` or `FabricTextModelValue`, so you can hydrate from JSON or persist canvases anywhere.',
-          'Standard Vue inputs, sliders, and watchers update those refs; the binding layer diffs props and syncs Fabric objects for you.',
+          richText(
+            text('Install with '),
+            code('pnpm add vue-fabric-fiber'),
+            text(' and import only the components you render; each export is tree-shakable.'),
+          ),
+          richText(
+            text('Scene state lives in refs typed like '),
+            code('FabricImageModelValue'),
+            text(' or '),
+            code('FabricTextModelValue'),
+            text(', so you can hydrate from JSON or persist canvases anywhere.'),
+          ),
+          plainRichText('Standard Vue inputs, sliders, and watchers update those refs; the binding layer diffs props and syncs Fabric objects for you.'),
         ],
         apiList: ['FabricCanvas', 'FabricImage', 'FabricText'],
         codeTitle: 'Minimal canvas',
@@ -327,19 +340,57 @@ const heroTitle = ref<FabricTextModelValue>({
 </template>
 `,
         footnotes: [
-          'Model refs stay serializable—`JSON.stringify` works because the components never mutate your source objects.',
+          richText(
+            text('Model refs stay serializable—'),
+            code('JSON.stringify'),
+            text(' works because the components never mutate your source objects.'),
+          ),
         ],
       },
       {
         id: 'fabric-canvas',
         title: 'FabricCanvas',
-        description: 'Wraps `fabric.Canvas` with auto-resizing, preset orchestration, and sequential task queues.',
+        description: richText(
+          text('Wraps '),
+          code('fabric.Canvas'),
+          text(' with auto-resizing, preset orchestration, and sequential task queues.'),
+        ),
         points: [
-          '`canvas-options` merges preset defaults → `initial` overrides → the bound `v-model` so you can progressively enhance configuration.',
-          '`preset` loads entries from `FABRIC_CANVAS_PRESETS`; ship your own preset id to reuse curated options across pages.',
-          '`auto-resize` keeps the canvas synced to its container via `ResizeObserver`. Disable it and set explicit `width/height` for export-friendly stages.',
-          '`pixel-ratio` overrides the device ratio so screenshots stay crisp on hidpi monitors.',
-          'Listen to `@ready` for the underlying `fabric.Canvas` and register custom tools or event handlers there.',
+          richText(
+            code('canvas-options'),
+            text(' merges preset defaults → '),
+            code('initial'),
+            text(' overrides → the bound '),
+            code('v-model'),
+            text(' so you can progressively enhance configuration.'),
+          ),
+          richText(
+            code('preset'),
+            text(' loads entries from '),
+            code('FABRIC_CANVAS_PRESETS'),
+            text('; ship your own preset id to reuse curated options across pages.'),
+          ),
+          richText(
+            code('auto-resize'),
+            text(' keeps the canvas synced to its container via '),
+            code('ResizeObserver'),
+            text('. Disable it and set explicit '),
+            code('width'),
+            text('/'),
+            code('height'),
+            text(' for export-friendly stages.'),
+          ),
+          richText(
+            code('pixel-ratio'),
+            text(' overrides the device ratio so screenshots stay crisp on hidpi monitors.'),
+          ),
+          richText(
+            text('Listen to '),
+            code('@ready'),
+            text(' for the underlying '),
+            code('fabric.Canvas'),
+            text(' and register custom tools or event handlers there.'),
+          ),
         ],
         apiList: ['canvas-options', 'preset', 'initial', 'auto-resize', 'pixel-ratio', '@ready'],
         codeTitle: 'Custom canvas preset',
@@ -379,19 +430,52 @@ function handleCanvasReady(canvas: Canvas) {
 </template>
 `,
         footnotes: [
-          'Export `FABRIC_CANVAS_PRESETS` or `FABRIC_CANVAS_OPTION_KEYS` when you need to build custom inspectors or sync options with forms.',
+          richText(
+            text('Export '),
+            code('FABRIC_CANVAS_PRESETS'),
+            text(' or '),
+            code('FABRIC_CANVAS_OPTION_KEYS'),
+            text(' when you need to build custom inspectors or sync options with forms.'),
+          ),
         ],
       },
       {
         id: 'fabric-image',
         title: 'FabricImage',
-        description: 'Two-way bind Fabric image objects, including async loads, sizing strategies, and overlay controls.',
+        description: plainRichText('Two-way bind Fabric image objects, including async loads, sizing strategies, and overlay controls.'),
         points: [
-          '`preset` chooses which props participate in `v-model` (backgrounds ignore `left/top`, overlays keep everything).',
-          '`width`/`height` accept numbers (px) or percentages that resolve against the canvas for responsive art.',
-          'Only the keys listed in `FABRIC_IMAGE_BINDABLE_KEYS` are diffed; everything else can live in the preset’s `initial` config.',
-          'Model values remain plain objects, so you can hydrate them from APIs or persist them next to other scene data.',
-          '`default` preset exposes all binding keys for general use, `background` preset only mirrors `src/width/height/opacity` for full-bleed art, and `overlay` preset surfaces coordinates, transforms, and sizing so draggable layers feel natural.',
+          richText(
+            code('preset'),
+            text(' chooses which props participate in '),
+            code('v-model'),
+            text(' (backgrounds ignore '),
+            code('left/top'),
+            text(', overlays keep everything).'),
+          ),
+          richText(
+            code('width'),
+            text('/'),
+            code('height'),
+            text(' accept numbers (px) or percentages that resolve against the canvas for responsive art.'),
+          ),
+          richText(
+            text('Only the keys listed in '),
+            code('FABRIC_IMAGE_BINDABLE_KEYS'),
+            text(' are diffed; everything else can live in the preset’s '),
+            code('initial'),
+            text(' config.'),
+          ),
+          plainRichText('Model values remain plain objects, so you can hydrate them from APIs or persist them next to other scene data.'),
+          richText(
+            code('default'),
+            text(' preset exposes all binding keys for general use, '),
+            code('background'),
+            text(' preset only mirrors '),
+            code('src/width/height/opacity'),
+            text(' for full-bleed art, and '),
+            code('overlay'),
+            text(' preset surfaces coordinates, transforms, and sizing so draggable layers feel natural.'),
+          ),
         ],
         apiList: ['FabricImage', 'preset', 'FABRIC_IMAGE_PRESETS', 'FABRIC_IMAGE_BINDABLE_KEYS'],
         codeTitle: 'Overlay image preset',
@@ -428,12 +512,27 @@ const accent = ref<FabricImageModelValue>({
       {
         id: 'fabric-text',
         title: 'FabricText',
-        description: 'Bind typography-focused Fabric objects with presets for headlines, badges, and body copy.',
+        description: plainRichText('Bind typography-focused Fabric objects with presets for headlines, badges, and body copy.'),
         points: [
-          'Every model requires a `text` key; the rest of the props come from `FABRIC_TEXT_OPTION_KEYS`.',
-          '`preset` limits which props sync through `v-model` so inspectors cannot accidentally mutate low-level Fabric config.',
-          'Use standard inputs (color pickers, sliders, dropdowns) against the same ref so both form and canvas stay in sync.',
-          'Pair with `RenderGroup` to guarantee copy updates re-render in the right order.',
+          richText(
+            text('Every model requires a '),
+            code('text'),
+            text(' key; the rest of the props come from '),
+            code('FABRIC_TEXT_OPTION_KEYS'),
+            text('.'),
+          ),
+          richText(
+            code('preset'),
+            text(' limits which props sync through '),
+            code('v-model'),
+            text(' so inspectors cannot accidentally mutate low-level Fabric config.'),
+          ),
+          plainRichText('Use standard inputs (color pickers, sliders, dropdowns) against the same ref so both form and canvas stay in sync.'),
+          richText(
+            text('Pair with '),
+            code('RenderGroup'),
+            text(' to guarantee copy updates re-render in the right order.'),
+          ),
         ],
         apiList: ['FabricText', 'preset', 'FABRIC_TEXT_PRESETS', 'FABRIC_TEXT_BINDABLE_KEYS'],
         codeTitle: 'Typography bindings',
@@ -475,12 +574,22 @@ const badge = ref<FabricTextModelValue>({
       {
         id: 'render-group',
         title: 'RenderGroup',
-        description: 'Queue asynchronous work so Fabric objects mount in deterministic order.',
+        description: plainRichText('Queue asynchronous work so Fabric objects mount in deterministic order.'),
         points: [
-          'Every `<RenderGroup>` inherits the canvas task queue and schedules object creation sequentially.',
-          '`priority` reorders the queue (lower priority runs first), which helps keep overlays above async imagery.',
-          '`disable-queue` bypasses ordering when you need to mutate an object immediately (e.g., dragging guides).',
-          'Nested groups share the same context, so you can isolate expensive sections without rebuilding the canvas.',
+          richText(
+            text('Every '),
+            code('<RenderGroup>'),
+            text(' inherits the canvas task queue and schedules object creation sequentially.'),
+          ),
+          richText(
+            code('priority'),
+            text(' reorders the queue (lower priority runs first), which helps keep overlays above async imagery.'),
+          ),
+          richText(
+            code('disable-queue'),
+            text(' bypasses ordering when you need to mutate an object immediately (e.g., dragging guides).'),
+          ),
+          plainRichText('Nested groups share the same context, so you can isolate expensive sections without rebuilding the canvas.'),
         ],
         apiList: ['RenderGroup', 'priority', 'disable-queue'],
         codeTitle: 'Deterministic layering',
@@ -517,17 +626,35 @@ const title = ref<FabricTextModelValue>({
 </template>
 `,
         footnotes: [
-          'Queues prevent async images from jumping ahead of text nodes, which keeps complex hero layouts stable.',
+          plainRichText('Queues prevent async images from jumping ahead of text nodes, which keeps complex hero layouts stable.'),
         ],
       },
       {
         id: 'shapes',
         title: 'Geometry helpers',
-        description: 'Rectangles, circles, lines, polygons, and custom paths share the same reactive `v-model` pattern.',
+        description: richText(
+          text('Rectangles, circles, lines, polygons, and custom paths share the same reactive '),
+          code('v-model'),
+          text(' pattern.'),
+        ),
         points: [
-          'Every shape component is generated by `createFabricObjectComponent`, so updates flow through the same diffing pipeline.',
-          'Model values match Fabric’s props (e.g., `FabricRectModelValue`, `FabricCircleModelValue`), letting you author overlays or guides as JSON.',
-          'Shapes respect the surrounding `RenderGroup`, making it easy to stack data visualizations or guides atop imagery.',
+          richText(
+            text('Every shape component is generated by '),
+            code('createFabricObjectComponent'),
+            text(', so updates flow through the same diffing pipeline.'),
+          ),
+          richText(
+            text('Model values match Fabric’s props (e.g., '),
+            code('FabricRectModelValue'),
+            text(', '),
+            code('FabricCircleModelValue'),
+            text('), letting you author overlays or guides as JSON.'),
+          ),
+          richText(
+            text('Shapes respect the surrounding '),
+            code('RenderGroup'),
+            text(', making it easy to stack data visualizations or guides atop imagery.'),
+          ),
         ],
         apiList: ['FabricRect', 'FabricCircle', 'FabricPolygon', 'FabricLine'],
         codeTitle: 'Shape overlays',

@@ -1,3 +1,5 @@
+import { code, plainRichText, richText, text } from '../richText'
+
 const zh = {
   locale: {
     label: '语言',
@@ -265,11 +267,23 @@ const zh = {
       {
         id: 'getting-started',
         title: '快速上手',
-        description: '所有绑定都是标准的 Vue 组件：安装依赖、创建响应式模型，然后把组件放进任意 SFC 即可。',
+        description: plainRichText('所有绑定都是标准的 Vue 组件：安装依赖、创建响应式模型，然后把组件放进任意 SFC 即可。'),
         points: [
-          '运行 `pnpm add vue-fabric-fiber` 并按需导入组件，各个导出都是可 tree-shake 的 ES 模块。',
-          '画布状态保存在 `ref` 中，并满足 `FabricImageModelValue`、`FabricTextModelValue` 等类型，因此可以直接用 JSON 还原或持久化。',
-          '常规的表单控件、watcher 都能驱动这些 ref；绑定层会负责 diff 并把变更同步到 Fabric 对象。',
+          richText(
+            text('运行 '),
+            code('pnpm add vue-fabric-fiber'),
+            text(' 并按需导入组件，各个导出都是可 tree-shake 的 ES 模块。'),
+          ),
+          richText(
+            text('画布状态保存在 '),
+            code('ref'),
+            text(' 中，并满足 '),
+            code('FabricImageModelValue'),
+            text('、'),
+            code('FabricTextModelValue'),
+            text(' 等类型，因此可以直接用 JSON 还原或持久化。'),
+          ),
+          plainRichText('常规的表单控件、watcher 都能驱动这些 ref；绑定层会负责 diff 并把变更同步到 Fabric 对象。'),
         ],
         apiList: ['FabricCanvas', 'FabricImage', 'FabricText'],
         codeTitle: '最小画布',
@@ -304,18 +318,56 @@ const heroTitle = ref<FabricTextModelValue>({
   </FabricCanvas>
 </template>
 `,
-        footnotes: ['组件不会直接修改你的 ref，因此可以安全地 `JSON.stringify` 并存储整个场景。'],
+        footnotes: [
+          richText(
+            text('组件不会直接修改你的 ref，因此可以安全地 '),
+            code('JSON.stringify'),
+            text(' 并存储整个场景。'),
+          ),
+        ],
       },
       {
         id: 'fabric-canvas',
         title: 'FabricCanvas',
-        description: '在 `fabric.Canvas` 之上提供自动缩放、预设管理与顺序任务队列。',
+        description: richText(
+          text('在 '),
+          code('fabric.Canvas'),
+          text(' 之上提供自动缩放、预设管理与顺序任务队列。'),
+        ),
         points: [
-          '`canvas-options` 会依次合并预设默认值 → `initial` → 当前绑定值，方便渐进式扩展配置。',
-          '`preset` 读取 `FABRIC_CANVAS_PRESETS`，自定义 id 即可在多页之间复用设置。',
-          '`auto-resize` 通过 `ResizeObserver` 同步容器尺寸；如需固定导出大小，可关闭并手动设置 `width`/`height`。',
-          '`pixel-ratio` 覆盖设备 DPR，保证高清屏幕上的截图质量。',
-          '监听 `@ready` 获取底层 `fabric.Canvas`，然后注册自定义工具或事件。',
+          richText(
+            code('canvas-options'),
+            text(' 会依次合并预设默认值 → '),
+            code('initial'),
+            text(' → 当前绑定值，方便渐进式扩展配置。'),
+          ),
+          richText(
+            code('preset'),
+            text(' 读取 '),
+            code('FABRIC_CANVAS_PRESETS'),
+            text('，自定义 id 即可在多页之间复用设置。'),
+          ),
+          richText(
+            code('auto-resize'),
+            text(' 通过 '),
+            code('ResizeObserver'),
+            text(' 同步容器尺寸；如需固定导出大小，可关闭并手动设置 '),
+            code('width'),
+            text('/'),
+            code('height'),
+            text('。'),
+          ),
+          richText(
+            code('pixel-ratio'),
+            text(' 覆盖设备 DPR，保证高清屏幕上的截图质量。'),
+          ),
+          richText(
+            text('监听 '),
+            code('@ready'),
+            text(' 获取底层 '),
+            code('fabric.Canvas'),
+            text('，然后注册自定义工具或事件。'),
+          ),
         ],
         apiList: ['canvas-options', 'preset', 'initial', 'auto-resize', 'pixel-ratio', '@ready'],
         codeTitle: '自定义预设',
@@ -354,18 +406,51 @@ function handleCanvasReady(canvas: Canvas) {
   </FabricCanvas>
 </template>
 `,
-        footnotes: ['使用导出的 `FABRIC_CANVAS_PRESETS` 与 `FABRIC_CANVAS_OPTION_KEYS` 可以快速构建自定义检查器。'],
+        footnotes: [
+          richText(
+            text('使用导出的 '),
+            code('FABRIC_CANVAS_PRESETS'),
+            text(' 与 '),
+            code('FABRIC_CANVAS_OPTION_KEYS'),
+            text(' 可以快速构建自定义检查器。'),
+          ),
+        ],
       },
       {
         id: 'fabric-image',
         title: 'FabricImage',
-        description: '双向绑定 Fabric 图像对象，涵盖异步加载、尺寸策略与叠加控制。',
+        description: plainRichText('双向绑定 Fabric 图像对象，涵盖异步加载、尺寸策略与叠加控制。'),
         points: [
-          '`preset` 决定哪些字段参与 `v-model`（背景忽略位置，叠加层保留所有坐标信息）。',
-          '`width`/`height` 可填像素值或百分比，百分比会基于画布尺寸计算，用于响应式背景。',
-          '只有 `FABRIC_IMAGE_BINDABLE_KEYS` 中的键会被 diff，其余配置可放在预设的 `initial` 中。',
-          '模型值是普通对象，方便与后端接口或本地存储互通。',
-          '`default` 预设暴露全部键值，适合通用图层；`background` 仅同步 `src/width/height/opacity`，方便铺满背景；`overlay` 则保留位置、尺寸与变换字段，让可拖拽叠加层体验自然。',
+          richText(
+            code('preset'),
+            text(' 决定哪些字段参与 '),
+            code('v-model'),
+            text('（背景忽略位置，叠加层保留所有坐标信息）。'),
+          ),
+          richText(
+            code('width'),
+            text('/'),
+            code('height'),
+            text(' 可填像素值或百分比，百分比会基于画布尺寸计算，用于响应式背景。'),
+          ),
+          richText(
+            text('只有 '),
+            code('FABRIC_IMAGE_BINDABLE_KEYS'),
+            text(' 中的键会被 diff，其余配置可放在预设的 '),
+            code('initial'),
+            text(' 中。'),
+          ),
+          plainRichText('模型值是普通对象，方便与后端接口或本地存储互通。'),
+          richText(
+            code('default'),
+            text(' 预设暴露全部键值，适合通用图层；'),
+            code('background'),
+            text(' 仅同步 '),
+            code('src/width/height/opacity'),
+            text('，方便铺满背景；'),
+            code('overlay'),
+            text(' 则保留位置、尺寸与变换字段，让可拖拽叠加层体验自然。'),
+          ),
         ],
         apiList: ['FabricImage', 'preset', 'FABRIC_IMAGE_PRESETS', 'FABRIC_IMAGE_BINDABLE_KEYS'],
         codeTitle: '叠加图像',
@@ -402,12 +487,25 @@ const accent = ref<FabricImageModelValue>({
       {
         id: 'fabric-text',
         title: 'FabricText',
-        description: '用于标题、徽章与正文的文字组件，拥有多套预设。',
+        description: plainRichText('用于标题、徽章与正文的文字组件，拥有多套预设。'),
         points: [
-          '模型必须包含 `text` 字段，其余属性来自 `FABRIC_TEXT_OPTION_KEYS`。',
-          '`preset` 限制可双向绑定的字段，避免误改底层 Fabric 配置。',
-          '使用常规的输入框、颜色选择器、滑块即可驱动同一个 ref，从而同时更新画布与表单。',
-          '与 `RenderGroup` 配合可保证文案更新时的渲染顺序。',
+          richText(
+            text('模型必须包含 '),
+            code('text'),
+            text(' 字段，其余属性来自 '),
+            code('FABRIC_TEXT_OPTION_KEYS'),
+            text('。'),
+          ),
+          richText(
+            code('preset'),
+            text(' 限制可双向绑定的字段，避免误改底层 Fabric 配置。'),
+          ),
+          plainRichText('使用常规的输入框、颜色选择器、滑块即可驱动同一个 ref，从而同时更新画布与表单。'),
+          richText(
+            text('与 '),
+            code('RenderGroup'),
+            text(' 配合可保证文案更新时的渲染顺序。'),
+          ),
         ],
         apiList: ['FabricText', 'preset', 'FABRIC_TEXT_PRESETS', 'FABRIC_TEXT_BINDABLE_KEYS'],
         codeTitle: '排版绑定',
@@ -449,12 +547,22 @@ const badge = ref<FabricTextModelValue>({
       {
         id: 'render-group',
         title: 'RenderGroup',
-        description: '将异步任务排队，确保对象按确定顺序挂载。',
+        description: plainRichText('将异步任务排队，确保对象按确定顺序挂载。'),
         points: [
-          '每个 `<RenderGroup>` 都接入画布的任务队列，串行创建 Fabric 对象。',
-          '`priority` 可以重新排序（数值越小越早执行），用来保持叠加层始终位于背景之上。',
-          '`disable-queue` 会跳过队列，适合需要立即响应的交互（例如拖拽辅助线）。',
-          '嵌套的分组共享同一上下文，可针对昂贵区域单独排队。',
+          richText(
+            text('每个 '),
+            code('<RenderGroup>'),
+            text(' 都接入画布的任务队列，串行创建 Fabric 对象。'),
+          ),
+          richText(
+            code('priority'),
+            text(' 可以重新排序（数值越小越早执行），用来保持叠加层始终位于背景之上。'),
+          ),
+          richText(
+            code('disable-queue'),
+            text(' 会跳过队列，适合需要立即响应的交互（例如拖拽辅助线）。'),
+          ),
+          plainRichText('嵌套的分组共享同一上下文，可针对昂贵区域单独排队。'),
         ],
         apiList: ['RenderGroup', 'priority', 'disable-queue'],
         codeTitle: '确定性的层叠',
@@ -490,16 +598,34 @@ const title = ref<FabricTextModelValue>({
   </FabricCanvas>
 </template>
 `,
-        footnotes: ['队列能阻止异步图像盖到文字前面，非常适合复杂主视觉。'],
+        footnotes: [plainRichText('队列能阻止异步图像盖到文字前面，非常适合复杂主视觉。')],
       },
       {
         id: 'shapes',
         title: '几何组件',
-        description: '矩形、圆形、折线、多边形与路径都遵守同一套 `v-model` 约定。',
+        description: richText(
+          text('矩形、圆形、折线、多边形与路径都遵守同一套 '),
+          code('v-model'),
+          text(' 约定。'),
+        ),
         points: [
-          '所有图形组件都由 `createFabricObjectComponent` 生成，更新会经过相同的 diff 流程。',
-          '模型类型与 Fabric 原生属性一致，例如 `FabricRectModelValue`、`FabricCircleModelValue`，便于用 JSON 定义辅助线。',
-          '图形也能参加 `RenderGroup` 的排序，方便在图像之上叠加可视化或命中区域。',
+          richText(
+            text('所有图形组件都由 '),
+            code('createFabricObjectComponent'),
+            text(' 生成，更新会经过相同的 diff 流程。'),
+          ),
+          richText(
+            text('模型类型与 Fabric 原生属性一致，例如 '),
+            code('FabricRectModelValue'),
+            text('、'),
+            code('FabricCircleModelValue'),
+            text('，便于用 JSON 定义辅助线。'),
+          ),
+          richText(
+            text('图形也能参加 '),
+            code('RenderGroup'),
+            text(' 的排序，方便在图像之上叠加可视化或命中区域。'),
+          ),
         ],
         apiList: ['FabricRect', 'FabricCircle', 'FabricPolygon', 'FabricLine'],
         codeTitle: '形状覆盖层',
