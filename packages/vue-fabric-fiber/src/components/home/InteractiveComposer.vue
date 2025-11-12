@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { HeroSceneState } from '@/composables/useHeroScene'
-import { computed, ref } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { FabricCanvas, FabricImage, FabricText, RenderGroup } from '~/index'
 
@@ -30,6 +30,31 @@ const interactiveToggleLabel = computed(() =>
   isInteractiveMode.value ? t('app.actions.exitInteractive') : t('app.actions.enterInteractive'),
 )
 
+let previousBodyOverflow: string | null = null
+
+function lockBodyScroll() {
+  if (typeof document === 'undefined') {
+    return
+  }
+  if (previousBodyOverflow === null) {
+    previousBodyOverflow = document.body.style.overflow || ''
+  }
+  document.body.style.overflow = 'hidden'
+}
+
+function unlockBodyScroll() {
+  if (typeof document === 'undefined') {
+    return
+  }
+  if (previousBodyOverflow !== null) {
+    document.body.style.overflow = previousBodyOverflow
+    previousBodyOverflow = null
+  }
+  else {
+    document.body.style.removeProperty('overflow')
+  }
+}
+
 function toggleInteractiveMode() {
   isInteractiveMode.value = !isInteractiveMode.value
 }
@@ -37,6 +62,19 @@ function toggleInteractiveMode() {
 function closeInteractiveMode() {
   isInteractiveMode.value = false
 }
+
+watch(isInteractiveMode, (active) => {
+  if (active) {
+    lockBodyScroll()
+  }
+  else {
+    unlockBodyScroll()
+  }
+})
+
+onBeforeUnmount(() => {
+  unlockBodyScroll()
+})
 </script>
 
 <template>
@@ -94,7 +132,7 @@ function closeInteractiveMode() {
     <template v-else>
       <Teleport to="body">
         <div
-          class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/85 px-4 py-10 backdrop-blur-xl"
+          class="fixed inset-0 z-50 flex items-start justify-center bg-slate-950/85 px-4 py-8 sm:py-10 backdrop-blur-xl overflow-y-auto lg:items-center lg:overflow-visible"
           @click.self="closeInteractiveMode"
         >
           <button
@@ -106,7 +144,7 @@ function closeInteractiveMode() {
             <span aria-hidden="true">×</span>
           </button>
 
-          <div class="grid w-full max-w-6xl gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]">
+          <div class="grid w-full max-w-[min(100vw-2rem,1600px)] items-start gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)] xl:gap-8">
             <div
               class="canvas-shell relative overflow-hidden rounded-[28px] border border-slate-800/60 bg-slate-950/90 shadow-[0_40px_90px_-45px_rgba(15,23,42,0.9)]"
               :style="heroCanvasStyle"
@@ -129,7 +167,7 @@ function closeInteractiveMode() {
               </FabricCanvas>
             </div>
 
-            <div class="flex flex-col gap-4 rounded-[24px] border border-slate-800/70 bg-slate-950/85 p-4 text-[11px] text-slate-100 max-h-[560px] overflow-auto pr-3">
+            <div class="flex flex-col gap-4 rounded-[24px] border border-slate-800/70 bg-slate-950/85 p-4 text-[11px] text-slate-100">
               <div class="space-y-1">
                 <span class="eyebrow text-[10px]">{{ t('home.hero.interactive.panel.title') }}</span>
                 <p class="text-[11px] leading-relaxed text-slate-400">

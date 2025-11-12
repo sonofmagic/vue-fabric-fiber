@@ -56,8 +56,8 @@ export function useHeroScene({ t, tm, locale }: UseHeroSceneOptions): HeroSceneS
     height: '100%',
     left: 0,
     top: 0,
-    scaleX: 1.1,
-    scaleY: 1.1,
+    scaleX: 0,
+    scaleY: 0,
     selectable: false,
     hasControls: false,
     evented: false,
@@ -65,10 +65,10 @@ export function useHeroScene({ t, tm, locale }: UseHeroSceneOptions): HeroSceneS
 
   const accentPortraitImage = ref<FabricImageModelValue>({
     src: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=900&q=80',
-    width: 360,
-    height: 420,
-    left: baseWidth * 0.78,
-    top: baseHeight * 0.52,
+    width: 580,
+    height: 400,
+    left: baseWidth * 0.82,
+    top: baseHeight * 0.44,
     angle: -10,
     selectable: true,
     hasControls: true,
@@ -99,15 +99,15 @@ export function useHeroScene({ t, tm, locale }: UseHeroSceneOptions): HeroSceneS
     initialHeadlines[2] ?? 'Live bindings · Scene graph · Render queues',
     initialHeadlines[3] ?? 'Adaptive render queues at scale',
   ]
-  const centerHeadlineWidth = baseWidth * 0.52
-  const lowerBodyWidth = baseWidth * 0.7
+  const centerHeadlineWidth = baseWidth * 0.48
+  const lowerBodyWidth = baseWidth * 0.66
 
   const textArray = ref<HeroTextLayer[]>([
     {
       text: fallbackHeadlines[0],
-      left: baseWidth * 0.18,
-      top: baseHeight * 0.16,
-      fontSize: 86,
+      left: baseWidth * 0.12,
+      top: baseHeight * 0.12,
+      fontSize: 82,
       fill: '#f8fafc',
       fontFamily: 'Inter',
       fontWeight: '700',
@@ -118,8 +118,8 @@ export function useHeroScene({ t, tm, locale }: UseHeroSceneOptions): HeroSceneS
     {
       text: fallbackHeadlines[1],
       left: (baseWidth - centerHeadlineWidth) / 2,
-      top: baseHeight * 0.38,
-      fontSize: 60,
+      top: baseHeight * 0.32,
+      fontSize: 56,
       fill: '#cbd5f5',
       fontFamily: 'Inter',
       fontWeight: '500',
@@ -131,9 +131,9 @@ export function useHeroScene({ t, tm, locale }: UseHeroSceneOptions): HeroSceneS
     {
       text: fallbackHeadlines[2],
       left: (baseWidth - lowerBodyWidth) / 2,
-      top: baseHeight * 0.68,
+      top: baseHeight * 0.72,
       width: lowerBodyWidth,
-      fontSize: 48,
+      fontSize: 44,
       fill: '#e2e8f0',
       fontFamily: 'Inter',
       fontWeight: '600',
@@ -145,8 +145,8 @@ export function useHeroScene({ t, tm, locale }: UseHeroSceneOptions): HeroSceneS
     {
       text: fallbackHeadlines[3],
       left: (baseWidth - centerHeadlineWidth) / 2,
-      top: baseHeight * 0.78,
-      fontSize: 40,
+      top: baseHeight * 0.86,
+      fontSize: 36,
       fill: '#38bdf8',
       fontFamily: 'Inter',
       fontWeight: '600',
@@ -160,7 +160,7 @@ export function useHeroScene({ t, tm, locale }: UseHeroSceneOptions): HeroSceneS
   const renderGroupTitle = ref<FabricTextModelValue>({
     text: t('home.hero.canvasCopy.queueTitle'),
     left: (baseWidth - lowerBodyWidth) / 2,
-    top: baseHeight * 0.58,
+    top: baseHeight * 0.54,
     fontSize: 44,
     fill: '#fbbf24',
     fontFamily: 'Inter',
@@ -174,7 +174,7 @@ export function useHeroScene({ t, tm, locale }: UseHeroSceneOptions): HeroSceneS
   const renderGroupGreeting = ref<FabricTextModelValue>({
     text: t('home.hero.canvasCopy.queueStatus'),
     left: (baseWidth - lowerBodyWidth) / 2,
-    top: baseHeight * 0.66,
+    top: baseHeight * 0.62,
     fontSize: 34,
     fill: '#f8fafc',
     fontFamily: 'Inter',

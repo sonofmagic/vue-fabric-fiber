@@ -3,17 +3,18 @@ import { Repl, useStore } from '@vue/repl'
 import Codemirror from '@vue/repl/codemirror-editor'
 import { computed, onMounted, ref, shallowRef, version as vueVersion } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { loadLibraryFiles } from '@/repl/library-files'
 import appStyleUrl from '@/style.css?url'
 import '@vue/repl/style.css'
 
-const props = withDefaults(defineProps<{
+const props = withDefaults(defineProps<{ 
   source: string
   filename?: string
   height?: number | string
+  fullHeight?: boolean
 }>(), {
   filename: 'DemoExample.vue',
   height: '720px',
+  fullHeight: false,
 })
 
 const store = shallowRef<ReturnType<typeof useStore>>()
@@ -30,8 +31,19 @@ const previewOptions = computed(() => ({
   headHTML: `<link rel="stylesheet" href="${appStyleUrl}">`,
 }))
 
+const localLibEntry = new URL('../lib/index.ts', import.meta.url).pathname
+const prodLibEntry = '/repl/vue-fabric-fiber/index.js'
+const pkgImportEntry = import.meta.env.DEV ? localLibEntry : prodLibEntry
+
+const resolvedHeight = computed(() => {
+  if (props.fullHeight) {
+    return 'calc(100vh - 10rem)'
+  }
+  return typeof props.height === 'number' ? `${props.height}px` : props.height
+})
+
 const shellStyle = computed(() => ({
-  '--demo-repl-height': typeof props.height === 'number' ? `${props.height}px` : props.height,
+  '--demo-repl-height': resolvedHeight.value,
 }))
 
 function getEntryFilename() {
@@ -40,10 +52,8 @@ function getEntryFilename() {
 
 async function bootstrapStore() {
   try {
-    const libFiles = await loadLibraryFiles()
     const demoFile = getEntryFilename()
     const files: Record<string, string> = {
-      ...libFiles,
       'main.ts': [
         'import { createApp } from \'vue\'',
         'import App from \'./App.vue\'',
@@ -74,7 +84,7 @@ async function bootstrapStore() {
       imports: {
         'vue': runtimeUrl,
         'vue/server-renderer': ssrUrl,
-        'vue-fabric-fiber': './vue-fabric-fiber/index.ts',
+        'vue-fabric-fiber': pkgImportEntry,
         'fabric': fabricUrl,
         'p-queue': pQueueUrl,
       },

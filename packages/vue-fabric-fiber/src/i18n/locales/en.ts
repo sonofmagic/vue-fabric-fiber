@@ -12,6 +12,7 @@ const en = {
     },
     nav: {
       overview: 'Overview',
+      docs: 'Docs',
       demos: 'Demos',
       github: 'GitHub',
       toggle: 'Toggle navigation',
@@ -28,6 +29,10 @@ const en = {
       typographyCanvas: 'Typography canvas',
       enterInteractive: 'Enter interactive mode',
       exitInteractive: 'Exit interactive mode',
+      lightMode: 'Switch to light mode',
+      darkMode: 'Switch to dark mode',
+      lightModeShort: 'Light',
+      darkModeShort: 'Dark',
     },
   },
   components: {
@@ -263,6 +268,303 @@ const en = {
         },
       },
     },
+  },
+  docs: {
+    meta: {
+      title: 'Docs',
+      description: 'Usage documentation for vue-fabric-fiber components and Fabric.js bindings.',
+      keywords: ['vue-fabric-fiber docs', 'FabricCanvas props', 'RenderGroup queue', 'FabricImage bindings'],
+    },
+    hero: {
+      eyebrow: 'Usage docs',
+      title: 'vue-fabric-fiber component reference',
+      description:
+        'Understand how FabricCanvas, FabricImage, FabricText, RenderGroup, and geometry helpers behave so you can compose canvases with confidence.',
+      quickLinksLabel: 'Sections',
+    },
+    sections: [
+      {
+        id: 'getting-started',
+        title: 'Getting started',
+        description:
+          'Install the bindings, create reactive model values, and drop Fabric components into any Vue tree—everything is written as standard SFCs.',
+        points: [
+          'Install with `pnpm add vue-fabric-fiber` and import only the components you render; each export is tree-shakable.',
+          'Scene state lives in refs typed like `FabricImageModelValue` or `FabricTextModelValue`, so you can hydrate from JSON or persist canvases anywhere.',
+          'Standard Vue inputs, sliders, and watchers update those refs; the binding layer diffs props and syncs Fabric objects for you.',
+        ],
+        apiList: ['FabricCanvas', 'FabricImage', 'FabricText'],
+        codeTitle: 'Minimal canvas',
+        codeLang: 'vue',
+        code: `<script setup lang="ts">
+import { ref } from 'vue'
+import type { FabricImageModelValue, FabricTextModelValue } from 'vue-fabric-fiber'
+import { FabricCanvas, FabricImage, FabricText } from 'vue-fabric-fiber'
+
+const heroImage = ref<FabricImageModelValue>({
+  src: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80',
+  width: '100%',
+  height: '100%',
+  selectable: false,
+  hasControls: false,
+})
+
+const heroTitle = ref<FabricTextModelValue>({
+  text: 'Fabric Ports',
+  left: 120,
+  top: 160,
+  fontSize: 72,
+  fontWeight: '700',
+  fill: '#f8fafc',
+})
+</script>
+
+<template>
+  <FabricCanvas :canvas-options="{ preserveObjectStacking: true }">
+    <FabricImage v-model="heroImage" preset="background" />
+    <FabricText v-model="heroTitle" preset="headline" />
+  </FabricCanvas>
+</template>
+`,
+        footnotes: [
+          'Model refs stay serializable—`JSON.stringify` works because the components never mutate your source objects.',
+        ],
+      },
+      {
+        id: 'fabric-canvas',
+        title: 'FabricCanvas',
+        description: 'Wraps `fabric.Canvas` with auto-resizing, preset orchestration, and sequential task queues.',
+        points: [
+          '`canvas-options` merges preset defaults → `initial` overrides → the bound `v-model` so you can progressively enhance configuration.',
+          '`preset` loads entries from `FABRIC_CANVAS_PRESETS`; ship your own preset id to reuse curated options across pages.',
+          '`auto-resize` keeps the canvas synced to its container via `ResizeObserver`. Disable it and set explicit `width/height` for export-friendly stages.',
+          '`pixel-ratio` overrides the device ratio so screenshots stay crisp on hidpi monitors.',
+          'Listen to `@ready` for the underlying `fabric.Canvas` and register custom tools or event handlers there.',
+        ],
+        apiList: ['canvas-options', 'preset', 'initial', 'auto-resize', 'pixel-ratio', '@ready'],
+        codeTitle: 'Custom canvas preset',
+        codeLang: 'vue',
+        code: `<script setup lang="ts">
+import { ref } from 'vue'
+import type { Canvas } from 'fabric'
+import type { FabricTextModelValue } from 'vue-fabric-fiber'
+import { FabricCanvas, FabricText } from 'vue-fabric-fiber'
+
+const headline = ref<FabricTextModelValue>({
+  text: 'Storyboards stay deterministic',
+  left: 80,
+  top: 120,
+  width: 480,
+  fontSize: 48,
+  fill: '#e2e8f0',
+})
+
+function handleCanvasReady(canvas: Canvas) {
+  canvas.on('selection:created', () => {
+    console.log('Selection created')
+  })
+}
+</script>
+
+<template>
+  <FabricCanvas
+    preset="storyboard"
+    :initial="{ backgroundColor: '#020617' }"
+    :canvas-options="{ selectionColor: 'rgba(56,189,248,0.12)' }"
+    :pixel-ratio="2"
+    @ready="handleCanvasReady"
+  >
+    <FabricText v-model="headline" />
+  </FabricCanvas>
+</template>
+`,
+        footnotes: [
+          'Export `FABRIC_CANVAS_PRESETS` or `FABRIC_CANVAS_OPTION_KEYS` when you need to build custom inspectors or sync options with forms.',
+        ],
+      },
+      {
+        id: 'fabric-image',
+        title: 'FabricImage',
+        description: 'Two-way bind Fabric image objects, including async loads, sizing strategies, and overlay controls.',
+        points: [
+          '`preset` chooses which props participate in `v-model` (backgrounds ignore `left/top`, overlays keep everything).',
+          '`width`/`height` accept numbers (px) or percentages that resolve against the canvas for responsive art.',
+          'Only the keys listed in `FABRIC_IMAGE_BINDABLE_KEYS` are diffed; everything else can live in the preset’s `initial` config.',
+          'Model values remain plain objects, so you can hydrate them from APIs or persist them next to other scene data.',
+          '`default` preset exposes all binding keys for general use, `background` preset only mirrors `src/width/height/opacity` for full-bleed art, and `overlay` preset surfaces coordinates, transforms, and sizing so draggable layers feel natural.',
+        ],
+        apiList: ['FabricImage', 'preset', 'FABRIC_IMAGE_PRESETS', 'FABRIC_IMAGE_BINDABLE_KEYS'],
+        codeTitle: 'Overlay image preset',
+        codeLang: 'vue',
+        code: `<script setup lang="ts">
+import { ref } from 'vue'
+import type { FabricImageModelValue } from 'vue-fabric-fiber'
+import { FabricCanvas, FabricImage } from 'vue-fabric-fiber'
+
+const background = ref<FabricImageModelValue>({
+  src: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1600&q=80',
+  width: '100%',
+  height: '100%',
+})
+
+const accent = ref<FabricImageModelValue>({
+  src: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=80',
+  left: 420,
+  top: 120,
+  width: 320,
+  angle: -8,
+  selectable: true,
+})
+</script>
+
+<template>
+  <FabricCanvas>
+    <FabricImage v-model="background" preset="background" />
+    <FabricImage v-model="accent" preset="overlay" />
+  </FabricCanvas>
+</template>
+`,
+      },
+      {
+        id: 'fabric-text',
+        title: 'FabricText',
+        description: 'Bind typography-focused Fabric objects with presets for headlines, badges, and body copy.',
+        points: [
+          'Every model requires a `text` key; the rest of the props come from `FABRIC_TEXT_OPTION_KEYS`.',
+          '`preset` limits which props sync through `v-model` so inspectors cannot accidentally mutate low-level Fabric config.',
+          'Use standard inputs (color pickers, sliders, dropdowns) against the same ref so both form and canvas stay in sync.',
+          'Pair with `RenderGroup` to guarantee copy updates re-render in the right order.',
+        ],
+        apiList: ['FabricText', 'preset', 'FABRIC_TEXT_PRESETS', 'FABRIC_TEXT_BINDABLE_KEYS'],
+        codeTitle: 'Typography bindings',
+        codeLang: 'vue',
+        code: `<script setup lang="ts">
+import { ref } from 'vue'
+import type { FabricTextModelValue } from 'vue-fabric-fiber'
+import { FabricCanvas, FabricText } from 'vue-fabric-fiber'
+
+const headline = ref<FabricTextModelValue>({
+  text: 'Render queues over placeholders',
+  left: 96,
+  top: 140,
+  width: 420,
+  fontSize: 56,
+  textAlign: 'left',
+})
+
+const badge = ref<FabricTextModelValue>({
+  text: 'LIVE SYNC',
+  left: 96,
+  top: 80,
+  fontSize: 18,
+  fontWeight: '600',
+  fill: '#0f172a',
+  backgroundColor: '#facc15',
+  padding: 12,
+})
+</script>
+
+<template>
+  <FabricCanvas :canvas-options="{ backgroundColor: '#020617' }">
+    <FabricText v-model="badge" preset="badge" />
+    <FabricText v-model="headline" preset="headline" />
+  </FabricCanvas>
+</template>
+`,
+      },
+      {
+        id: 'render-group',
+        title: 'RenderGroup',
+        description: 'Queue asynchronous work so Fabric objects mount in deterministic order.',
+        points: [
+          'Every `<RenderGroup>` inherits the canvas task queue and schedules object creation sequentially.',
+          '`priority` reorders the queue (lower priority runs first), which helps keep overlays above async imagery.',
+          '`disable-queue` bypasses ordering when you need to mutate an object immediately (e.g., dragging guides).',
+          'Nested groups share the same context, so you can isolate expensive sections without rebuilding the canvas.',
+        ],
+        apiList: ['RenderGroup', 'priority', 'disable-queue'],
+        codeTitle: 'Deterministic layering',
+        codeLang: 'vue',
+        code: `<script setup lang="ts">
+import { ref } from 'vue'
+import type { FabricImageModelValue, FabricTextModelValue } from 'vue-fabric-fiber'
+import { FabricCanvas, FabricImage, FabricText, RenderGroup } from 'vue-fabric-fiber'
+
+const background = ref<FabricImageModelValue>({
+  src: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1600&q=80',
+  width: '100%',
+  height: '100%',
+})
+
+const title = ref<FabricTextModelValue>({
+  text: 'Queued layers never flicker',
+  left: 120,
+  top: 180,
+  fontSize: 54,
+  width: 420,
+})
+</script>
+
+<template>
+  <FabricCanvas>
+    <RenderGroup :priority="1">
+      <FabricImage v-model="background" preset="background" />
+    </RenderGroup>
+    <RenderGroup :priority="10">
+      <FabricText v-model="title" preset="headline" />
+    </RenderGroup>
+  </FabricCanvas>
+</template>
+`,
+        footnotes: [
+          'Queues prevent async images from jumping ahead of text nodes, which keeps complex hero layouts stable.',
+        ],
+      },
+      {
+        id: 'shapes',
+        title: 'Geometry helpers',
+        description: 'Rectangles, circles, lines, polygons, and custom paths share the same reactive `v-model` pattern.',
+        points: [
+          'Every shape component is generated by `createFabricObjectComponent`, so updates flow through the same diffing pipeline.',
+          'Model values match Fabric’s props (e.g., `FabricRectModelValue`, `FabricCircleModelValue`), letting you author overlays or guides as JSON.',
+          'Shapes respect the surrounding `RenderGroup`, making it easy to stack data visualizations or guides atop imagery.',
+        ],
+        apiList: ['FabricRect', 'FabricCircle', 'FabricPolygon', 'FabricLine'],
+        codeTitle: 'Shape overlays',
+        codeLang: 'vue',
+        code: `<script setup lang="ts">
+import { ref } from 'vue'
+import type { FabricRectModelValue, FabricCircleModelValue } from 'vue-fabric-fiber'
+import { FabricCanvas, FabricRect, FabricCircle } from 'vue-fabric-fiber'
+
+const frame = ref<FabricRectModelValue>({
+  left: 80,
+  top: 80,
+  width: 520,
+  height: 320,
+  stroke: '#38bdf8',
+  strokeWidth: 2,
+  fill: 'transparent',
+})
+
+const focus = ref<FabricCircleModelValue>({
+  left: 260,
+  top: 200,
+  radius: 90,
+  fill: 'rgba(56,189,248,0.12)',
+  stroke: '#38bdf8',
+})
+</script>
+
+<template>
+  <FabricCanvas :canvas-options="{ backgroundColor: '#020617' }">
+    <FabricRect v-model="frame" />
+    <FabricCircle v-model="focus" />
+  </FabricCanvas>
+</template>
+`,
+      },
+    ],
   },
 } as const
 

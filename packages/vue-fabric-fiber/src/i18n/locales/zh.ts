@@ -12,6 +12,7 @@ const zh = {
     },
     nav: {
       overview: '概览',
+      docs: '文档',
       demos: '演示',
       github: 'GitHub',
       toggle: '切换导航',
@@ -28,6 +29,10 @@ const zh = {
       typographyCanvas: '排版画布',
       enterInteractive: '进入交互模式',
       exitInteractive: '退出交互模式',
+      lightMode: '切换到亮色模式',
+      darkMode: '切换到暗色模式',
+      lightModeShort: '亮色',
+      darkModeShort: '暗色',
     },
   },
   components: {
@@ -243,6 +248,295 @@ const zh = {
         },
       },
     },
+  },
+  docs: {
+    meta: {
+      title: '文档',
+      description: 'vue-fabric-fiber 组件与 Fabric.js 绑定的使用指南。',
+      keywords: ['vue-fabric-fiber 文档', 'FabricCanvas 属性', 'RenderGroup 队列', 'FabricImage 绑定'],
+    },
+    hero: {
+      eyebrow: '使用文档',
+      title: 'vue-fabric-fiber 组件参考',
+      description: '了解 FabricCanvas、FabricImage、FabricText、RenderGroup 以及几何辅助组件的行为，放心构建画布体验。',
+      quickLinksLabel: '章节',
+    },
+    sections: [
+      {
+        id: 'getting-started',
+        title: '快速上手',
+        description: '所有绑定都是标准的 Vue 组件：安装依赖、创建响应式模型，然后把组件放进任意 SFC 即可。',
+        points: [
+          '运行 `pnpm add vue-fabric-fiber` 并按需导入组件，各个导出都是可 tree-shake 的 ES 模块。',
+          '画布状态保存在 `ref` 中，并满足 `FabricImageModelValue`、`FabricTextModelValue` 等类型，因此可以直接用 JSON 还原或持久化。',
+          '常规的表单控件、watcher 都能驱动这些 ref；绑定层会负责 diff 并把变更同步到 Fabric 对象。',
+        ],
+        apiList: ['FabricCanvas', 'FabricImage', 'FabricText'],
+        codeTitle: '最小画布',
+        codeLang: 'vue',
+        code: `<script setup lang="ts">
+import { ref } from 'vue'
+import type { FabricImageModelValue, FabricTextModelValue } from 'vue-fabric-fiber'
+import { FabricCanvas, FabricImage, FabricText } from 'vue-fabric-fiber'
+
+const heroImage = ref<FabricImageModelValue>({
+  src: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80',
+  width: '100%',
+  height: '100%',
+  selectable: false,
+  hasControls: false,
+})
+
+const heroTitle = ref<FabricTextModelValue>({
+  text: 'Fabric Ports',
+  left: 120,
+  top: 160,
+  fontSize: 72,
+  fontWeight: '700',
+  fill: '#f8fafc',
+})
+</script>
+
+<template>
+  <FabricCanvas :canvas-options="{ preserveObjectStacking: true }">
+    <FabricImage v-model="heroImage" preset="background" />
+    <FabricText v-model="heroTitle" preset="headline" />
+  </FabricCanvas>
+</template>
+`,
+        footnotes: ['组件不会直接修改你的 ref，因此可以安全地 `JSON.stringify` 并存储整个场景。'],
+      },
+      {
+        id: 'fabric-canvas',
+        title: 'FabricCanvas',
+        description: '在 `fabric.Canvas` 之上提供自动缩放、预设管理与顺序任务队列。',
+        points: [
+          '`canvas-options` 会依次合并预设默认值 → `initial` → 当前绑定值，方便渐进式扩展配置。',
+          '`preset` 读取 `FABRIC_CANVAS_PRESETS`，自定义 id 即可在多页之间复用设置。',
+          '`auto-resize` 通过 `ResizeObserver` 同步容器尺寸；如需固定导出大小，可关闭并手动设置 `width`/`height`。',
+          '`pixel-ratio` 覆盖设备 DPR，保证高清屏幕上的截图质量。',
+          '监听 `@ready` 获取底层 `fabric.Canvas`，然后注册自定义工具或事件。',
+        ],
+        apiList: ['canvas-options', 'preset', 'initial', 'auto-resize', 'pixel-ratio', '@ready'],
+        codeTitle: '自定义预设',
+        codeLang: 'vue',
+        code: `<script setup lang="ts">
+import { ref } from 'vue'
+import type { Canvas } from 'fabric'
+import type { FabricTextModelValue } from 'vue-fabric-fiber'
+import { FabricCanvas, FabricText } from 'vue-fabric-fiber'
+
+const headline = ref<FabricTextModelValue>({
+  text: 'Storyboards stay deterministic',
+  left: 80,
+  top: 120,
+  width: 480,
+  fontSize: 48,
+  fill: '#e2e8f0',
+})
+
+function handleCanvasReady(canvas: Canvas) {
+  canvas.on('selection:created', () => {
+    console.log('Selection created')
+  })
+}
+</script>
+
+<template>
+  <FabricCanvas
+    preset="storyboard"
+    :initial="{ backgroundColor: '#020617' }"
+    :canvas-options="{ selectionColor: 'rgba(56,189,248,0.12)' }"
+    :pixel-ratio="2"
+    @ready="handleCanvasReady"
+  >
+    <FabricText v-model="headline" />
+  </FabricCanvas>
+</template>
+`,
+        footnotes: ['使用导出的 `FABRIC_CANVAS_PRESETS` 与 `FABRIC_CANVAS_OPTION_KEYS` 可以快速构建自定义检查器。'],
+      },
+      {
+        id: 'fabric-image',
+        title: 'FabricImage',
+        description: '双向绑定 Fabric 图像对象，涵盖异步加载、尺寸策略与叠加控制。',
+        points: [
+          '`preset` 决定哪些字段参与 `v-model`（背景忽略位置，叠加层保留所有坐标信息）。',
+          '`width`/`height` 可填像素值或百分比，百分比会基于画布尺寸计算，用于响应式背景。',
+          '只有 `FABRIC_IMAGE_BINDABLE_KEYS` 中的键会被 diff，其余配置可放在预设的 `initial` 中。',
+          '模型值是普通对象，方便与后端接口或本地存储互通。',
+          '`default` 预设暴露全部键值，适合通用图层；`background` 仅同步 `src/width/height/opacity`，方便铺满背景；`overlay` 则保留位置、尺寸与变换字段，让可拖拽叠加层体验自然。',
+        ],
+        apiList: ['FabricImage', 'preset', 'FABRIC_IMAGE_PRESETS', 'FABRIC_IMAGE_BINDABLE_KEYS'],
+        codeTitle: '叠加图像',
+        codeLang: 'vue',
+        code: `<script setup lang="ts">
+import { ref } from 'vue'
+import type { FabricImageModelValue } from 'vue-fabric-fiber'
+import { FabricCanvas, FabricImage } from 'vue-fabric-fiber'
+
+const background = ref<FabricImageModelValue>({
+  src: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1600&q=80',
+  width: '100%',
+  height: '100%',
+})
+
+const accent = ref<FabricImageModelValue>({
+  src: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=80',
+  left: 420,
+  top: 120,
+  width: 320,
+  angle: -8,
+  selectable: true,
+})
+</script>
+
+<template>
+  <FabricCanvas>
+    <FabricImage v-model="background" preset="background" />
+    <FabricImage v-model="accent" preset="overlay" />
+  </FabricCanvas>
+</template>
+`,
+      },
+      {
+        id: 'fabric-text',
+        title: 'FabricText',
+        description: '用于标题、徽章与正文的文字组件，拥有多套预设。',
+        points: [
+          '模型必须包含 `text` 字段，其余属性来自 `FABRIC_TEXT_OPTION_KEYS`。',
+          '`preset` 限制可双向绑定的字段，避免误改底层 Fabric 配置。',
+          '使用常规的输入框、颜色选择器、滑块即可驱动同一个 ref，从而同时更新画布与表单。',
+          '与 `RenderGroup` 配合可保证文案更新时的渲染顺序。',
+        ],
+        apiList: ['FabricText', 'preset', 'FABRIC_TEXT_PRESETS', 'FABRIC_TEXT_BINDABLE_KEYS'],
+        codeTitle: '排版绑定',
+        codeLang: 'vue',
+        code: `<script setup lang="ts">
+import { ref } from 'vue'
+import type { FabricTextModelValue } from 'vue-fabric-fiber'
+import { FabricCanvas, FabricText } from 'vue-fabric-fiber'
+
+const headline = ref<FabricTextModelValue>({
+  text: 'Render queues over placeholders',
+  left: 96,
+  top: 140,
+  width: 420,
+  fontSize: 56,
+  textAlign: 'left',
+})
+
+const badge = ref<FabricTextModelValue>({
+  text: 'LIVE SYNC',
+  left: 96,
+  top: 80,
+  fontSize: 18,
+  fontWeight: '600',
+  fill: '#0f172a',
+  backgroundColor: '#facc15',
+  padding: 12,
+})
+</script>
+
+<template>
+  <FabricCanvas :canvas-options="{ backgroundColor: '#020617' }">
+    <FabricText v-model="badge" preset="badge" />
+    <FabricText v-model="headline" preset="headline" />
+  </FabricCanvas>
+</template>
+`,
+      },
+      {
+        id: 'render-group',
+        title: 'RenderGroup',
+        description: '将异步任务排队，确保对象按确定顺序挂载。',
+        points: [
+          '每个 `<RenderGroup>` 都接入画布的任务队列，串行创建 Fabric 对象。',
+          '`priority` 可以重新排序（数值越小越早执行），用来保持叠加层始终位于背景之上。',
+          '`disable-queue` 会跳过队列，适合需要立即响应的交互（例如拖拽辅助线）。',
+          '嵌套的分组共享同一上下文，可针对昂贵区域单独排队。',
+        ],
+        apiList: ['RenderGroup', 'priority', 'disable-queue'],
+        codeTitle: '确定性的层叠',
+        codeLang: 'vue',
+        code: `<script setup lang="ts">
+import { ref } from 'vue'
+import type { FabricImageModelValue, FabricTextModelValue } from 'vue-fabric-fiber'
+import { FabricCanvas, FabricImage, FabricText, RenderGroup } from 'vue-fabric-fiber'
+
+const background = ref<FabricImageModelValue>({
+  src: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1600&q=80',
+  width: '100%',
+  height: '100%',
+})
+
+const title = ref<FabricTextModelValue>({
+  text: 'Queued layers never flicker',
+  left: 120,
+  top: 180,
+  fontSize: 54,
+  width: 420,
+})
+</script>
+
+<template>
+  <FabricCanvas>
+    <RenderGroup :priority="1">
+      <FabricImage v-model="background" preset="background" />
+    </RenderGroup>
+    <RenderGroup :priority="10">
+      <FabricText v-model="title" preset="headline" />
+    </RenderGroup>
+  </FabricCanvas>
+</template>
+`,
+        footnotes: ['队列能阻止异步图像盖到文字前面，非常适合复杂主视觉。'],
+      },
+      {
+        id: 'shapes',
+        title: '几何组件',
+        description: '矩形、圆形、折线、多边形与路径都遵守同一套 `v-model` 约定。',
+        points: [
+          '所有图形组件都由 `createFabricObjectComponent` 生成，更新会经过相同的 diff 流程。',
+          '模型类型与 Fabric 原生属性一致，例如 `FabricRectModelValue`、`FabricCircleModelValue`，便于用 JSON 定义辅助线。',
+          '图形也能参加 `RenderGroup` 的排序，方便在图像之上叠加可视化或命中区域。',
+        ],
+        apiList: ['FabricRect', 'FabricCircle', 'FabricPolygon', 'FabricLine'],
+        codeTitle: '形状覆盖层',
+        codeLang: 'vue',
+        code: `<script setup lang="ts">
+import { ref } from 'vue'
+import type { FabricRectModelValue, FabricCircleModelValue } from 'vue-fabric-fiber'
+import { FabricCanvas, FabricRect, FabricCircle } from 'vue-fabric-fiber'
+
+const frame = ref<FabricRectModelValue>({
+  left: 80,
+  top: 80,
+  width: 520,
+  height: 320,
+  stroke: '#38bdf8',
+  strokeWidth: 2,
+  fill: 'transparent',
+})
+
+const focus = ref<FabricCircleModelValue>({
+  left: 260,
+  top: 200,
+  radius: 90,
+  fill: 'rgba(56,189,248,0.12)',
+  stroke: '#38bdf8',
+})
+</script>
+
+<template>
+  <FabricCanvas :canvas-options="{ backgroundColor: '#020617' }">
+    <FabricRect v-model="frame" />
+    <FabricCircle v-model="focus" />
+  </FabricCanvas>
+</template>
+`,
+      },
+    ],
   },
 } as const
 

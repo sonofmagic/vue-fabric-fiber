@@ -2,6 +2,7 @@
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { RouterLink, RouterView, useRoute } from 'vue-router'
+import { dispatchThemeChange, resolveInitialTheme, THEME_STORAGE_KEY, type ThemeName } from '@/constants/theme'
 import { isSupportedLocale, rememberLocale, SUPPORTED_LOCALES } from '@/i18n'
 import { usePageSeo } from '@/seo'
 
@@ -9,6 +10,7 @@ const { t, locale } = useI18n()
 
 const navLinks = computed(() => [
   { to: '/', label: t('app.nav.overview') },
+  { to: '/docs', label: t('app.nav.docs') },
   { to: '/demos', label: t('app.nav.demos') },
 ])
 
@@ -17,6 +19,10 @@ const localeOptions = SUPPORTED_LOCALES
 const route = useRoute()
 const showMobileNav = ref(false)
 const year = new Date().getFullYear()
+const theme = ref<ThemeName>('dark')
+if (typeof window !== 'undefined') {
+  theme.value = resolveInitialTheme()
+}
 
 function isActive(path: string) {
   if (path === '/') {
@@ -24,6 +30,18 @@ function isActive(path: string) {
   }
 
   return route.path.startsWith(path)
+}
+
+function applyTheme(next: ThemeName) {
+  if (typeof document === 'undefined') {
+    return
+  }
+  document.documentElement.dataset.theme = next
+  dispatchThemeChange(next)
+}
+
+function toggleTheme() {
+  theme.value = theme.value === 'dark' ? 'light' : 'dark'
 }
 
 function toggleMobileNav() {
@@ -39,6 +57,21 @@ watch(locale, (next) => {
     rememberLocale(next)
   }
 })
+
+if (typeof window !== 'undefined') {
+  applyTheme(theme.value)
+  watch(theme, (next) => {
+    applyTheme(next)
+    try {
+      window.localStorage?.setItem(THEME_STORAGE_KEY, next)
+    }
+    catch {
+      // noop
+    }
+  })
+}
+
+const themeToggleLabel = computed(() => (theme.value === 'dark' ? t('app.actions.lightMode') : t('app.actions.darkMode')))
 
 usePageSeo()
 </script>
@@ -83,21 +116,33 @@ usePageSeo()
             </RouterLink>
           </nav>
 
-          <a
-            class="hidden items-center gap-2 rounded-xl border border-slate-800/60 bg-slate-950/70 px-3 py-2 text-xs font-medium text-slate-300 transition hover:border-slate-700 hover:text-slate-100 lg:flex"
-            href="https://github.com/icebreaker/fabric-ports"
-            rel="noreferrer"
-            target="_blank"
-          >
-            <svg class="h-4 w-4 text-slate-400" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path
-                clip-rule="evenodd"
-                d="M12 2C6.48 2 2 6.58 2 12.2c0 4.5 2.87 8.32 6.84 9.67.5.1.68-.22.68-.5v-1.9c-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.1-1.5-1.1-1.5-.9-.64.07-.63.07-.63 1 .07 1.53 1.04 1.53 1.04.9 1.56 2.37 1.11 2.95.85.1-.68.36-1.12.66-1.37-2.22-.26-4.56-1.15-4.56-5.12 0-1.13.39-2.05 1.03-2.78-.1-.26-.45-1.3.1-2.7 0 0 .84-.28 2.76 1.06a9.2 9.2 0 0 1 5 0c1.92-1.34 2.76-1.06 2.76-1.06.55 1.41.2 2.45.1 2.7.64.73 1.03 1.65 1.03 2.78 0 3.98-2.34 4.86-4.57 5.12.37.33.7.97.7 1.97v2.92c0 .28.18.61.69.5A10.22 10.22 0 0 0 22 12.2C22 6.58 17.52 2 12 2Z"
-                fill-rule="evenodd"
-              />
-            </svg>
-            {{ t('app.nav.github') }}
-          </a>
+          <div class="hidden items-center gap-2 lg:flex">
+            <a
+              class="inline-flex items-center gap-2 rounded-xl border border-slate-800/60 bg-slate-950/70 px-3 py-2 text-xs font-medium text-slate-300 transition hover:border-slate-700 hover:text-slate-100"
+              href="https://github.com/icebreaker/fabric-ports"
+              rel="noreferrer"
+              target="_blank"
+            >
+              <svg class="h-4 w-4 text-slate-400" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  clip-rule="evenodd"
+                  d="M12 2C6.48 2 2 6.58 2 12.2c0 4.5 2.87 8.32 6.84 9.67.5.1.68-.22.68-.5v-1.9c-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.1-1.5-1.1-1.5-.9-.64.07-.63.07-.63 1 .07 1.53 1.04 1.53 1.04.9 1.56 2.37 1.11 2.95.85.1-.68.36-1.12.66-1.37-2.22-.26-4.56-1.15-4.56-5.12 0-1.13.39-2.05 1.03-2.78-.1-.26-.45-1.3.1-2.7 0 0 .84-.28 2.76 1.06a9.2 9.2 0 0 1 5 0c1.92-1.34 2.76-1.06 2.76-1.06.55 1.41.2 2.45.1 2.7.64.73 1.03 1.65 1.03 2.78 0 3.98-2.34 4.86-4.57 5.12.37.33.7.97.7 1.97v2.92c0 .28.18.61.69.5A10.22 10.22 0 0 0 22 12.2C22 6.58 17.52 2 12 2Z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+              {{ t('app.nav.github') }}
+            </a>
+
+            <button
+              class="inline-flex items-center gap-2 rounded-xl border border-slate-800/60 bg-slate-950/70 px-3 py-2 text-xs font-medium text-slate-300 transition hover:border-slate-700 hover:text-slate-100"
+              type="button"
+              :aria-label="themeToggleLabel"
+              @click="toggleTheme"
+            >
+              <span aria-hidden="true">{{ theme === 'dark' ? '🌞' : '🌙' }}</span>
+              <span>{{ theme === 'dark' ? t('app.actions.lightModeShort') : t('app.actions.darkModeShort') }}</span>
+            </button>
+          </div>
 
           <div class="hidden items-center gap-2 md:flex">
             <label class="sr-only" for="site-language-desktop">{{ t('locale.label') }}</label>
@@ -167,6 +212,13 @@ usePageSeo()
             >
               {{ t('app.nav.github') }}
             </a>
+            <button
+              class="rounded-lg px-3 py-2 text-left text-slate-300 transition hover:bg-slate-900/70 hover:text-slate-100"
+              type="button"
+              @click="toggleTheme"
+            >
+              {{ theme === 'dark' ? t('app.actions.lightMode') : t('app.actions.darkMode') }}
+            </button>
             <div class="mt-3">
               <label class="sr-only" for="site-language-mobile">{{ t('locale.label') }}</label>
               <select
