@@ -9,8 +9,13 @@ try {
   fabricModule = await import('fabric/node')
 }
 catch (error) {
-  console.warn(
-    '[ssr.test] Skipping fabric SSR test because native bindings are unavailable.',
+  const reason = error instanceof Error ? error.message : 'Unknown native binding error'
+  const maybeConsole = (globalThis as Record<string, unknown>).console as
+    | { warn?: (message?: unknown, ...optionalParams: unknown[]) => void }
+    | undefined
+
+  maybeConsole?.warn?.(
+    `Skipping fabric SSR test because native bindings are unavailable: ${reason}`,
     error,
   )
 }
