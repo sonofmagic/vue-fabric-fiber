@@ -36,10 +36,10 @@ usePageSeo({
       <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-purple-500/10" />
       <div class="relative space-y-6">
         <span class="eyebrow">{{ t('demos.hero.eyebrow') }}</span>
-        <h1 class="text-3xl font-semibold leading-tight text-slate-100 sm:text-4xl">
+        <h1 class="text-3xl font-semibold leading-tight text-primary sm:text-4xl">
           {{ t('demos.hero.title') }}
         </h1>
-        <p class="max-w-3xl text-sm leading-relaxed text-slate-300 sm:text-base">
+        <p class="max-w-3xl text-sm leading-relaxed text-secondary sm:text-base">
           {{ t('demos.hero.description') }}
         </p>
       </div>
@@ -50,14 +50,14 @@ usePageSeo({
         v-for="card in cards"
         :key="card.to"
         :to="card.to"
-        class="group relative flex h-full flex-col gap-6 overflow-hidden rounded-[28px] border border-slate-800/60 bg-slate-950/70 p-6 transition hover:-translate-y-1 hover:border-slate-600 hover:bg-slate-900/70"
+        class="group relative flex h-full flex-col gap-6 overflow-hidden rounded-[28px] border border-panel bg-panel p-6 transition hover:-translate-y-1 hover:border-panel-strong hover:bg-panel"
       >
         <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-purple-500/10 opacity-0 transition group-hover:opacity-100" />
         <div class="relative space-y-3">
-          <h2 class="text-lg font-semibold text-slate-100">
+          <h2 class="text-lg font-semibold text-primary">
             {{ card.title }}
           </h2>
-          <p class="text-xs leading-relaxed text-slate-400">
+          <p class="text-xs leading-relaxed text-muted">
             {{ card.description }}
           </p>
         </div>
@@ -65,12 +65,12 @@ usePageSeo({
           <span
             v-for="tag in card.tags || []"
             :key="tag"
-            class="rounded-full border border-slate-700/60 bg-slate-900/70 px-3 py-1 text-[11px] uppercase tracking-[0.28em] text-slate-400"
+            class="rounded-full border border-panel-strong bg-panel px-3 py-1 text-[11px] uppercase tracking-[0.28em] text-muted"
           >
             {{ tag }}
           </span>
         </div>
-        <span class="relative inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-slate-400 transition group-hover:text-slate-100">
+        <span class="relative inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted transition group-hover:text-primary">
           {{ t('app.actions.viewDemo') }}
           <span aria-hidden="true" class="transition group-hover:translate-x-1">→</span>
         </span>

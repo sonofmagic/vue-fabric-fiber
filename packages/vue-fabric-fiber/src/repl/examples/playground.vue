@@ -494,19 +494,19 @@ const supportedLegend = computed(() => [
       <div aria-hidden="true" class="absolute right-[-140px] bottom-[-80px] h-80 w-80 rounded-full bg-purple-500/15 blur-[180px]" />
       <div class="relative max-w-3xl space-y-5">
         <span class="eyebrow">Live playground</span>
-        <h1 class="text-3xl font-semibold leading-tight text-slate-100 sm:text-4xl">
+        <h1 class="text-3xl font-semibold leading-tight text-primary sm:text-4xl">
           Edit scene instructions and render Fabric canvases instantly
         </h1>
-        <p class="text-sm leading-relaxed text-slate-300 sm:text-base">
+        <p class="text-sm leading-relaxed text-secondary sm:text-base">
           Describe objects with JSON, swap presets, and manipulate nodes directly on canvas. The playground keeps the preview synced
           with every keystroke.
         </p>
-        <div class="flex flex-wrap gap-3 text-xs text-slate-400">
-          <span class="inline-flex items-center gap-2 rounded-full border border-slate-800/60 bg-slate-900/70 px-4 py-2">
+        <div class="flex flex-wrap gap-3 text-xs text-muted">
+          <span class="inline-flex items-center gap-2 rounded-full border border-panel bg-panel px-4 py-2">
             <span class="h-2 w-2 rounded-full bg-cyan-300" />
             JSON → Fabric bindings
           </span>
-          <span class="inline-flex items-center gap-2 rounded-full border border-slate-800/60 bg-slate-900/70 px-4 py-2">
+          <span class="inline-flex items-center gap-2 rounded-full border border-panel bg-panel px-4 py-2">
             <span class="h-2 w-2 rounded-full bg-amber-300" />
             Drag on canvas to inspect props
           </span>
@@ -521,7 +521,7 @@ const supportedLegend = computed(() => [
           <header class="flex flex-wrap items-center justify-between gap-3">
             <div class="space-y-1">
               <span class="eyebrow">Scene blueprint</span>
-              <p class="text-xs text-slate-400">
+              <p class="text-xs text-muted">
                 Supported keys map to Fabric components. Switch a preset or edit below.
               </p>
             </div>
@@ -531,8 +531,8 @@ const supportedLegend = computed(() => [
                 :key="preset.id"
                 class="rounded-full border px-3 py-1.5 text-xs font-semibold capitalize transition"
                 :class="preset.id === activePreset
-                  ? 'border-slate-200 bg-slate-100 text-slate-900'
-                  : 'border-slate-800/60 bg-slate-900/70 text-slate-300 hover:border-slate-700 hover:text-slate-100'"
+                  ? 'border-panel-soft bg-elevated text-contrast'
+                  : 'border-panel bg-panel text-secondary hover:border-panel-strong hover:text-primary'"
                 type="button"
                 @click="loadPreset(preset.id)"
               >
@@ -541,13 +541,13 @@ const supportedLegend = computed(() => [
             </div>
           </header>
 
-          <div class="relative flex-1 overflow-hidden rounded-2xl border border-slate-800/60 bg-slate-950/80 shadow-inner">
+          <div class="relative flex-1 overflow-hidden rounded-2xl border border-panel bg-panel-strong shadow-inner">
             <textarea
               v-model="editorValue"
               spellcheck="false"
               autocapitalize="off"
               autocomplete="off"
-              class="h-[520px] w-full resize-none bg-transparent p-5 font-mono text-[13px] leading-relaxed text-slate-200 outline-none"
+              class="h-[520px] w-full resize-none bg-transparent p-5 font-mono text-[13px] leading-relaxed text-primary-soft outline-none"
             />
             <div
               v-if="parseError"
@@ -557,20 +557,20 @@ const supportedLegend = computed(() => [
             </div>
           </div>
 
-          <div class="flex flex-wrap items-center justify-between gap-3 text-[11px] text-slate-500">
+          <div class="flex flex-wrap items-center justify-between gap-3 text-[11px] text-dim">
             <p>
               Supported nodes:
               <span
                 v-for="legend in supportedLegend"
                 :key="legend.label"
-                class="mr-2 inline-flex items-center gap-1 rounded-full border border-slate-800/60 bg-slate-900/70 px-2 py-1 text-[10px] uppercase tracking-[0.28em]"
+                class="mr-2 inline-flex items-center gap-1 rounded-full border border-panel bg-panel px-2 py-1 text-[10px] uppercase tracking-[0.28em]"
               >
                 {{ legend.label }}
-                <span class="text-slate-400">{{ legend.component }}</span>
+                <span class="text-muted">{{ legend.component }}</span>
               </span>
             </p>
             <button
-              class="inline-flex items-center gap-2 rounded-full border border-slate-800/60 bg-slate-900/70 px-3 py-1.5 text-[11px] font-medium text-slate-200 transition hover:border-slate-700 hover:text-slate-100"
+              class="inline-flex items-center gap-2 rounded-full border border-panel bg-panel px-3 py-1.5 text-[11px] font-medium text-primary-soft transition hover:border-panel-strong hover:text-primary"
               type="button"
               :disabled="!isDirty"
               :class="{ 'opacity-40 pointer-events-none': !isDirty }"
@@ -587,17 +587,17 @@ const supportedLegend = computed(() => [
         <div class="relative space-y-5">
           <header class="space-y-2">
             <span class="eyebrow">Canvas preview</span>
-            <h2 class="text-lg font-semibold text-slate-100">
+            <h2 class="text-lg font-semibold text-primary">
               Rendered Fabric scene
             </h2>
-            <p class="text-xs leading-relaxed text-slate-400">
+            <p class="text-xs leading-relaxed text-muted">
               Drag objects to inspect their props or tweak values in the editor. Parsed nodes update immediately—errors preserve the
               last valid render.
             </p>
           </header>
 
           <div
-            class="canvas-shell overflow-hidden rounded-3xl border border-slate-800/60 bg-slate-950/80 shadow-[0_40px_90px_-48px_rgba(15,23,42,0.9)]"
+            class="canvas-shell overflow-hidden rounded-3xl border border-panel bg-panel-strong shadow-[0_40px_90px_-48px_rgba(15,23,42,0.9)]"
             :style="playgroundCanvasStyle"
           >
             <FabricCanvas
@@ -619,15 +619,15 @@ const supportedLegend = computed(() => [
             </FabricCanvas>
           </div>
 
-          <ul class="grid gap-3 text-xs text-slate-400">
-            <li class="rounded-2xl border border-slate-800/60 bg-slate-950/70 px-4 py-3">
-              <span class="font-semibold text-slate-200">
+          <ul class="grid gap-3 text-xs text-muted">
+            <li class="rounded-2xl border border-panel bg-panel px-4 py-3">
+              <span class="font-semibold text-primary-soft">
                 Tip:
               </span>
               Add more nodes by extending the JSON array—each object becomes a Fabric component.
             </li>
-            <li class="rounded-2xl border border-slate-800/60 bg-slate-950/70 px-4 py-3">
-              <span class="font-semibold text-slate-200">
+            <li class="rounded-2xl border border-panel bg-panel px-4 py-3">
+              <span class="font-semibold text-primary-soft">
                 Tip:
               </span>
               Use the inspector tools in other demos to capture props and paste them here for rapid iteration.

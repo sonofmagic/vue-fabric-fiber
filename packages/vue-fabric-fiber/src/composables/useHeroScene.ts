@@ -6,6 +6,8 @@ import type {
 } from '~/index'
 import { Shadow } from 'fabric'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import heroBackgroundSrc from '@/assets/interactive/hero-background.webp'
+import heroPortraitSrc from '@/assets/interactive/hero-portrait.webp'
 import { bindCanvasDragBounds } from '@/utils/canvasBounds'
 
 export interface HeroSceneState {
@@ -51,7 +53,7 @@ export function useHeroScene({ t, tm, locale }: UseHeroSceneOptions): HeroSceneS
   } as const
 
   const heroCanvasImage = ref<FabricImageModelValue>({
-    src: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=2000&q=80',
+    src: heroBackgroundSrc,
     width: '100%',
     height: '100%',
     left: 0,
@@ -64,7 +66,7 @@ export function useHeroScene({ t, tm, locale }: UseHeroSceneOptions): HeroSceneS
   })
 
   const accentPortraitImage = ref<FabricImageModelValue>({
-    src: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=900&q=80',
+    src: heroPortraitSrc,
     width: 580,
     height: 400,
     left: baseWidth * 0.82,

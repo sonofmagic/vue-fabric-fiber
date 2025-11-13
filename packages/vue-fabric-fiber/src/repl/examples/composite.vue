@@ -145,19 +145,19 @@ const highlightCount = computed(() => {
       <div aria-hidden="true" class="absolute right-[-120px] bottom-[-60px] h-80 w-80 rounded-full bg-cyan-500/15 blur-[170px]" />
       <div class="relative max-w-3xl space-y-5">
         <span class="eyebrow">Layered composition</span>
-        <h1 class="text-3xl font-semibold leading-tight text-slate-100 sm:text-4xl">
+        <h1 class="text-3xl font-semibold leading-tight text-primary sm:text-4xl">
           Orchestrate async assets with RenderGroup queues
         </h1>
-        <p class="text-sm leading-relaxed text-slate-300 sm:text-base">
+        <p class="text-sm leading-relaxed text-secondary sm:text-base">
           Group Fabric objects into deterministic stacks that stay in sync—even when images stream in at different times. Flip
           overlays and HUD layers without sacrificing z-order or transition smoothness.
         </p>
-        <div class="flex flex-wrap gap-3 text-xs text-slate-400">
-          <span class="inline-flex items-center gap-2 rounded-full border border-slate-800/60 bg-slate-900/70 px-4 py-2">
+        <div class="flex flex-wrap gap-3 text-xs text-muted">
+          <span class="inline-flex items-center gap-2 rounded-full border border-panel bg-panel px-4 py-2">
             <span class="h-2 w-2 rounded-full bg-purple-300" />
             Nested RenderGroup orchestration
           </span>
-          <span class="inline-flex items-center gap-2 rounded-full border border-slate-800/60 bg-slate-900/70 px-4 py-2">
+          <span class="inline-flex items-center gap-2 rounded-full border border-panel bg-panel px-4 py-2">
             <span class="h-2 w-2 rounded-full bg-cyan-300" />
             Toggle layers without flicker
           </span>
@@ -168,7 +168,7 @@ const highlightCount = computed(() => {
     <div class="grid gap-10 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
       <div class="relative overflow-hidden rounded-[32px] surface-panel p-6 sm:p-8">
         <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-br from-purple-500/15 via-transparent to-cyan-400/15" />
-        <div class="relative overflow-hidden rounded-3xl border border-slate-800/60 bg-[#020617]/95 shadow-[0_44px_100px_-52px_rgba(15,23,42,0.96)]">
+        <div class="relative overflow-hidden rounded-3xl border border-panel bg-[#020617]/95 shadow-[0_44px_100px_-52px_rgba(15,23,42,0.96)]">
           <FabricCanvas :canvas-options="{ width: 960, height: 560, backgroundColor: '#020617', preserveObjectStacking: true }">
             <RenderGroup>
               <FabricImage v-model="primaryBackdropImage" preset="background" />
@@ -204,41 +204,41 @@ const highlightCount = computed(() => {
         </div>
       </div>
 
-      <aside class="surface-panel-muted flex flex-col gap-6 rounded-[32px] p-6 text-sm text-slate-100 sm:p-7">
+      <aside class="surface-panel-muted flex flex-col gap-6 rounded-[32px] p-6 text-sm text-primary sm:p-7">
         <header class="space-y-3">
           <span class="eyebrow">Layer toggles</span>
-          <h2 class="text-lg font-semibold text-slate-100">
+          <h2 class="text-lg font-semibold text-primary">
             Layered composition
           </h2>
-          <p class="text-xs leading-relaxed text-slate-400">
+          <p class="text-xs leading-relaxed text-muted">
             Stack RenderGroups to orchestrate async assets. Toggle layers to see how the queue isolates backgrounds, highlights, and
             HUD overlays without flicker.
           </p>
         </header>
 
-        <section class="space-y-3 rounded-2xl border border-slate-800/60 bg-slate-950/70 p-4">
-          <label class="flex items-center justify-between rounded-xl border border-slate-800/60 bg-slate-900/70 px-4 py-3 text-xs font-medium uppercase tracking-[0.3em] text-slate-300">
+        <section class="space-y-3 rounded-2xl border border-panel bg-panel p-4">
+          <label class="flex items-center justify-between rounded-xl border border-panel bg-panel px-4 py-3 text-xs font-medium uppercase tracking-[0.3em] text-secondary">
             Highlight photos
-            <input v-model="showHighlights" class="h-4 w-4 rounded border-slate-700 bg-slate-950" type="checkbox">
+            <input v-model="showHighlights" class="h-4 w-4 rounded border-panel-strong bg-app" type="checkbox">
           </label>
-          <label class="flex items-center justify-between rounded-xl border border-slate-800/60 bg-slate-900/70 px-4 py-3 text-xs font-medium uppercase tracking-[0.3em] text-slate-300">
+          <label class="flex items-center justify-between rounded-xl border border-panel bg-panel px-4 py-3 text-xs font-medium uppercase tracking-[0.3em] text-secondary">
             Callout labels
-            <input v-model="showCallouts" class="h-4 w-4 rounded border-slate-700 bg-slate-950" type="checkbox">
+            <input v-model="showCallouts" class="h-4 w-4 rounded border-panel-strong bg-app" type="checkbox">
           </label>
-          <label class="flex items-center justify-between rounded-xl border border-slate-800/60 bg-slate-900/70 px-4 py-3 text-xs font-medium uppercase tracking-[0.3em] text-slate-300">
+          <label class="flex items-center justify-between rounded-xl border border-panel bg-panel px-4 py-3 text-xs font-medium uppercase tracking-[0.3em] text-secondary">
             HUD overlay
-            <input v-model="showHUD" class="h-4 w-4 rounded border-slate-700 bg-slate-950" type="checkbox">
+            <input v-model="showHUD" class="h-4 w-4 rounded border-panel-strong bg-app" type="checkbox">
           </label>
         </section>
 
-        <section class="rounded-2xl border border-slate-800/60 bg-slate-950/75 p-4 text-xs text-slate-300 shadow-inner">
-          <p class="mb-2 font-semibold text-slate-200">
+        <section class="rounded-2xl border border-panel bg-panel p-4 text-xs text-secondary shadow-inner">
+          <p class="mb-2 font-semibold text-primary-soft">
             Rendered highlights
           </p>
           <p>
             {{ highlightCount }} interactive photos on stage
           </p>
-          <p class="mt-2 text-[11px] leading-relaxed text-slate-500">
+          <p class="mt-2 text-[11px] leading-relaxed text-dim">
             Each photo is its own FabricImage instance so you can test control handles, selection rules, and stacking order.
           </p>
         </section>

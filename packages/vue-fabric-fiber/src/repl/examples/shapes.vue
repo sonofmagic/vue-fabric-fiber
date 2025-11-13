@@ -227,19 +227,19 @@ function randomizeLine() {
       <div aria-hidden="true" class="absolute right-[-120px] bottom-[-80px] h-80 w-80 rounded-full bg-sky-500/15 blur-[170px]" />
       <div class="relative max-w-3xl space-y-5">
         <span class="eyebrow">Shape toolkit</span>
-        <h1 class="text-3xl font-semibold leading-tight text-slate-100 sm:text-4xl">
+        <h1 class="text-3xl font-semibold leading-tight text-primary sm:text-4xl">
           Manipulate Fabric primitives with Vue bindings
         </h1>
-        <p class="text-sm leading-relaxed text-slate-300 sm:text-base">
+        <p class="text-sm leading-relaxed text-secondary sm:text-base">
           Adjust every geometric primitive from range inputs and colour pickers while the canvas stays interactive. Fabric Ports keeps
           model values in sync with direct manipulation on stage.
         </p>
-        <div class="flex flex-wrap gap-3 text-xs text-slate-400">
-          <span class="inline-flex items-center gap-2 rounded-full border border-slate-800/60 bg-slate-900/70 px-4 py-2">
+        <div class="flex flex-wrap gap-3 text-xs text-muted">
+          <span class="inline-flex items-center gap-2 rounded-full border border-panel bg-panel px-4 py-2">
             <span class="h-2 w-2 rounded-full bg-emerald-300" />
             Two-way shape bindings
           </span>
-          <span class="inline-flex items-center gap-2 rounded-full border border-slate-800/60 bg-slate-900/70 px-4 py-2">
+          <span class="inline-flex items-center gap-2 rounded-full border border-panel bg-panel px-4 py-2">
             <span class="h-2 w-2 rounded-full bg-fuchsia-300" />
             Path + polygon presets
           </span>
@@ -250,7 +250,7 @@ function randomizeLine() {
     <div class="grid gap-10 xl:grid-cols-[minmax(0,1.25fr)_minmax(0,0.75fr)]">
       <div class="relative overflow-hidden rounded-[32px] surface-panel p-6 sm:p-8">
         <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-br from-emerald-400/12 via-transparent to-sky-500/12" />
-        <div class="relative overflow-hidden rounded-3xl border border-slate-800/60 bg-slate-950/85 shadow-[0_44px_100px_-52px_rgba(15,23,42,0.95)]">
+        <div class="relative overflow-hidden rounded-3xl border border-panel bg-overlay shadow-[0_44px_100px_-52px_rgba(15,23,42,0.95)]">
           <FabricCanvas :canvas-options="{ width: 920, height: 560, preserveObjectStacking: true, selection: true }">
             <FabricRect v-model="rectModel" />
             <FabricCircle v-model="circleModel" />
@@ -264,96 +264,96 @@ function randomizeLine() {
         </div>
       </div>
 
-      <aside class="surface-panel-muted flex flex-col gap-6 rounded-[32px] p-6 text-sm text-slate-100 sm:p-7">
+      <aside class="surface-panel-muted flex flex-col gap-6 rounded-[32px] p-6 text-sm text-primary sm:p-7">
         <header class="space-y-3">
           <span class="eyebrow">Primitive controls</span>
-          <h2 class="text-lg font-semibold text-slate-100">
+          <h2 class="text-lg font-semibold text-primary">
             Shape toolkit
           </h2>
-          <p class="text-xs leading-relaxed text-slate-400">
+          <p class="text-xs leading-relaxed text-muted">
             Adjust Fabric primitives through Vue bindings. Drag nodes directly on the canvas or tweak props below—the components stay
             synchronised either way.
           </p>
         </header>
 
-        <section class="space-y-3 rounded-2xl border border-slate-800/60 bg-slate-950/70 p-4">
-          <h3 class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
+        <section class="space-y-3 rounded-2xl border border-panel bg-panel p-4">
+          <h3 class="text-xs font-semibold uppercase tracking-[0.3em] text-muted">
             Rectangle
           </h3>
-          <div class="grid gap-3 text-xs text-slate-300">
-            <label class="flex items-center justify-between gap-4 rounded-xl border border-slate-800/60 bg-slate-900/70 px-3 py-2">
+          <div class="grid gap-3 text-xs text-secondary">
+            <label class="flex items-center justify-between gap-4 rounded-xl border border-panel bg-panel px-3 py-2">
               <span>Width</span>
               <input v-model.number="rectModel.width" class="w-36 accent-slate-100" max="360" min="40" step="10" type="range">
             </label>
-            <label class="flex items-center justify-between gap-4 rounded-xl border border-slate-800/60 bg-slate-900/70 px-3 py-2">
+            <label class="flex items-center justify-between gap-4 rounded-xl border border-panel bg-panel px-3 py-2">
               <span>Height</span>
               <input v-model.number="rectModel.height" class="w-36 accent-slate-100" max="260" min="40" step="10" type="range">
             </label>
-            <label class="flex items-center justify-between gap-4 rounded-xl border border-slate-800/60 bg-slate-900/70 px-3 py-2">
+            <label class="flex items-center justify-between gap-4 rounded-xl border border-panel bg-panel px-3 py-2">
               <span>Corner</span>
               <input v-model.number="rectCornerRadius" class="w-36 accent-slate-100" max="48" min="0" step="2" type="range">
             </label>
-            <label class="flex items-center gap-2 rounded-xl border border-slate-800/60 bg-slate-900/70 px-3 py-2">
+            <label class="flex items-center gap-2 rounded-xl border border-panel bg-panel px-3 py-2">
               <span class="w-20">Fill</span>
-              <input v-model="rectModel.fill" class="h-9 w-16 cursor-pointer rounded border border-slate-800/60" type="color">
+              <input v-model="rectModel.fill" class="h-9 w-16 cursor-pointer rounded border border-panel" type="color">
             </label>
           </div>
         </section>
 
-        <section class="space-y-3 rounded-2xl border border-slate-800/60 bg-slate-950/70 p-4">
-          <h3 class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
+        <section class="space-y-3 rounded-2xl border border-panel bg-panel p-4">
+          <h3 class="text-xs font-semibold uppercase tracking-[0.3em] text-muted">
             Circle & Ellipse
           </h3>
-          <div class="grid gap-3 text-xs text-slate-300">
-            <label class="flex items-center justify-between gap-4 rounded-xl border border-slate-800/60 bg-slate-900/70 px-3 py-2">
+          <div class="grid gap-3 text-xs text-secondary">
+            <label class="flex items-center justify-between gap-4 rounded-xl border border-panel bg-panel px-3 py-2">
               <span>Radius</span>
               <input v-model.number="circleModel.radius" class="w-36 accent-slate-100" max="140" min="20" step="5" type="range">
             </label>
-            <label class="flex items-center gap-2 rounded-xl border border-slate-800/60 bg-slate-900/70 px-3 py-2">
+            <label class="flex items-center gap-2 rounded-xl border border-panel bg-panel px-3 py-2">
               <span class="w-24">Circle fill</span>
-              <input v-model="circleModel.fill" class="h-9 w-16 cursor-pointer rounded border border-slate-800/60" type="color">
+              <input v-model="circleModel.fill" class="h-9 w-16 cursor-pointer rounded border border-panel" type="color">
             </label>
-            <label class="flex items-center justify-between gap-4 rounded-xl border border-slate-800/60 bg-slate-900/70 px-3 py-2">
+            <label class="flex items-center justify-between gap-4 rounded-xl border border-panel bg-panel px-3 py-2">
               <span>Ellipse rx</span>
               <input v-model.number="ellipseModel.rx" class="w-36 accent-slate-100" max="160" min="40" step="5" type="range">
             </label>
-            <label class="flex items-center justify-between gap-4 rounded-xl border border-slate-800/60 bg-slate-900/70 px-3 py-2">
+            <label class="flex items-center justify-between gap-4 rounded-xl border border-panel bg-panel px-3 py-2">
               <span>Ellipse ry</span>
               <input v-model.number="ellipseModel.ry" class="w-36 accent-slate-100" max="120" min="20" step="5" type="range">
             </label>
-            <label class="flex items-center gap-2 rounded-xl border border-slate-800/60 bg-slate-900/70 px-3 py-2">
+            <label class="flex items-center gap-2 rounded-xl border border-panel bg-panel px-3 py-2">
               <span class="w-20">Stroke</span>
-              <input v-model="ellipseModel.stroke" class="h-9 w-16 cursor-pointer rounded border border-slate-800/60" type="color">
+              <input v-model="ellipseModel.stroke" class="h-9 w-16 cursor-pointer rounded border border-panel" type="color">
             </label>
           </div>
         </section>
 
-        <section class="space-y-3 rounded-2xl border border-slate-800/60 bg-slate-950/70 p-4">
+        <section class="space-y-3 rounded-2xl border border-panel bg-panel p-4">
           <div class="flex items-center justify-between text-xs">
-            <h3 class="font-semibold uppercase tracking-[0.3em] text-slate-400">
+            <h3 class="font-semibold uppercase tracking-[0.3em] text-muted">
               Line
             </h3>
-            <span class="text-[11px] text-slate-500">
+            <span class="text-[11px] text-dim">
               {{ lineLength }} px
             </span>
           </div>
-          <div class="grid gap-3 text-xs text-slate-300">
-            <label class="flex items-center gap-2 rounded-xl border border-slate-800/60 bg-slate-900/70 px-3 py-2">
+          <div class="grid gap-3 text-xs text-secondary">
+            <label class="flex items-center gap-2 rounded-xl border border-panel bg-panel px-3 py-2">
               <span class="w-20">Stroke</span>
-              <input v-model="lineModel.stroke" class="h-9 w-16 cursor-pointer rounded border border-slate-800/60" type="color">
+              <input v-model="lineModel.stroke" class="h-9 w-16 cursor-pointer rounded border border-panel" type="color">
             </label>
-            <label class="flex items-center justify-between gap-4 rounded-xl border border-slate-800/60 bg-slate-900/70 px-3 py-2">
+            <label class="flex items-center justify-between gap-4 rounded-xl border border-panel bg-panel px-3 py-2">
               <span>Weight</span>
               <input v-model.number="lineModel.strokeWidth" class="w-36 accent-slate-100" max="12" min="1" type="range">
             </label>
-            <button class="rounded-xl border border-slate-800/60 bg-slate-900/70 px-4 py-2 text-xs font-medium text-slate-200 transition hover:border-slate-700 hover:bg-slate-900" type="button" @click="randomizeLine">
+            <button class="rounded-xl border border-panel bg-panel px-4 py-2 text-xs font-medium text-primary-soft transition hover:border-panel-strong hover:bg-input" type="button" @click="randomizeLine">
               Randomize anchor points
             </button>
           </div>
         </section>
 
-        <section class="space-y-3 rounded-2xl border border-slate-800/60 bg-slate-950/70 p-4">
-          <h3 class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
+        <section class="space-y-3 rounded-2xl border border-panel bg-panel p-4">
+          <h3 class="text-xs font-semibold uppercase tracking-[0.3em] text-muted">
             Path variants
           </h3>
           <div class="flex gap-2">
@@ -362,8 +362,8 @@ function randomizeLine() {
               :key="preset"
               class="flex-1 rounded-xl border px-3 py-2 text-xs font-semibold capitalize transition"
               :class="activePathPreset === preset
-                ? 'border-slate-200 bg-slate-100 text-slate-900'
-                : 'border-slate-800 bg-slate-900 text-slate-300 hover:border-slate-700'"
+                ? 'border-panel-soft bg-elevated text-contrast'
+                : 'border-panel bg-input text-secondary hover:border-panel-strong'"
               type="button"
               @click="applyPathPreset(preset)"
             >
@@ -372,12 +372,12 @@ function randomizeLine() {
           </div>
           <textarea
             v-model="pathInput"
-            class="h-32 rounded-xl border border-slate-800/60 bg-slate-900/70 px-3 py-2 text-xs text-slate-100 focus:border-slate-600 focus:outline-none"
+            class="h-32 rounded-xl border border-panel bg-panel px-3 py-2 text-xs text-primary focus:border-panel-strong focus:outline-none"
           />
         </section>
 
-        <section class="space-y-3 rounded-2xl border border-slate-800/60 bg-slate-950/70 p-4">
-          <h3 class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
+        <section class="space-y-3 rounded-2xl border border-panel bg-panel p-4">
+          <h3 class="text-xs font-semibold uppercase tracking-[0.3em] text-muted">
             Polyline presets
           </h3>
           <div class="flex gap-2">
@@ -386,8 +386,8 @@ function randomizeLine() {
               :key="preset"
               class="flex-1 rounded-xl border px-3 py-2 text-xs font-semibold capitalize transition"
               :class="activePolylinePreset === preset
-                ? 'border-slate-200 bg-slate-100 text-slate-900'
-                : 'border-slate-800 bg-slate-900 text-slate-300 hover:border-slate-700'"
+                ? 'border-panel-soft bg-elevated text-contrast'
+                : 'border-panel bg-input text-secondary hover:border-panel-strong'"
               type="button"
               @click="applyPolylinePreset(preset)"
             >
@@ -396,8 +396,8 @@ function randomizeLine() {
           </div>
         </section>
 
-        <section class="space-y-3 rounded-2xl border border-slate-800/60 bg-slate-950/70 p-4">
-          <h3 class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
+        <section class="space-y-3 rounded-2xl border border-panel bg-panel p-4">
+          <h3 class="text-xs font-semibold uppercase tracking-[0.3em] text-muted">
             Polygon presets
           </h3>
           <div class="flex gap-2">
@@ -406,8 +406,8 @@ function randomizeLine() {
               :key="preset"
               class="flex-1 rounded-xl border px-3 py-2 text-xs font-semibold capitalize transition"
               :class="activePolygonPreset === preset
-                ? 'border-slate-200 bg-slate-100 text-slate-900'
-                : 'border-slate-800 bg-slate-900 text-slate-300 hover:border-slate-700'"
+                ? 'border-panel-soft bg-elevated text-contrast'
+                : 'border-panel bg-input text-secondary hover:border-panel-strong'"
               type="button"
               @click="applyPolygonPreset(preset)"
             >

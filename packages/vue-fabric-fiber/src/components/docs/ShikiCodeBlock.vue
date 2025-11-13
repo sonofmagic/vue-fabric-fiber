@@ -101,11 +101,11 @@ watch(
 </script>
 
 <template>
-  <div class="code-block rounded-2xl border border-slate-800/60 bg-slate-950/70 p-4">
-    <p v-if="title" class="mb-3 text-[11px] uppercase tracking-[0.28em] text-slate-400">
+  <div class="code-block rounded-2xl border border-panel bg-panel p-4">
+    <p v-if="title" class="mb-3 text-[11px] uppercase tracking-[0.28em] text-muted">
       {{ title }}
     </p>
-    <div v-if="isLoading" class="text-xs text-slate-500">
+    <div v-if="isLoading" class="text-xs text-dim">
       Highlighting code…
     </div>
     <div v-else-if="errorMessage" class="text-xs text-rose-300">

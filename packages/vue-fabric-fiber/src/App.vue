@@ -87,17 +87,17 @@ usePageSeo()
     </div>
 
     <div class="relative z-10 flex min-h-screen flex-col">
-      <header class="fixed top-0 left-0 right-0 z-40 border-b border-slate-800/40 bg-slate-950/80 backdrop-blur-xl">
+      <header class="fixed top-0 left-0 right-0 z-40 border-b border-panel-soft bg-panel-strong backdrop-blur-xl">
         <div class="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
           <RouterLink to="/" class="flex items-center gap-3" @click="closeMobileNav">
-            <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-400/80 via-blue-500/70 to-purple-500/80 text-sm font-semibold text-slate-950 shadow-[0_18px_50px_-20px_rgba(59,130,246,0.7)]">
+            <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-400/80 via-blue-500/70 to-purple-500/80 text-sm font-semibold text-on-accent shadow-[0_18px_50px_-20px_rgba(59,130,246,0.7)]">
               FP
             </span>
             <div class="-space-y-1">
-              <p class="text-sm font-semibold tracking-wide text-slate-100">
+              <p class="text-sm font-semibold tracking-wide text-primary">
                 Fabric Ports
               </p>
-              <span class="text-[11px] uppercase tracking-[0.28em] text-slate-400">
+              <span class="text-[11px] uppercase tracking-[0.28em] text-muted">
                 {{ t('app.brand.tagline') }}
               </span>
             </div>
@@ -110,8 +110,8 @@ usePageSeo()
               :to="link.to"
               class="rounded-xl px-3 py-2 transition"
               :class="isActive(link.to)
-                ? 'bg-slate-100 text-slate-900 shadow-[0_18px_46px_-26px_rgba(148,163,184,0.8)]'
-                : 'text-slate-400 hover:text-slate-100 hover:bg-slate-900/70'"
+                ? 'bg-elevated text-contrast shadow-[0_18px_46px_-26px_rgba(148,163,184,0.8)]'
+                : 'text-muted hover:text-primary hover:bg-panel'"
             >
               {{ link.label }}
             </RouterLink>
@@ -119,12 +119,12 @@ usePageSeo()
 
           <div class="hidden items-center gap-2 lg:flex">
             <a
-              class="inline-flex items-center gap-2 rounded-xl border border-slate-800/60 bg-slate-950/70 px-3 py-2 text-xs font-medium text-slate-300 transition hover:border-slate-700 hover:text-slate-100"
+              class="inline-flex items-center gap-2 rounded-xl border border-panel bg-panel px-3 py-2 text-xs font-medium text-secondary transition hover:border-panel-strong hover:text-primary"
               href="https://github.com/sonofmagic/vue-fabric-fiber"
               rel="noreferrer"
               target="_blank"
             >
-              <svg class="h-4 w-4 text-slate-400" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <svg class="h-4 w-4 text-muted" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path
                   clip-rule="evenodd"
                   d="M12 2C6.48 2 2 6.58 2 12.2c0 4.5 2.87 8.32 6.84 9.67.5.1.68-.22.68-.5v-1.9c-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.1-1.5-1.1-1.5-.9-.64.07-.63.07-.63 1 .07 1.53 1.04 1.53 1.04.9 1.56 2.37 1.11 2.95.85.1-.68.36-1.12.66-1.37-2.22-.26-4.56-1.15-4.56-5.12 0-1.13.39-2.05 1.03-2.78-.1-.26-.45-1.3.1-2.7 0 0 .84-.28 2.76 1.06a9.2 9.2 0 0 1 5 0c1.92-1.34 2.76-1.06 2.76-1.06.55 1.41.2 2.45.1 2.7.64.73 1.03 1.65 1.03 2.78 0 3.98-2.34 4.86-4.57 5.12.37.33.7.97.7 1.97v2.92c0 .28.18.61.69.5A10.22 10.22 0 0 0 22 12.2C22 6.58 17.52 2 12 2Z"
@@ -135,7 +135,7 @@ usePageSeo()
             </a>
 
             <button
-              class="inline-flex items-center gap-2 rounded-xl border border-slate-800/60 bg-slate-950/70 px-3 py-2 text-xs font-medium text-slate-300 transition hover:border-slate-700 hover:text-slate-100"
+              class="inline-flex items-center gap-2 rounded-xl border border-panel bg-panel px-3 py-2 text-xs font-medium text-secondary transition hover:border-panel-strong hover:text-primary"
               type="button"
               :aria-label="themeToggleLabel"
               @click="toggleTheme"
@@ -150,7 +150,7 @@ usePageSeo()
             <select
               id="site-language-desktop"
               v-model="locale"
-              class="rounded-xl border border-slate-800/60 bg-slate-950/70 px-3 py-2 text-xs font-medium text-slate-300 focus:border-slate-600 focus:outline-none"
+              class="rounded-xl border border-panel bg-panel px-3 py-2 text-xs font-medium text-secondary focus:border-panel-strong focus:outline-none"
             >
               <option
                 v-for="code in localeOptions"
@@ -163,7 +163,7 @@ usePageSeo()
           </div>
 
           <button
-            class="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-800/60 bg-slate-950/70 text-slate-300 transition hover:border-slate-700 hover:text-slate-100 md:hidden"
+            class="flex h-10 w-10 items-center justify-center rounded-xl border border-panel bg-panel text-secondary transition hover:border-panel-strong hover:text-primary md:hidden"
             type="button"
             :aria-label="t('app.nav.toggle')"
             @click="toggleMobileNav"
@@ -189,7 +189,7 @@ usePageSeo()
 
         <div
           v-if="showMobileNav"
-          class="absolute left-0 right-0 top-full border-t border-slate-800/40 bg-slate-950/95 px-4 pb-6 pt-2 md:hidden"
+          class="absolute left-0 right-0 top-full border-t border-panel-soft bg-overlay-strong px-4 pb-6 pt-2 md:hidden"
         >
           <nav class="flex flex-col gap-1 text-sm font-medium">
             <RouterLink
@@ -198,14 +198,14 @@ usePageSeo()
               :to="link.to"
               class="rounded-lg px-3 py-2 transition"
               :class="isActive(link.to)
-                ? 'bg-slate-100 text-slate-900 shadow-[0_18px_46px_-26px_rgba(148,163,184,0.8)]'
-                : 'text-slate-400 hover:bg-slate-900/70 hover:text-slate-100'"
+                ? 'bg-elevated text-contrast shadow-[0_18px_46px_-26px_rgba(148,163,184,0.8)]'
+                : 'text-muted hover:bg-panel hover:text-primary'"
               @click="closeMobileNav"
             >
               {{ link.label }}
             </RouterLink>
             <a
-              class="rounded-lg px-3 py-2 text-slate-400 transition hover:bg-slate-900/70 hover:text-slate-100"
+              class="rounded-lg px-3 py-2 text-muted transition hover:bg-panel hover:text-primary"
               href="https://github.com/sonofmagic/vue-fabric-fiber"
               rel="noreferrer"
               target="_blank"
@@ -214,7 +214,7 @@ usePageSeo()
               {{ t('app.nav.github') }}
             </a>
             <button
-              class="rounded-lg px-3 py-2 text-left text-slate-300 transition hover:bg-slate-900/70 hover:text-slate-100"
+              class="rounded-lg px-3 py-2 text-left text-secondary transition hover:bg-panel hover:text-primary"
               type="button"
               @click="toggleTheme"
             >
@@ -225,7 +225,7 @@ usePageSeo()
               <select
                 id="site-language-mobile"
                 v-model="locale"
-                class="w-full rounded-lg border border-slate-800/60 bg-slate-900/70 px-3 py-2 text-xs font-medium text-slate-300 focus:border-slate-600 focus:outline-none"
+                class="w-full rounded-lg border border-panel bg-panel px-3 py-2 text-xs font-medium text-secondary focus:border-panel-strong focus:outline-none"
               >
                 <option
                   v-for="code in localeOptions"
@@ -244,12 +244,12 @@ usePageSeo()
         <RouterView />
       </main>
 
-      <footer class="relative z-10 border-t border-slate-800/40 bg-slate-950/70">
-        <div class="mx-auto flex w-full max-w-6xl flex-col gap-3 px-4 py-6 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-          <p class="text-xs text-slate-400">
+      <footer class="relative z-10 border-t border-panel-soft bg-panel">
+        <div class="mx-auto flex w-full max-w-6xl flex-col gap-3 px-4 py-6 text-xs text-dim sm:flex-row sm:items-center sm:justify-between sm:px-6">
+          <p class="text-xs text-muted">
             {{ t('app.footer.builtWith') }}
           </p>
-          <p class="text-[11px] uppercase tracking-[0.32em] text-slate-600">
+          <p class="text-[11px] uppercase tracking-[0.32em] text-tertiary">
             {{ t('app.footer.copyright', { year }) }}
           </p>
         </div>

@@ -10,211 +10,275 @@
 @layer base {
   :root {
     color-scheme: dark;
+
     --fp-body-bg: #020617;
+    --fp-body-bg-muted: #040a1f;
     --fp-text-primary: #f8fafc;
+    --fp-text-primary-soft: #e2e8f0;
     --fp-text-secondary: #cbd5f5;
     --fp-text-muted: #94a3b8;
-    --fp-text-dim: #94a3b8;
-    --fp-surface-bg: rgba(2, 6, 23, 0.9);
-    --fp-surface-muted-bg: rgba(15, 23, 42, 0.85);
-    --fp-surface-border: rgba(15, 23, 42, 0.6);
-    --fp-chip-bg: rgba(15, 23, 42, 0.7);
-    --fp-chip-border: rgba(51, 65, 85, 0.6);
-    --fp-panel-shadow: 0 40px 110px -60px rgba(2, 6, 23, 0.88);
-    --fp-panel-muted-shadow: 0 30px 90px -55px rgba(15, 23, 42, 0.85);
+    --fp-text-dim: #7c8ba1;
+    --fp-text-tertiary: #64748b;
+    --fp-text-contrast: #0f172a;
+    --fp-text-on-accent: #020617;
+
+    --fp-panel-bg: rgb(2 6 23 / 88%);
+    --fp-panel-bg-soft: rgb(15 23 42 / 70%);
+    --fp-panel-bg-strong: rgb(2 6 23 / 94%);
+    --fp-overlay-bg: rgb(2 6 23 / 90%);
+    --fp-overlay-bg-strong: rgb(2 6 23 / 96%);
+    --fp-input-bg: rgb(15 23 42 / 78%);
+    --fp-elevated-bg: rgb(248 250 252 / 1);
+    --fp-elevated-bg-soft: rgb(226 232 240 / 90%);
+
+    --fp-border-color: rgb(15 23 42 / 60%);
+    --fp-border-color-soft: rgb(51 65 85 / 40%);
+    --fp-border-color-strong: rgb(51 65 85 / 70%);
+    --fp-chip-bg: rgb(15 23 42 / 72%);
+    --fp-chip-border: rgb(51 65 85 / 62%);
+
+    --fp-panel-shadow: 0 40px 110px -60px rgb(2 6 23 / 88%);
+    --fp-panel-muted-shadow: 0 30px 90px -55px rgb(15 23 42 / 85%);
+
     --fp-body-gradient:
       radial-gradient(circle at 20% 20%, rgb(56 189 248 / 12%), transparent 58%),
       radial-gradient(circle at 85% 0%, rgb(244 114 182 / 12%), transparent 55%),
       radial-gradient(circle at 40% 90%, rgb(250 204 21 / 8%), transparent 60%);
+
+    --fp-grid-color: rgb(148 163 184 / 8%);
+    --fp-grid-color-strong: rgb(148 163 184 / 18%);
   }
 
   :root[data-theme='light'] {
     color-scheme: light;
+
     --fp-body-bg: #f8fafc;
+    --fp-body-bg-muted: #e2e8f0;
     --fp-text-primary: #0f172a;
+    --fp-text-primary-soft: #1c2a43;
     --fp-text-secondary: #1f2937;
     --fp-text-muted: #475569;
-    --fp-text-dim: #64748b;
-    --fp-surface-bg: rgba(255, 255, 255, 0.92);
-    --fp-surface-muted-bg: rgba(255, 255, 255, 0.88);
-    --fp-surface-border: rgba(148, 163, 184, 0.55);
-    --fp-chip-bg: rgba(226, 232, 240, 0.7);
-    --fp-chip-border: rgba(148, 163, 184, 0.6);
-    --fp-panel-shadow: 0 35px 90px -60px rgba(15, 23, 42, 0.2);
-    --fp-panel-muted-shadow: 0 25px 70px -45px rgba(15, 23, 42, 0.15);
+    --fp-text-dim: #5b6a7f;
+    --fp-text-tertiary: #64748b;
+    --fp-text-contrast: #0f172a;
+    --fp-text-on-accent: #0f172a;
+
+    --fp-panel-bg: rgb(255 255 255 / 92%);
+    --fp-panel-bg-soft: rgb(248 250 252 / 88%);
+    --fp-panel-bg-strong: rgb(255 255 255 / 98%);
+    --fp-overlay-bg: rgb(15 23 42 / 40%);
+    --fp-overlay-bg-strong: rgb(15 23 42 / 55%);
+    --fp-input-bg: rgb(255 255 255 / 95%);
+    --fp-elevated-bg: rgb(15 23 42 / 8%);
+    --fp-elevated-bg-soft: rgb(15 23 42 / 6%);
+
+    --fp-border-color: rgb(148 163 184 / 55%);
+    --fp-border-color-soft: rgb(203 213 225 / 60%);
+    --fp-border-color-strong: rgb(148 163 184 / 70%);
+    --fp-chip-bg: rgb(226 232 240 / 85%);
+    --fp-chip-border: rgb(148 163 184 / 55%);
+
+    --fp-panel-shadow: 0 35px 90px -60px rgb(15 23 42 / 20%);
+    --fp-panel-muted-shadow: 0 25px 70px -45px rgb(15 23 42 / 15%);
+
     --fp-body-gradient:
       radial-gradient(circle at 18% 18%, rgb(56 189 248 / 18%), transparent 50%),
       radial-gradient(circle at 80% 0%, rgb(244 63 94 / 15%), transparent 55%),
       radial-gradient(circle at 42% 88%, rgb(251 191 36 / 18%), transparent 60%);
-    --fp-overlay-95: rgba(255, 255, 255, 0.95);
-    --fp-overlay-90: rgba(255, 255, 255, 0.9);
-    --fp-overlay-85: rgba(255, 255, 255, 0.85);
-    --fp-overlay-80: rgba(255, 255, 255, 0.8);
-    --fp-overlay-75: rgba(255, 255, 255, 0.75);
-    --fp-overlay-70: rgba(255, 255, 255, 0.7);
-    --fp-overlay-65: rgba(255, 255, 255, 0.65);
-    --fp-overlay-60: rgba(255, 255, 255, 0.6);
-    --fp-overlay-55: rgba(255, 255, 255, 0.55);
-    --fp-overlay-40: rgba(255, 255, 255, 0.4);
+
+    --fp-grid-color: rgb(148 163 184 / 20%);
+    --fp-grid-color-strong: rgb(148 163 184 / 30%);
   }
 
   html {
     font-family: var(--font-sans);
-    background-color: var(--fp-body-bg);
     color: var(--fp-text-primary);
+    background-color: var(--fp-body-bg);
   }
 
   body {
     min-height: 100vh;
-    background-color: var(--fp-body-bg);
     color: var(--fp-text-primary);
+    background-color: var(--fp-body-bg);
     background-image: var(--fp-body-gradient);
     background-attachment: fixed;
+
     @apply antialiased;
   }
 
   a {
-    color: var(--fp-text-primary);
+    color: inherit;
     text-decoration: none;
-  }
-
-  :root[data-theme='light'] a {
-    color: var(--fp-text-secondary);
-  }
-
-  :root[data-theme='light'] .text-slate-100,
-  :root[data-theme='light'] .text-slate-200,
-  :root[data-theme='light'] .text-white {
-    color: var(--fp-text-primary) !important;
-  }
-
-  :root[data-theme='light'] .text-slate-300 {
-    color: var(--fp-text-secondary) !important;
-  }
-
-  :root[data-theme='light'] .text-slate-400 {
-    color: var(--fp-text-muted) !important;
-  }
-
-  :root[data-theme='light'] .text-slate-500,
-  :root[data-theme='light'] .text-slate-600 {
-    color: var(--fp-text-dim) !important;
-  }
-
-  :root[data-theme='light'] .bg-slate-950 {
-    background-color: #f8fafc !important;
-    color: var(--fp-text-primary);
-  }
-
-  :root[data-theme='light'] .bg-slate-900 {
-    background-color: #f1f5f9 !important;
-    color: var(--fp-text-primary);
-  }
-
-  :root[data-theme='light'] .bg-slate-950\/95,
-  :root[data-theme='light'] .bg-slate-900\/95 {
-    background-color: var(--fp-overlay-95) !important;
-  }
-
-  :root[data-theme='light'] .bg-slate-950\/90,
-  :root[data-theme='light'] .bg-slate-900\/90 {
-    background-color: var(--fp-overlay-90) !important;
-  }
-
-  :root[data-theme='light'] .bg-slate-950\/85 {
-    background-color: var(--fp-overlay-85) !important;
-  }
-
-  :root[data-theme='light'] .bg-slate-950\/80 {
-    background-color: var(--fp-overlay-80) !important;
-  }
-
-  :root[data-theme='light'] .bg-slate-950\/75 {
-    background-color: var(--fp-overlay-75) !important;
-  }
-
-  :root[data-theme='light'] .bg-slate-950\/70,
-  :root[data-theme='light'] .bg-slate-900\/70 {
-    background-color: var(--fp-overlay-70) !important;
-  }
-
-  :root[data-theme='light'] .bg-slate-950\/65 {
-    background-color: var(--fp-overlay-65) !important;
-  }
-
-  :root[data-theme='light'] .bg-slate-950\/60,
-  :root[data-theme='light'] .bg-slate-900\/60 {
-    background-color: var(--fp-overlay-60) !important;
-  }
-
-  :root[data-theme='light'] .bg-slate-900\/55 {
-    background-color: var(--fp-overlay-55) !important;
-  }
-
-  :root[data-theme='light'] .bg-slate-900\/40 {
-    background-color: var(--fp-overlay-40) !important;
-  }
-
-  :root[data-theme='light'] .border-slate-800,
-  :root[data-theme='light'] .border-slate-800\/70,
-  :root[data-theme='light'] .border-slate-800\/60,
-  :root[data-theme='light'] .border-slate-800\/50,
-  :root[data-theme='light'] .border-slate-800\/40,
-  :root[data-theme='light'] .border-slate-700,
-  :root[data-theme='light'] .border-slate-700\/70,
-  :root[data-theme='light'] .border-slate-700\/60 {
-    border-color: rgba(148, 163, 184, 0.6) !important;
-  }
-
-  :root[data-theme='light'] .border-slate-600,
-  :root[data-theme='light'] .border-slate-500,
-  :root[data-theme='light'] .border-slate-200,
-  :root[data-theme='light'] .border-white\/20 {
-    border-color: rgba(203, 213, 225, 0.7) !important;
   }
 }
 
 @layer utilities {
   .bg-grid-overlay {
     background-image:
-      linear-gradient(to right, rgb(148 163 184 / 8%) 1px, transparent 1px),
-      linear-gradient(to bottom, rgb(148 163 184 / 8%) 1px, transparent 1px);
+      linear-gradient(to right, var(--fp-grid-color) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--fp-grid-color) 1px, transparent 1px);
     background-size: 52px 52px;
   }
 
   :root[data-theme='light'] .bg-grid-overlay {
     background-image:
-      linear-gradient(to right, rgb(148 163 184 / 20%) 1px, transparent 1px),
-      linear-gradient(to bottom, rgb(148 163 184 / 20%) 1px, transparent 1px);
+      linear-gradient(to right, var(--fp-grid-color-strong) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--fp-grid-color-strong) 1px, transparent 1px);
+  }
+
+  .text-primary {
+    color: var(--fp-text-primary);
+  }
+
+  .text-primary-soft {
+    color: var(--fp-text-primary-soft);
+  }
+
+  .text-secondary {
+    color: var(--fp-text-secondary);
+  }
+
+  .text-muted {
+    color: var(--fp-text-muted);
+  }
+
+  .text-dim {
+    color: var(--fp-text-dim);
+  }
+
+  .text-tertiary {
+    color: var(--fp-text-tertiary);
+  }
+
+  .text-contrast {
+    color: var(--fp-text-contrast);
+  }
+
+  .text-on-accent {
+    color: var(--fp-text-on-accent);
+  }
+
+  .hover\:text-primary:hover {
+    color: var(--fp-text-primary);
+  }
+
+  .bg-app {
+    background-color: var(--fp-body-bg);
+  }
+
+  .bg-panel {
+    background-color: var(--fp-panel-bg);
+  }
+
+  .bg-panel-soft {
+    background-color: var(--fp-panel-bg-soft);
+  }
+
+  .bg-panel-strong {
+    background-color: var(--fp-panel-bg-strong);
+  }
+
+  .bg-input {
+    background-color: var(--fp-input-bg);
+  }
+
+  .bg-overlay {
+    background-color: var(--fp-overlay-bg);
+    backdrop-filter: blur(18px);
+  }
+
+  .bg-overlay-strong {
+    background-color: var(--fp-overlay-bg-strong);
+    backdrop-filter: blur(22px);
+  }
+
+  .bg-elevated {
+    background-color: var(--fp-elevated-bg);
+  }
+
+  .bg-elevated-soft {
+    background-color: var(--fp-elevated-bg-soft);
+  }
+
+  .hover\:bg-panel:hover {
+    background-color: var(--fp-panel-bg);
+  }
+
+  .hover\:bg-panel-strong:hover {
+    background-color: var(--fp-panel-bg-strong);
+  }
+
+  .hover\:bg-panel-soft:hover {
+    background-color: var(--fp-panel-bg-soft);
+  }
+
+  .hover\:bg-elevated:hover {
+    background-color: var(--fp-elevated-bg);
+  }
+
+  .hover\:bg-elevated-soft:hover {
+    background-color: var(--fp-elevated-bg-soft);
+  }
+
+  .hover\:bg-input:hover {
+    background-color: var(--fp-input-bg);
+  }
+
+  .border-panel {
+    border-color: var(--fp-border-color);
+  }
+
+  .border-panel-soft {
+    border-color: var(--fp-border-color-soft);
+  }
+
+  .border-panel-strong {
+    border-color: var(--fp-border-color-strong);
+  }
+
+  .hover\:border-panel:hover {
+    border-color: var(--fp-border-color);
+  }
+
+  .hover\:border-panel-strong:hover {
+    border-color: var(--fp-border-color-strong);
+  }
+
+  .focus\:border-panel-strong:focus {
+    border-color: var(--fp-border-color-strong);
+  }
+
+  .group:hover .group-hover\:text-primary {
+    color: var(--fp-text-primary);
   }
 
   .surface-panel {
-    border: 1px solid var(--fp-surface-border);
-    background-color: var(--fp-surface-bg);
-    backdrop-filter: blur(22px);
+    background-color: var(--fp-panel-bg);
+    border: 1px solid var(--fp-border-color);
     box-shadow: var(--fp-panel-shadow);
+    backdrop-filter: blur(22px);
   }
 
   .surface-panel-muted {
-    border: 1px solid var(--fp-surface-border);
-    background-color: var(--fp-surface-muted-bg);
-    backdrop-filter: blur(16px);
+    background-color: var(--fp-panel-bg-soft);
+    border: 1px solid var(--fp-border-color);
     box-shadow: var(--fp-panel-muted-shadow);
+    backdrop-filter: blur(16px);
   }
 
   .eyebrow {
     display: inline-flex;
-    align-items: center;
     gap: 0.5rem;
-    border: 1px solid var(--fp-chip-border);
-    background-color: var(--fp-chip-bg);
+    align-items: center;
     padding: 0.25rem 0.75rem;
     font-size: 11px;
     font-weight: 600;
-    letter-spacing: 0.28em;
-    text-transform: uppercase;
-    border-radius: 9999px;
     color: var(--fp-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.28em;
+    background-color: var(--fp-chip-bg);
+    border: 1px solid var(--fp-chip-border);
+    border-radius: 9999px;
   }
 
   .canvas-shell {
@@ -235,7 +299,7 @@
 
   .full-bleed {
     width: 100vw;
-    margin-left: calc(50% - 50vw);
     margin-right: calc(50% - 50vw);
+    margin-left: calc(50% - 50vw);
   }
 }

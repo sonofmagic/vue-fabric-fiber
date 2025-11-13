@@ -275,11 +275,11 @@ onBeforeUnmount(() => {
   <div class="mx-auto flex max-w-5xl flex-col gap-10">
     <section class="rounded-[32px] surface-panel px-6 py-10 sm:px-10">
       <span class="eyebrow">Fabric.js official demo</span>
-      <h1 class="mt-4 text-3xl font-semibold text-slate-100 sm:text-4xl">
+      <h1 class="mt-4 text-3xl font-semibold text-primary sm:text-4xl">
         Animating crosses
       </h1>
-      <p class="mt-4 max-w-3xl text-sm leading-relaxed text-slate-300 sm:text-base">
-        This recreation ports Fabric.js’ <span class="font-medium text-slate-100">animating crosses</span> example into the
+      <p class="mt-4 max-w-3xl text-sm leading-relaxed text-secondary sm:text-base">
+        This recreation ports Fabric.js’ <span class="font-medium text-primary">animating crosses</span> example into the
         vue-fabric-fiber component model. Each cross inherits from <code>fabric.FabricObject</code>, animating its arms with
         requestAnimationFrame while keeping Fabric’s render cycle hot.
       </p>
@@ -288,7 +288,7 @@ onBeforeUnmount(() => {
     <div class="grid gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
       <div class="relative overflow-hidden rounded-[32px] surface-panel p-6 sm:p-8">
         <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-purple-500/10" />
-        <div class="relative overflow-hidden rounded-3xl border border-slate-800/60 bg-slate-950/80 shadow-[0_36px_90px_-48px_rgba(15,23,42,0.9)]">
+        <div class="relative overflow-hidden rounded-3xl border border-panel bg-panel-strong shadow-[0_36px_90px_-48px_rgba(15,23,42,0.9)]">
           <FabricCanvas
             :canvas-options="canvasOptionsBinding"
             :auto-resize="false"
@@ -297,33 +297,33 @@ onBeforeUnmount(() => {
         </div>
       </div>
 
-      <aside class="surface-panel-muted flex flex-col gap-6 rounded-[32px] p-6 text-sm text-slate-100 sm:p-7">
+      <aside class="surface-panel-muted flex flex-col gap-6 rounded-[32px] p-6 text-sm text-primary sm:p-7">
         <section class="space-y-2">
           <span class="eyebrow">Controls</span>
-          <h2 class="text-lg font-semibold text-slate-100">
+          <h2 class="text-lg font-semibold text-primary">
             Animation settings
           </h2>
-          <p class="text-xs leading-relaxed text-slate-400">
+          <p class="text-xs leading-relaxed text-muted">
             Tune the cross animation by adjusting speed, switching palettes, or resetting the arms. The canvas keeps the Fabric
             render loop reactive.
           </p>
         </section>
 
-        <section class="space-y-3 rounded-2xl border border-slate-800/60 bg-slate-950/70 p-4">
-          <h3 class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
+        <section class="space-y-3 rounded-2xl border border-panel bg-panel p-4">
+          <h3 class="text-xs font-semibold uppercase tracking-[0.3em] text-muted">
             Playback
           </h3>
           <button
-            class="w-full rounded-xl border border-slate-800/60 bg-slate-900/70 px-4 py-2 text-xs font-medium text-slate-200 transition hover:border-slate-700 hover:bg-slate-900"
+            class="w-full rounded-xl border border-panel bg-panel px-4 py-2 text-xs font-medium text-primary-soft transition hover:border-panel-strong hover:bg-input"
             type="button"
             @click="toggleAnimation"
           >
             {{ isRunning ? 'Pause animation' : 'Resume animation' }}
           </button>
-          <label class="flex flex-col gap-2 rounded-xl border border-slate-800/50 bg-slate-900/70 px-4 py-3 text-xs text-slate-200">
+          <label class="flex flex-col gap-2 rounded-xl border border-panel-soft bg-panel px-4 py-3 text-xs text-primary-soft">
             <span class="flex items-center justify-between">
               Speed
-              <span class="font-semibold text-slate-100">{{ speed.toFixed(1) }}×</span>
+              <span class="font-semibold text-primary">{{ speed.toFixed(1) }}×</span>
             </span>
             <input
               v-model.number="speed"
@@ -335,7 +335,7 @@ onBeforeUnmount(() => {
             >
           </label>
           <button
-            class="w-full rounded-xl border border-slate-800/60 bg-slate-900/70 px-4 py-2 text-xs font-medium text-slate-200 transition hover:border-slate-700 hover:bg-slate-900"
+            class="w-full rounded-xl border border-panel bg-panel px-4 py-2 text-xs font-medium text-primary-soft transition hover:border-panel-strong hover:bg-input"
             type="button"
             @click="resetCrosses"
           >
@@ -343,8 +343,8 @@ onBeforeUnmount(() => {
           </button>
         </section>
 
-        <section class="space-y-3 rounded-2xl border border-slate-800/60 bg-slate-950/70 p-4">
-          <h3 class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
+        <section class="space-y-3 rounded-2xl border border-panel bg-panel p-4">
+          <h3 class="text-xs font-semibold uppercase tracking-[0.3em] text-muted">
             Color palette
           </h3>
           <div class="flex flex-col gap-3">
@@ -353,8 +353,8 @@ onBeforeUnmount(() => {
               :key="palette.id"
               class="flex items-center justify-between rounded-xl border px-4 py-3 text-xs transition" :class="[
                 activePaletteId === palette.id
-                  ? 'border-cyan-400/70 bg-cyan-400/10 text-slate-100'
-                  : 'border-slate-800/60 bg-slate-900/70 text-slate-300 hover:border-slate-700 hover:bg-slate-900',
+                  ? 'border-cyan-400/70 bg-cyan-400/10 text-primary'
+                  : 'border-panel bg-panel text-secondary hover:border-panel-strong hover:bg-input',
               ]"
               type="button"
               @click="activePaletteId = palette.id"
@@ -372,7 +372,7 @@ onBeforeUnmount(() => {
           </div>
         </section>
 
-        <section class="space-y-2 rounded-2xl border border-slate-800/60 bg-slate-950/70 p-4 text-xs text-slate-300">
+        <section class="space-y-2 rounded-2xl border border-panel bg-panel p-4 text-xs text-secondary">
           <p>
             <code>Cross</code> reuses Fabric&apos;s object lifecycle – the component only needs to add instances during
             <code>@ready</code>. The animation itself runs outside Vue reactivity, relying on Fabric&apos;s render queue for smooth

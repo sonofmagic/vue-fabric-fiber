@@ -68,19 +68,19 @@ function toggleGuides() {
       <div aria-hidden="true" class="absolute right-10 bottom-[-80px] h-72 w-72 rounded-full bg-cyan-500/20 blur-[150px]" />
       <div class="relative max-w-3xl space-y-5">
         <span class="eyebrow">Hero banner</span>
-        <h1 class="text-3xl font-semibold leading-tight text-slate-100 sm:text-4xl">
+        <h1 class="text-3xl font-semibold leading-tight text-primary sm:text-4xl">
           Design a marketing hero in real time
         </h1>
-        <p class="text-sm leading-relaxed text-slate-300 sm:text-base">
+        <p class="text-sm leading-relaxed text-secondary sm:text-base">
           Swap imagery, retheme typography, and fine-tune layout controls while Fabric keeps the canvas reactive. Experiment with
           asynchronous assets without losing selection state or stacking order.
         </p>
-        <div class="flex flex-wrap gap-3 text-xs text-slate-400">
-          <span class="inline-flex items-center gap-2 rounded-full border border-slate-800/60 bg-slate-900/70 px-4 py-2">
+        <div class="flex flex-wrap gap-3 text-xs text-muted">
+          <span class="inline-flex items-center gap-2 rounded-full border border-panel bg-panel px-4 py-2">
             <span class="h-2 w-2 rounded-full bg-emerald-400" />
             Live selection toggles
           </span>
-          <span class="inline-flex items-center gap-2 rounded-full border border-slate-800/60 bg-slate-900/70 px-4 py-2">
+          <span class="inline-flex items-center gap-2 rounded-full border border-panel bg-panel px-4 py-2">
             <span class="h-2 w-2 rounded-full bg-sky-400" />
             Reactive layout shuffles
           </span>
@@ -91,7 +91,7 @@ function toggleGuides() {
     <div class="grid gap-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
       <div class="relative overflow-hidden rounded-[32px] surface-panel p-6 sm:p-8">
         <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-br from-amber-300/10 via-transparent to-sky-400/10" />
-        <div class="relative overflow-hidden rounded-3xl border border-slate-800/60 bg-slate-950/85 shadow-[0_40px_90px_-46px_rgba(15,23,42,0.92)]">
+        <div class="relative overflow-hidden rounded-3xl border border-panel bg-overlay shadow-[0_40px_90px_-46px_rgba(15,23,42,0.92)]">
           <FabricCanvas :canvas-options="{ width: 960, height: 540, preserveObjectStacking: true }">
             <FabricImage v-model="heroImage" preset="background" />
             <FabricText v-model="headline" />
@@ -100,35 +100,35 @@ function toggleGuides() {
         </div>
       </div>
 
-      <aside class="surface-panel-muted flex flex-col gap-6 rounded-[32px] p-6 text-sm text-slate-100 sm:p-7">
+      <aside class="surface-panel-muted flex flex-col gap-6 rounded-[32px] p-6 text-sm text-primary sm:p-7">
         <section class="space-y-2">
           <span class="eyebrow">Control panel</span>
-          <h2 class="text-lg font-semibold text-slate-100">
+          <h2 class="text-lg font-semibold text-primary">
             Hero banner
           </h2>
-          <p class="text-xs leading-relaxed text-slate-400">
+          <p class="text-xs leading-relaxed text-muted">
             Toggle interactivity or reshape the layout to see how Fabric responds. Changes apply instantly to the canvas objects.
           </p>
         </section>
 
-        <section class="space-y-3 rounded-2xl border border-slate-800/60 bg-slate-950/70 p-4">
-          <h3 class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
+        <section class="space-y-3 rounded-2xl border border-panel bg-panel p-4">
+          <h3 class="text-xs font-semibold uppercase tracking-[0.3em] text-muted">
             Canvas settings
           </h3>
-          <label class="flex items-center justify-between rounded-xl border border-slate-800/50 bg-slate-900/70 px-4 py-3 text-xs text-slate-200">
+          <label class="flex items-center justify-between rounded-xl border border-panel-soft bg-panel px-4 py-3 text-xs text-primary-soft">
             Enable object selection
-            <input v-model="selectionEnabled" type="checkbox" class="h-4 w-4 rounded border-slate-700 bg-slate-950">
+            <input v-model="selectionEnabled" type="checkbox" class="h-4 w-4 rounded border-panel-strong bg-app">
           </label>
           <div class="flex flex-wrap gap-3">
             <button
-              class="flex-1 rounded-xl border border-slate-800/60 bg-slate-900/70 px-4 py-2 text-xs font-medium text-slate-200 transition hover:border-slate-700 hover:bg-slate-900"
+              class="flex-1 rounded-xl border border-panel bg-panel px-4 py-2 text-xs font-medium text-primary-soft transition hover:border-panel-strong hover:bg-input"
               type="button"
               @click="randomizeLayout"
             >
               Shuffle layout
             </button>
             <button
-              class="flex-1 rounded-xl border border-slate-800/60 bg-slate-900/70 px-4 py-2 text-xs font-medium text-slate-200 transition hover:border-slate-700 hover:bg-slate-900"
+              class="flex-1 rounded-xl border border-panel bg-panel px-4 py-2 text-xs font-medium text-primary-soft transition hover:border-panel-strong hover:bg-input"
               type="button"
               @click="toggleGuides"
             >
@@ -137,15 +137,15 @@ function toggleGuides() {
           </div>
         </section>
 
-        <section class="space-y-3 rounded-2xl border border-slate-800/60 bg-slate-950/70 p-4">
-          <h3 class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
+        <section class="space-y-3 rounded-2xl border border-panel bg-panel p-4">
+          <h3 class="text-xs font-semibold uppercase tracking-[0.3em] text-muted">
             Accent palette
           </h3>
           <div class="flex flex-wrap gap-3">
             <button
               v-for="color in accentColors"
               :key="color"
-              class="relative h-10 w-10 rounded-full border border-slate-800/60 transition hover:scale-105"
+              class="relative h-10 w-10 rounded-full border border-panel transition hover:scale-105"
               :style="{ backgroundColor: color }"
               type="button"
               @click="setAccent(color)"
@@ -155,17 +155,17 @@ function toggleGuides() {
           </div>
         </section>
 
-        <section class="space-y-3 rounded-2xl border border-slate-800/60 bg-slate-950/70 p-4">
-          <h3 class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
+        <section class="space-y-3 rounded-2xl border border-panel bg-panel p-4">
+          <h3 class="text-xs font-semibold uppercase tracking-[0.3em] text-muted">
             Background image
           </h3>
           <input
             v-model="heroImage.src"
-            class="w-full rounded-xl border border-slate-800/60 bg-slate-900/70 px-3 py-2 text-xs text-slate-100 focus:border-slate-600 focus:outline-none"
+            class="w-full rounded-xl border border-panel bg-panel px-3 py-2 text-xs text-primary focus:border-panel-strong focus:outline-none"
             placeholder="Image URL"
             type="url"
           >
-          <p class="text-[11px] leading-snug text-slate-500">
+          <p class="text-[11px] leading-snug text-dim">
             Paste any remote image URL to rebuild the canvas background in-place.
           </p>
         </section>

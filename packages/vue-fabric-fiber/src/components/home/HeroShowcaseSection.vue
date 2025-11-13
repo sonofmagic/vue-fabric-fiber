@@ -38,57 +38,57 @@ const { t } = useI18n()
       <div class="space-y-8">
         <span class="eyebrow">{{ t('home.hero.eyebrow') }}</span>
         <div class="space-y-4">
-          <h1 class="text-3xl font-semibold leading-tight tracking-tight text-slate-100 sm:text-4xl lg:text-5xl">
+          <h1 class="text-3xl font-semibold leading-tight tracking-tight text-primary sm:text-4xl lg:text-5xl">
             {{ t('home.hero.title') }}
           </h1>
-          <p class="max-w-xl text-sm leading-relaxed text-slate-300 sm:text-base">
+          <p class="max-w-xl text-sm leading-relaxed text-secondary sm:text-base">
             {{ t('home.hero.description') }}
           </p>
         </div>
         <div class="flex flex-wrap items-center gap-4">
           <RouterLink
-            class="inline-flex items-center gap-3 rounded-full bg-slate-100 px-5 py-2.5 text-sm font-semibold text-slate-900 transition hover:-translate-y-0.5 hover:bg-slate-200"
+            class="inline-flex items-center gap-3 rounded-full bg-elevated px-5 py-2.5 text-sm font-semibold text-contrast transition hover:-translate-y-0.5 hover:bg-elevated-soft"
             to="/demos/basic"
           >
             {{ t('app.actions.exploreHeroBuilder') }}
             <span aria-hidden="true">↗</span>
           </RouterLink>
           <RouterLink
-            class="inline-flex items-center gap-3 rounded-full border border-slate-700/70 bg-slate-900/60 px-5 py-2.5 text-sm font-medium text-slate-300 transition hover:border-slate-600 hover:text-slate-100"
+            class="inline-flex items-center gap-3 rounded-full border border-panel-strong bg-panel-soft px-5 py-2.5 text-sm font-medium text-secondary transition hover:border-panel-strong hover:text-primary"
             to="/demos/text-playground"
           >
             {{ t('app.actions.typographyCanvas') }}
           </RouterLink>
         </div>
-        <dl class="grid gap-4 text-sm text-slate-300 sm:grid-cols-2 lg:grid-cols-3">
+        <dl class="grid gap-4 text-sm text-secondary sm:grid-cols-2 lg:grid-cols-3">
           <div
             v-for="stat in safeStats"
             :key="stat.label"
-            class="rounded-2xl border border-slate-800/60 bg-slate-900/55 px-4 py-5 shadow-[0_24px_60px_-42px_rgba(15,23,42,0.85)]"
+            class="rounded-2xl border border-panel bg-panel-soft px-4 py-5 shadow-[0_24px_60px_-42px_rgba(15,23,42,0.85)]"
           >
-            <dt class="text-[11px] uppercase tracking-[0.28em] text-slate-500">
+            <dt class="text-[11px] uppercase tracking-[0.28em] text-dim">
               {{ stat.label }}
             </dt>
-            <dd class="mt-2 text-lg font-semibold text-slate-100">
+            <dd class="mt-2 text-lg font-semibold text-primary">
               {{ stat.value }}
             </dd>
           </div>
         </dl>
       </div>
-      <div class="space-y-4 rounded-[28px] border border-slate-800/60 bg-slate-950/60 p-6 shadow-[0_30px_90px_-50px_rgba(8,47,73,0.85)] backdrop-blur-xl">
-        <h2 class="text-sm font-semibold uppercase tracking-[0.32em] text-slate-400">
+      <div class="space-y-4 rounded-[28px] border border-panel bg-panel-soft p-6 shadow-[0_30px_90px_-50px_rgba(8,47,73,0.85)] backdrop-blur-xl">
+        <h2 class="text-sm font-semibold uppercase tracking-[0.32em] text-muted">
           {{ t('home.hero.highlightsTitle') }}
         </h2>
-        <ul class="space-y-4 text-sm text-slate-300">
+        <ul class="space-y-4 text-sm text-secondary">
           <li
             v-for="highlight in safeHighlights"
             :key="highlight.title"
-            class="rounded-2xl border border-slate-800/50 bg-slate-900/60 p-4"
+            class="rounded-2xl border border-panel-soft bg-panel-soft p-4"
           >
-            <p class="text-sm font-medium text-slate-100">
+            <p class="text-sm font-medium text-primary">
               {{ highlight.title }}
             </p>
-            <p class="mt-2 text-xs leading-relaxed text-slate-400">
+            <p class="mt-2 text-xs leading-relaxed text-muted">
               {{ highlight.description }}
             </p>
           </li>

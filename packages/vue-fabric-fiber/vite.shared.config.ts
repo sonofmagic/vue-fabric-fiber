@@ -10,4 +10,7 @@ export const sharedConfig = defineConfig({
       '~': path.resolve(import.meta.dirname, 'lib'),
     },
   },
+  optimizeDeps: {
+    exclude: ['@vue/repl'],
+  },
 })

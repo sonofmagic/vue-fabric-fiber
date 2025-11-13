@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { Repl, useStore } from '@vue/repl'
-import Codemirror from '@vue/repl/codemirror-editor'
+import Monaco from '@vue/repl/monaco-editor'
 import { computed, onMounted, ref, shallowRef, version as vueVersion } from 'vue'
 import { useI18n } from 'vue-i18n'
 import appStyleUrl from '@/style.css?url'
-import '@vue/repl/style.css'
 
 const props = withDefaults(defineProps<{
   source: string
@@ -106,14 +105,14 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="demo-repl surface-panel rounded-[32px] border border-slate-800/60 bg-slate-950/75 p-3" :style="shellStyle">
+  <div class="demo-repl surface-panel rounded-[32px] border border-panel bg-panel p-3" :style="shellStyle">
     <div v-if="errorMessage" class="flex min-h-[200px] items-center justify-center rounded-2xl border border-red-400/30 bg-red-500/10 px-6 py-12 text-center text-sm text-red-200">
       {{ t('components.demoRepl.errorTitle') }}
       <br>
       {{ errorMessage }}
     </div>
-    <div v-else-if="isLoading" class="flex min-h-[200px] flex-col items-center justify-center gap-3 rounded-2xl border border-slate-800/60 bg-slate-900/40 px-6 py-12 text-sm text-slate-400">
-      <svg class="h-5 w-5 animate-spin text-slate-400" viewBox="0 0 24 24" fill="none">
+    <div v-else-if="isLoading" class="flex min-h-[200px] flex-col items-center justify-center gap-3 rounded-2xl border border-panel bg-panel-soft px-6 py-12 text-sm text-muted">
+      <svg class="h-5 w-5 animate-spin text-muted" viewBox="0 0 24 24" fill="none">
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
         <path class="opacity-75" d="M4 12a8 8 0 0 1 8-8" stroke="currentColor" stroke-linecap="round" stroke-width="4" />
       </svg>
@@ -122,7 +121,7 @@ onMounted(() => {
     <Repl
       v-else-if="store"
       :store="store"
-      :editor="Codemirror"
+      :editor="Monaco"
       theme="dark"
       layout="horizontal"
       :auto-resize="false"
@@ -146,8 +145,8 @@ onMounted(() => {
 }
 
 .demo-repl :deep(.split-pane-container) {
-  min-height: var(--demo-repl-height);
   height: 100%;
+  min-height: var(--demo-repl-height);
 }
 
 .demo-repl :deep(.split-pane) {
@@ -159,10 +158,10 @@ onMounted(() => {
 }
 
 .demo-repl :deep(.pane.editor) {
-  border-right: 1px solid rgb(15 23 42 / 0.6);
+  border-right: 1px solid rgb(15 23 42 / 60%);
 }
 
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   .demo-repl :deep(.vue-repl) {
     min-height: calc(var(--demo-repl-height) + 240px);
   }

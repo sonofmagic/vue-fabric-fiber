@@ -37,15 +37,15 @@ usePageSeo({
         <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-purple-500/10" />
         <div class="relative space-y-6">
           <span class="eyebrow">{{ t('docs.hero.eyebrow') }}</span>
-          <h1 class="text-3xl font-semibold leading-tight text-slate-100 sm:text-4xl">
+          <h1 class="text-3xl font-semibold leading-tight text-primary sm:text-4xl">
             {{ t('docs.hero.title') }}
           </h1>
-          <p class="max-w-3xl text-sm leading-relaxed text-slate-300 sm:text-base">
+          <p class="max-w-3xl text-sm leading-relaxed text-secondary sm:text-base">
             {{ t('docs.hero.description') }}
           </p>
 
-          <div class="rounded-2xl border border-slate-800/50 bg-slate-950/60 p-4">
-            <p class="text-[11px] uppercase tracking-[0.32em] text-slate-500">
+          <div class="rounded-2xl border border-panel-soft bg-panel-soft p-4">
+            <p class="text-[11px] uppercase tracking-[0.32em] text-dim">
               {{ t('docs.hero.quickLinksLabel') }}
             </p>
             <div class="mt-3 flex flex-wrap gap-2">
@@ -53,7 +53,7 @@ usePageSeo({
                 v-for="section in sections"
                 :key="section.id"
                 :href="`#${section.id}`"
-                class="rounded-full border border-slate-800/60 bg-slate-900/60 px-3 py-1 text-[11px] tracking-[0.12em] text-slate-300 transition hover:border-cyan-400/70 hover:text-slate-100"
+                class="rounded-full border border-panel bg-panel-soft px-3 py-1 text-[11px] tracking-[0.12em] text-secondary transition hover:border-cyan-400/70 hover:text-primary"
               >
                 {{ section.title }}
               </a>
@@ -66,16 +66,16 @@ usePageSeo({
         v-for="section in sections"
         :id="section.id"
         :key="section.id"
-        class="scroll-mt-28 rounded-[28px] border border-slate-800/60 bg-slate-950/70 p-6 sm:p-8"
+        class="scroll-mt-28 rounded-[28px] border border-panel bg-panel p-6 sm:p-8"
       >
         <div class="space-y-5">
-          <span class="text-[10px] tracking-[0.2em] text-slate-500">{{ section.id }}</span>
+          <span class="text-[10px] tracking-[0.2em] text-dim">{{ section.id }}</span>
           <div class="space-y-3">
-            <h2 class="text-2xl font-semibold text-slate-100">
+            <h2 class="text-2xl font-semibold text-primary">
               {{ section.title }}
             </h2>
             <DocsRichText
-              class="text-sm leading-relaxed text-slate-300"
+              class="text-sm leading-relaxed text-secondary"
               tag="p"
               :value="section.description"
             />
@@ -85,13 +85,13 @@ usePageSeo({
             <span
               v-for="api in section.apiList"
               :key="api"
-              class="rounded-full border border-slate-800/60 bg-slate-900/60 px-3 py-1 text-[11px] tracking-[0.12em] text-slate-400"
+              class="rounded-full border border-panel bg-panel-soft px-3 py-1 text-[11px] tracking-[0.12em] text-muted"
             >
               {{ api }}
             </span>
           </div>
 
-          <ul class="space-y-2 text-sm leading-relaxed text-slate-300">
+          <ul class="space-y-2 text-sm leading-relaxed text-secondary">
             <li v-for="point in section.points" :key="getRichTextKey(point)" class="flex gap-2">
               <span aria-hidden="true" class="mt-1 text-cyan-400">•</span>
               <DocsRichText class="flex-1" :value="point" />
@@ -105,7 +105,7 @@ usePageSeo({
             :title="section.codeTitle"
           />
 
-          <div v-if="section.footnotes?.length" class="space-y-2 rounded-2xl border border-slate-800/40 bg-slate-900/40 p-4 text-xs text-slate-400">
+          <div v-if="section.footnotes?.length" class="space-y-2 rounded-2xl border border-panel-soft bg-panel-soft p-4 text-xs text-muted">
             <DocsRichText
               v-for="note in section.footnotes"
               :key="getRichTextKey(note)"
