@@ -84,7 +84,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <aside class="docs-toc hidden text-xs lg:sticky lg:top-28 lg:block">
+  <aside class="docs-toc hidden text-xs lg:sticky lg:top-28 lg:block lg:self-start">
     <div class="flex flex-col gap-4 rounded-2xl border border-panel bg-panel-strong p-4">
       <p class="text-[11px] tracking-[0.28em] text-dim">
         TOC

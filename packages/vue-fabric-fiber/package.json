@@ -33,7 +33,7 @@
     "node": ">=20.0.0"
   },
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "vue-tsc -b && vite build",
     "build:site": "vite build --config ./vite.site.config.ts",
     "preview": "vite preview",
