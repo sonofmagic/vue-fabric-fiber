@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Repl, useStore } from '@vue/repl'
-import Monaco from '@vue/repl/monaco-editor'
+import CodeMirror from '@vue/repl/codemirror-editor'
 import { computed, onMounted, ref, shallowRef, version as vueVersion } from 'vue'
 import { useI18n } from 'vue-i18n'
 import appStyleUrl from '@/style.css?url'
@@ -133,7 +133,7 @@ onMounted(() => {
     <Repl
       v-else-if="store"
       :store="store"
-      :editor="Monaco"
+      :editor="CodeMirror"
       theme="dark"
       layout="horizontal"
       :auto-resize="false"
@@ -153,23 +153,23 @@ onMounted(() => {
 }
 
 .demo-repl :deep(.vue-repl) {
-  min-height: var(--demo-repl-height);
   display: flex;
   flex-direction: column;
+  min-height: var(--demo-repl-height);
 }
 
 .demo-repl :deep(.split-pane) {
   display: flex;
-  min-height: var(--demo-repl-height);
   height: 100%;
+  min-height: var(--demo-repl-height);
 }
 
 .demo-repl :deep(.split-pane .left),
 .demo-repl :deep(.split-pane .right) {
   display: flex;
   flex-direction: column;
-  min-height: var(--demo-repl-height);
   height: 100%;
+  min-height: var(--demo-repl-height);
 }
 
 .demo-repl :deep(.split-pane .left) {
@@ -182,10 +182,10 @@ onMounted(() => {
 
 .demo-repl :deep(.split-pane .left .editor-container),
 .demo-repl :deep(.split-pane .left .editor) {
-  flex: 1 1 auto;
-  min-height: calc(var(--demo-repl-height) - 48px);
   display: flex;
+  flex: 1 1 auto;
   height: 100%;
+  min-height: calc(var(--demo-repl-height) - 48px);
 }
 
 .demo-repl :deep(.split-pane .left .monaco-editor) {
