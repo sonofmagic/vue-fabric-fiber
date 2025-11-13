@@ -3,7 +3,7 @@ import type { ComputedRef, Ref } from 'vue'
 import type {
   FabricImageModelValue,
   FabricTextModelValue,
-} from '~/index'
+} from 'vue-fabric-fiber'
 import { Shadow } from 'fabric'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import heroBackgroundSrc from '@/assets/interactive/hero-background.webp'

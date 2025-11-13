@@ -1,13 +1,13 @@
 import type { UserConfig } from 'vite'
-import path from 'pathe'
+import path from 'node:path'
+import Vue from '@vitejs/plugin-vue'
 import { mergeConfig } from 'vite'
 import DTS from 'vite-plugin-dts'
-import { createVitePlugins } from './vite.plugins'
 import { sharedConfig } from './vite.shared.config'
 
 export default mergeConfig(sharedConfig, {
   plugins: [
-    ...createVitePlugins(),
+    Vue(),
     DTS(
       {
         tsconfigPath: './tsconfig.app.json',
@@ -26,12 +26,14 @@ export default mergeConfig(sharedConfig, {
     rollupOptions: {
       // make sure to externalize deps that shouldn't be bundled
       // into your library
-      external: ['vue'],
+      external: ['vue', 'fabric', 'p-queue'],
       output: {
         // Provide global variables to use in the UMD build
         // for externalized deps
         globals: {
-          vue: 'Vue',
+          'vue': 'Vue',
+          'fabric': 'fabric',
+          'p-queue': 'PQueue',
         },
       },
     },

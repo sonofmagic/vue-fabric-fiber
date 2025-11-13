@@ -2,7 +2,7 @@
 import type { HeroSceneState } from '@/composables/useHeroScene'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { FabricCanvas, FabricImage, FabricText, RenderGroup } from '~/index'
+import { FabricCanvas, FabricImage, FabricText, RenderGroup } from 'vue-fabric-fiber'
 
 interface InteractiveComposerProps {
   scene: HeroSceneState

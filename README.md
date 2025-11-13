@@ -3,6 +3,7 @@
 ## Packages
 
 - [vue-fabric-fiber](packages/vue-fabric-fiber) - vue lib vite lib mode template
+- [docs](apps/docs) - marketing site + interactive demos powered by Vite
 
 ## Contributing
 

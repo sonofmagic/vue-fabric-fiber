@@ -1,5 +1,5 @@
 const libraryModules = import.meta.glob<string>(
-  '../../lib/**/*.ts',
+  '../../../../packages/vue-fabric-fiber/lib/**/*.ts',
   {
     as: 'raw',
   },
@@ -8,7 +8,8 @@ const libraryModules = import.meta.glob<string>(
 let libraryFilesPromise: Promise<Record<string, string>> | null = null
 
 function normalizePath(path: string) {
-  const [, relative] = path.split('/lib/')
+  const sanitizedPath = path.replace(/\\/g, '/')
+  const [, relative] = sanitizedPath.split('/lib/')
   if (!relative) {
     throw new Error(`Unable to derive library path from ${path}`)
   }

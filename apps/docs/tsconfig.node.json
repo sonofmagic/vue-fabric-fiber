@@ -1,21 +1,12 @@
 {
-  "extends": "@vue/tsconfig/tsconfig.dom.json",
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
     "target": "ES2023",
-    "lib": [
-      "ES2023"
-    ],
+    "lib": ["ES2023"],
     "moduleDetection": "force",
-    "baseUrl": ".",
     "module": "ESNext",
-    /* Bundler mode */
     "moduleResolution": "bundler",
-    "types": [
-      "vitest/globals"
-    ],
     "allowImportingTsExtensions": true,
-    /* Linting */
     "strict": true,
     "noFallthroughCasesInSwitch": true,
     "noUnusedLocals": true,
@@ -27,7 +18,7 @@
     "noUncheckedSideEffectImports": true
   },
   "include": [
-    "lib/**/*.ts",
-    "test/**/*.ts"
+    "vite.config.ts",
+    "vite.plugins.ts"
   ]
 }

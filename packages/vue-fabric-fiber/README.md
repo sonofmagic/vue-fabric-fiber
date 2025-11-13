@@ -97,10 +97,10 @@ import type { FabricPathModelValue } from 'vue-fabric-fiber'
 
 ## Demos
 
-Run the playground to view interactive recipes:
+Run the docs/playground app (now living in `apps/docs`) to view interactive recipes:
 
 ```bash
-pnpm --filter vue-fabric-fiber dev -- --open
+pnpm --filter docs dev -- --open
 ```
 
 Routes:
@@ -113,11 +113,11 @@ Routes:
 
 ## Build targets
 
-- `pnpm build` — type-checks via `vue-tsc -b` and bundles the component library in `dist/`.
-- `pnpm build:site` — runs the Vite app build (output lives in `dist-site/`) so you can deploy the marketing/demo website separately from the library artifacts.
+- `pnpm build` — type-checks via `vue-tsc -b` and bundles the component library in `packages/vue-fabric-fiber/dist/`.
+- `pnpm --filter docs build` — runs the docs/marketing site build (output lives in `apps/docs/dist/`) so you can deploy it separately from the library artifacts.
 
 ## SEO configuration
 
-- Set `VITE_SITE_URL` in your `.env` (for example `https://fabric.icebreaker.top`) so canonical links, JSON-LD, and social cards point to the correct domain.
-- Update `public/sitemap.xml` whenever you add or rename demo routes.
-- Robots and favicons live in `public/robots.txt` and `public/favicon.svg`; tweak them to match your deployment before shipping.
+- Set `VITE_SITE_URL` in your `.env` inside `apps/docs` (for example `https://fabric.icebreaker.top`) so canonical links, JSON-LD, and social cards point to the correct domain.
+- Update `apps/docs/public/sitemap.xml` whenever you add or rename demo routes.
+- Keep robots/favicons in `apps/docs/public/robots.txt` and `apps/docs/public/favicon.svg`; the library package intentionally omits a `public/` directory so npm builds stay lean.

@@ -30,7 +30,7 @@ const previewOptions = computed(() => ({
   headHTML: `<link rel="stylesheet" href="${appStyleUrl}">`,
 }))
 
-const localLibEntry = new URL('../../lib/index.ts', import.meta.url).pathname
+const localLibEntry = new URL('../../../../packages/vue-fabric-fiber/lib/index.ts', import.meta.url).pathname
 const prodLibEntry = '/repl/vue-fabric-fiber/index.js'
 const pkgImportEntry = import.meta.env.DEV ? localLibEntry : prodLibEntry
 
@@ -79,7 +79,6 @@ async function bootstrapStore() {
     })
     replStore.sfcOptions.template = {
       ...(replStore.sfcOptions.template ?? {}),
-      hoistStatic: false,
       compilerOptions: {
         ...(replStore.sfcOptions.template?.compilerOptions ?? {}),
         hoistStatic: false,
