@@ -2,6 +2,9 @@
 import type { FabricImageModelValue, FabricTextModelValue } from 'vue-fabric-fiber'
 import { computed, ref, watchEffect } from 'vue'
 import { FabricCanvas, FabricImage, FabricText, RenderGroup } from 'vue-fabric-fiber'
+import AuroraImage from '@/assets/demos/basic-aurora.webp'
+import StudioImage from '@/assets/demos/basic-studio.webp'
+import SunsetImage from '@/assets/demos/basic-sunset.webp'
 
 interface HeroVariant {
   id: string
@@ -16,7 +19,7 @@ const HERO_VARIANTS: HeroVariant[] = [
   {
     id: 'aurora',
     label: 'Aurora gradient',
-    image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1800&q=80',
+    image: AuroraImage,
     headlineFill: '#f8fafc',
     taglineFill: '#cbd5f5',
     accentFill: '#38bdf8',
@@ -24,7 +27,7 @@ const HERO_VARIANTS: HeroVariant[] = [
   {
     id: 'sunset',
     label: 'Sunset dunes',
-    image: 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1800&q=80',
+    image: SunsetImage,
     headlineFill: '#fefce8',
     taglineFill: '#fde68a',
     accentFill: '#fbbf24',
@@ -32,7 +35,7 @@ const HERO_VARIANTS: HeroVariant[] = [
   {
     id: 'studio',
     label: 'Studio portrait',
-    image: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1600&q=80',
+    image: StudioImage,
     headlineFill: '#f8fafc',
     taglineFill: '#e2e8f0',
     accentFill: '#f472b6',

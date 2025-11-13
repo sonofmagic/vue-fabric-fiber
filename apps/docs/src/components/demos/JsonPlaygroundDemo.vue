@@ -2,6 +2,11 @@
 import type { Component } from 'vue'
 import { computed, ref, watch } from 'vue'
 import { FabricCanvas, FabricImage, FabricRect, FabricText } from 'vue-fabric-fiber'
+import AuroraImage from '@/assets/demos/basic-aurora.webp'
+import StudioImage from '@/assets/demos/basic-studio.webp'
+import SunsetImage from '@/assets/demos/basic-sunset.webp'
+import JsonHeroImage from '@/assets/demos/json-hero.webp'
+import TextLabImage from '@/assets/demos/text-lab.webp'
 
 type SceneNodeType = 'image' | 'text' | 'rect'
 
@@ -18,6 +23,22 @@ interface ScenePreset {
   nodes: SceneNode[]
 }
 
+const POSTER_IMAGES = [AuroraImage, SunsetImage, StudioImage, TextLabImage] as const
+
+const POSTER_GRID_NODES = POSTER_IMAGES.map((source, idx) => ({
+  id: `poster-${idx}`,
+  type: 'image' as const,
+  model: {
+    src: source,
+    width: 260,
+    height: 360,
+    left: 80 + (idx % 2) * 280,
+    top: 80 + Math.floor(idx / 2) * 220,
+    angle: idx % 2 === 0 ? -6 : 8,
+    shadow: 'rgba(2,6,23,0.55) 0px 20px 60px',
+  },
+})) satisfies SceneNode[]
+
 const SCENE_PRESETS: ScenePreset[] = [
   {
     id: 'hero',
@@ -28,7 +49,7 @@ const SCENE_PRESETS: ScenePreset[] = [
         type: 'image',
         preset: 'background',
         model: {
-          src: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1600&q=80',
+          src: JsonHeroImage,
           width: '100%',
           height: '100%',
         },
@@ -107,19 +128,7 @@ const SCENE_PRESETS: ScenePreset[] = [
           fill: '#020617',
         },
       },
-      ...Array.from({ length: 4 }, (_, idx) => ({
-        id: `poster-${idx}`,
-        type: 'image',
-        model: {
-          src: `https://images.unsplash.com/photo-1520${80 + idx}7162513-77705c0f0d4a?auto=format&fit=crop&w=800&q=80`,
-          width: 260,
-          height: 360,
-          left: 80 + (idx % 2) * 280,
-          top: 80 + Math.floor(idx / 2) * 220,
-          angle: idx % 2 === 0 ? -6 : 8,
-          shadow: 'rgba(2,6,23,0.55) 0px 20px 60px',
-        },
-      })),
+      ...POSTER_GRID_NODES,
       {
         id: 'gridTitle',
         type: 'text',

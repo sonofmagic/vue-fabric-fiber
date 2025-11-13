@@ -6,9 +6,11 @@ import type {
 } from 'vue-fabric-fiber'
 import { ref, watchEffect } from 'vue'
 import { FabricCanvas, FabricImage, FabricRect, FabricText, RenderGroup } from 'vue-fabric-fiber'
+import StudioImage from '@/assets/demos/basic-studio.webp'
+import SunsetImage from '@/assets/demos/basic-sunset.webp'
 
 const baseImage = ref<FabricImageModelValue>({
-  src: 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1600&q=80',
+  src: SunsetImage,
   width: '100%',
   height: '100%',
   selectable: false,
@@ -26,7 +28,7 @@ const gradientOverlay = ref<FabricRectModelValue>({
 })
 
 const portrait = ref<FabricImageModelValue>({
-  src: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=80',
+  src: StudioImage,
   width: 380,
   height: 460,
   left: 610,

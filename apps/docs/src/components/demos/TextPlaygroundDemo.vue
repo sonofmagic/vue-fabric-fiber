@@ -2,9 +2,10 @@
 import type { FabricImageModelValue, FabricTextModelValue } from 'vue-fabric-fiber'
 import { ref, watchEffect } from 'vue'
 import { FabricCanvas, FabricImage, FabricText } from 'vue-fabric-fiber'
+import TextLabImage from '@/assets/demos/text-lab.webp'
 
 const background = ref<FabricImageModelValue>({
-  src: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1600&q=80',
+  src: TextLabImage,
   width: '100%',
   height: '100%',
   selectable: false,
