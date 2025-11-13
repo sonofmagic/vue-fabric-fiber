@@ -31,7 +31,7 @@ usePageSeo({
 </script>
 
 <template>
-  <div class="mx-auto flex w-full max-w-6xl flex-col gap-8 lg:flex-row">
+  <div class="mx-auto flex w-full max-w-6xl flex-col gap-8 lg:grid lg:grid-cols-[minmax(0,1fr)_280px]">
     <div class="flex min-w-0 flex-1 flex-col gap-12">
       <section class="relative overflow-hidden rounded-[32px] surface-panel px-6 py-12 sm:px-10">
         <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-purple-500/10" />

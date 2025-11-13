@@ -78,7 +78,7 @@ usePageSeo()
 </script>
 
 <template>
-  <div class="relative min-h-screen overflow-hidden">
+  <div class="relative min-h-screen">
     <div aria-hidden="true" class="pointer-events-none fixed inset-0">
       <div class="absolute inset-0 bg-grid-overlay opacity-50" />
       <div class="absolute -left-32 top-[-12rem] h-[520px] w-[520px] rounded-full bg-cyan-500/12 blur-3xl" />

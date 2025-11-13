@@ -84,7 +84,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <aside class="docs-toc hidden text-xs lg:sticky lg:top-24 lg:block lg:self-start">
+  <aside class="docs-toc hidden text-xs lg:sticky lg:top-28 lg:block">
     <div class="flex flex-col gap-4 rounded-2xl border border-panel bg-panel-strong p-4">
       <p class="text-[11px] tracking-[0.28em] text-dim">
         TOC
@@ -94,9 +94,7 @@ onBeforeUnmount(() => {
           v-for="section in sections"
           :key="section.id"
           class="docs-toc-link flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-[11px] tracking-[0.12em]"
-          :class="{
-            'docs-toc-link--active': activeId === section.id,
-          }"
+          :class="{ 'docs-toc-link--active': activeId === section.id }"
           type="button"
           @click="scrollToSection(section.id)"
         >
