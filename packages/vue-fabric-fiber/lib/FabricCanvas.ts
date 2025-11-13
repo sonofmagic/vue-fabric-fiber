@@ -5,6 +5,7 @@ import PQueue from 'p-queue'
 import {
   computed,
   defineComponent,
+  getCurrentInstance,
   h,
   onBeforeUnmount,
   onMounted,
@@ -205,6 +206,7 @@ export const FabricCanvas = defineComponent({
   },
   emits: ['update:canvasOptions', 'ready'],
   setup(props, { slots, emit }) {
+    const instance = getCurrentInstance()
     const canvasOptions = useModel(props, 'canvasOptions')
     const resolvedPixelRatio = computed(() => {
       return getDevicePixelRatio(props.pixelRatio)
@@ -292,7 +294,26 @@ export const FabricCanvas = defineComponent({
       resizeObserver.observe(container)
     }
 
+    function resolveElements() {
+      const root = instance?.proxy?.$el as HTMLDivElement | undefined
+      if (!root) {
+        return { container: undefined, canvas: undefined }
+      }
+      const canvas = root.querySelector('canvas') as HTMLCanvasElement | null
+      return {
+        container: root,
+        canvas: canvas ?? undefined,
+      }
+    }
+
     onMounted(() => {
+      if (import.meta.env.DEV) {
+        // eslint-disable-next-line no-console
+        console.debug('[FabricCanvas] mounted in REPL preview')
+      }
+      const { container, canvas } = resolveElements()
+      ctx.containerEl = container
+      ctx.canvasEl = canvas
       if (!ctx.canvasEl || !ctx.containerEl) {
         return
       }
@@ -365,22 +386,10 @@ export const FabricCanvas = defineComponent({
     provide(ContextKey, ctx as Context)
 
     return () => {
-      return h(
-        'div',
-        {
-          ref: (el) => {
-            ctx.containerEl = el as HTMLDivElement | undefined
-          },
-        },
-        [
-          h('canvas', {
-            ref: (el) => {
-              ctx.canvasEl = el as HTMLCanvasElement | undefined
-            },
-          }),
-          ctx.fabricCanvas ? (slots.default ? slots.default() : null) : null,
-        ],
-      )
+      return h('div', [
+        h('canvas'),
+        ctx.fabricCanvas ? (slots.default ? slots.default() : null) : null,
+      ])
     }
   },
 })

@@ -30,7 +30,7 @@ const previewOptions = computed(() => ({
   headHTML: `<link rel="stylesheet" href="${appStyleUrl}">`,
 }))
 
-const localLibEntry = new URL('../lib/index.ts', import.meta.url).pathname
+const localLibEntry = new URL('../../lib/index.ts', import.meta.url).pathname
 const prodLibEntry = '/repl/vue-fabric-fiber/index.js'
 const pkgImportEntry = import.meta.env.DEV ? localLibEntry : prodLibEntry
 
@@ -77,6 +77,18 @@ async function bootstrapStore() {
       showOutput: ref(true),
       outputMode: ref('preview'),
     })
+    replStore.sfcOptions.template = {
+      ...(replStore.sfcOptions.template ?? {}),
+      hoistStatic: false,
+      compilerOptions: {
+        ...(replStore.sfcOptions.template?.compilerOptions ?? {}),
+        hoistStatic: false,
+      },
+    }
+    replStore.sfcOptions.script = {
+      ...(replStore.sfcOptions.script ?? {}),
+      inlineTemplate: false,
+    }
 
     await replStore.setFiles(files, demoFile)
     replStore.setImportMap({
@@ -142,23 +154,57 @@ onMounted(() => {
 
 .demo-repl :deep(.vue-repl) {
   min-height: var(--demo-repl-height);
-}
-
-.demo-repl :deep(.split-pane-container) {
-  height: 100%;
-  min-height: var(--demo-repl-height);
+  display: flex;
+  flex-direction: column;
 }
 
 .demo-repl :deep(.split-pane) {
+  display: flex;
+  min-height: var(--demo-repl-height);
   height: 100%;
 }
 
-.demo-repl :deep(.pane) {
+.demo-repl :deep(.split-pane .left),
+.demo-repl :deep(.split-pane .right) {
+  display: flex;
+  flex-direction: column;
   min-height: var(--demo-repl-height);
+  height: 100%;
 }
 
-.demo-repl :deep(.pane.editor) {
+.demo-repl :deep(.split-pane .left) {
   border-right: 1px solid rgb(15 23 42 / 60%);
+}
+
+.demo-repl :deep(.split-pane .left .file-selector) {
+  flex: 0 0 auto;
+}
+
+.demo-repl :deep(.split-pane .left .editor-container),
+.demo-repl :deep(.split-pane .left .editor) {
+  flex: 1 1 auto;
+  min-height: calc(var(--demo-repl-height) - 48px);
+  display: flex;
+  height: 100%;
+}
+
+.demo-repl :deep(.split-pane .left .monaco-editor) {
+  flex: 1 1 auto;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: calc(var(--demo-repl-height) - 48px);
+}
+
+.demo-repl :deep(.split-pane .left .monaco-editor .overflow-guard),
+.demo-repl :deep(.split-pane .left .monaco-editor .monaco-scrollable-element) {
+  height: 100% !important;
+  min-height: calc(var(--demo-repl-height) - 48px);
+}
+
+.demo-repl :deep(.split-pane .right iframe) {
+  flex: 1 1 auto;
+  height: 100%;
+  min-height: calc(var(--demo-repl-height) - 48px);
 }
 
 @media (width <= 1024px) {
