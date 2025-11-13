@@ -28,7 +28,7 @@ export function createFabricObjectComponent<
   TObject extends FabricObject,
 >(
   options: CreateFabricObjectComponentOptions<TModel, TObject>,
-) {
+): ReturnType<typeof defineComponent> {
   return defineComponent({
     name: options.name,
     props: {

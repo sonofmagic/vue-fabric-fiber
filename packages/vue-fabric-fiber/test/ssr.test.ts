@@ -28,7 +28,7 @@ describeIfFabricAvailable('ssr', () => {
       throw new Error('fabric/node is unavailable; test should have been skipped')
     }
 
-    const canvas = new fabricModule.Canvas(null, { width: 120, height: 80 })
+    const canvas = new fabricModule.Canvas(undefined, { width: 120, height: 80 })
     expect(canvas.getWidth()).toBe(120)
     expect(canvas.getHeight()).toBe(80)
   })

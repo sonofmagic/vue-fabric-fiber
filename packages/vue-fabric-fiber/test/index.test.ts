@@ -1,12 +1,11 @@
-// import { mount } from '@vue/test-utils'
+import { describe, expect, it } from 'vitest'
+import * as entry from '../lib'
 
-it.skip('displays message', () => {
-  // const wrapper = mount(HelloWorld, {
-  //   props: {
-  //     msg: 'Hello world',
-  //   },
-  // })
-
-  // Assert the rendered text of the component
-  // expect(wrapper.text()).toContain('Hello world')
+describe('package entry', () => {
+  it('exposes the primary Vue bindings', () => {
+    expect(entry.FabricCanvas).toBeDefined()
+    expect(entry.RenderGroup).toBeDefined()
+    expect(entry.FabricImage).toBeDefined()
+    expect(entry.FabricText).toBeDefined()
+  })
 })

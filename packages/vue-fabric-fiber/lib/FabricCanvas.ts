@@ -17,6 +17,16 @@ import {
 import { ContextKey } from './symbols'
 import { removeUndefined } from './utils'
 
+function isDevEnvironment(): boolean {
+  try {
+    const meta = import.meta as ImportMeta & { env?: { DEV?: boolean } }
+    return Boolean(meta.env?.DEV)
+  }
+  catch {
+    return false
+  }
+}
+
 export type FabricCanvasOptions = Partial<fabric.CanvasOptions>
 
 export type FabricCanvasOptionKey = keyof FabricCanvasOptions
@@ -307,7 +317,7 @@ export const FabricCanvas = defineComponent({
     }
 
     onMounted(() => {
-      if (import.meta.env.DEV) {
+      if (isDevEnvironment()) {
         // eslint-disable-next-line no-console
         console.debug('[FabricCanvas] mounted in REPL preview')
       }
