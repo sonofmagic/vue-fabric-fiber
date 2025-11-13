@@ -241,32 +241,31 @@ const en = {
       },
       notes: {
         basic: {
-          intro: 'Code lives in ',
-          outro:
-            '. Edit it inside the embedded @vue/repl to inspect both source and canvas output simultaneously.',
+          intro: 'Source lives in components/demos/BasicHeroDemo.vue',
+          outro: ', the same component rendered on this page.',
         },
         animatingCrosses: {
-          intro: 'The REPL loads ',
+          intro: 'Animated refs sit inside components/demos/AnimatingCrossesDemo.vue',
           outro:
-            ' so you can explore the animated Fabric object implementation without leaving the page.',
+            ', showcasing how watchers drive FabricRect bindings without a REPL.',
         },
         playground: {
-          intro: 'The editor loads ',
-          outro: ' so you can iterate on the scene blueprint that powers the controls.',
+          intro: 'JSON parsing + rendering occur in components/demos/JsonPlaygroundDemo.vue',
+          outro: ', which powers the live playground embedded below.',
         },
         textPlayground: {
-          intro: 'Use ',
+          intro: 'Typography controls live inside components/demos/TextPlaygroundDemo.vue',
           outro:
-            ' inside the REPL to tweak copy, gradients, and input bindings side by side with the rendered canvas.',
+            ', so you can study the FabricText bindings directly in the repo.',
         },
         composite: {
-          intro: 'Edit ',
+          intro: 'RenderGroup samples live in components/demos/CompositeLayersDemo.vue',
           outro:
-            ' directly in the embedded editor to understand how each RenderGroup slot feeds the Fabric canvas.',
+            ', demonstrating how queue props orchestrate layered scenes.',
         },
         shapes: {
-          intro: 'Explore ',
-          outro: ' to see how each primitive maps to the Fabric.js API within @vue/repl.',
+          intro: 'Primitives are wired inside components/demos/ShapesShowcaseDemo.vue',
+          outro: ', mapping each Fabric shape wrapper to real refs.',
         },
       },
     },

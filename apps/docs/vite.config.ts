@@ -22,7 +22,4 @@ export default defineConfig({
       allow: [workspaceRoot, libraryRoot],
     },
   },
-  optimizeDeps: {
-    exclude: ['@vue/repl'],
-  },
 })

@@ -60,8 +60,11 @@ export function createFabricObjectComponent<
           ...model.value,
         } as TModel
       })
+      const boundModel = computed<TModel>(() => {
+        return removeUndefined(model.value) as TModel
+      })
       const observedKeys = computed(() => {
-        return Object.keys(resolvedModel.value) as (keyof TModel & string)[]
+        return Object.keys(boundModel.value) as (keyof TModel & string)[]
       })
 
       function applyToInstance(next: TModel) {

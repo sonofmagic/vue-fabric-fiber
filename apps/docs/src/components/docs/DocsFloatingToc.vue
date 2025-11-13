@@ -117,7 +117,10 @@ onBeforeUnmount(() => {
   color: var(--fp-text-muted);
   background-color: transparent;
   border: 1px solid transparent;
-  transition: color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .docs-toc-link:hover {

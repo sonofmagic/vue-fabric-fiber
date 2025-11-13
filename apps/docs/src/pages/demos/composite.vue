@@ -2,8 +2,8 @@
 import type { DemoCardSlug } from './cards'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import DemoRepl from '@/components/DemoRepl.vue'
-import CompositeSource from '@/repl/examples/composite.vue?raw'
+import CompositeLayersDemo from '@/components/demos/CompositeLayersDemo.vue'
+import DemoPageIntro from '@/components/demos/DemoPageIntro.vue'
 import { buildCanonicalUrl, usePageSeo } from '@/seo'
 import { demoCards } from './cards'
 
@@ -21,6 +21,7 @@ const card = computed(() => ({
   title: t(definition.titleKey),
   description: t(definition.descriptionKey),
   tags: (definition.tagKeys ?? []).map(tag => t(`demos.tags.${tag}`)),
+  helper: t(`demos.detail.helpers.${slug}`),
 }))
 
 usePageSeo({
@@ -39,7 +40,13 @@ usePageSeo({
 </script>
 
 <template>
-  <div class="full-bleed px-2 pb-10 sm:px-4 lg:px-6">
-    <DemoRepl full-height :source="CompositeSource" filename="examples/composite.vue" />
+  <div class="mx-auto flex max-w-6xl flex-col gap-10 px-2 pb-16 sm:px-4 lg:px-0">
+    <DemoPageIntro
+      :title="card.title"
+      :description="card.description"
+      :helper="card.helper"
+      :tags="card.tags"
+    />
+    <CompositeLayersDemo />
   </div>
 </template>

@@ -225,28 +225,28 @@ const zh = {
       },
       notes: {
         basic: {
-          intro: '代码位于 ',
-          outro: '，在内嵌的 @vue/repl 中编辑即可同时查看源码与画布输出。',
+          intro: '源码位于 components/demos/BasicHeroDemo.vue',
+          outro: '，本页直接渲染该组件，无需切换 REPL。',
         },
         animatingCrosses: {
-          intro: 'REPL 会加载 ',
-          outro: '，让你无需离开页面即可探索动画对象的实现。',
+          intro: '动画逻辑写在 components/demos/AnimatingCrossesDemo.vue',
+          outro: '，可以直接查看其中的 ref 与 watcher。',
         },
         playground: {
-          intro: '编辑器会载入 ',
-          outro: '，方便你迭代驱动控制面板的场景蓝图。',
+          intro: 'JSON 解析与渲染定义在 components/demos/JsonPlaygroundDemo.vue',
+          outro: '，也是下方实时演示采用的组件。',
         },
         textPlayground: {
-          intro: '使用 ',
-          outro: '，在 REPL 中即可同时调整文案、渐变与输入绑定，并观察画布反馈。',
+          intro: '排版控制来自 components/demos/TextPlaygroundDemo.vue',
+          outro: '，可直接查阅 FabricText 的绑定写法。',
         },
         composite: {
-          intro: '直接编辑 ',
-          outro: '，即可理解每个 RenderGroup 插槽如何驱动 Fabric 画布。',
+          intro: 'RenderGroup 示例位于 components/demos/CompositeLayersDemo.vue',
+          outro: '，展示如何利用队列编排多层画布。',
         },
         shapes: {
-          intro: '探索 ',
-          outro: '，了解每个基础图元如何在 @vue/repl 内映射到 Fabric.js API。',
+          intro: '全部基础图元集中在 components/demos/ShapesShowcaseDemo.vue',
+          outro: '，便于对照各个 Fabric 组件的用法。',
         },
       },
     },

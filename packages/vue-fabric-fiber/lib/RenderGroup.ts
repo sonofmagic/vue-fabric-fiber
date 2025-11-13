@@ -46,8 +46,6 @@ export const RenderGroup = defineComponent({
     ctx.addSequentialTask = addSequentialTask
 
     provide(ContextKey, ctx as Context)
-    return () => {
-      return ctx?.fabricCanvas ? (slots.default ? slots.default() : null) : null
-    }
+    return () => slots.default?.() ?? null
   },
 })

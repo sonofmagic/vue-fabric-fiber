@@ -131,9 +131,6 @@ importers:
       '@unhead/vue':
         specifier: ^2.0.0
         version: 2.0.19(vue@3.5.24(typescript@5.9.3))
-      '@vue/repl':
-        specifier: ^4.7.0
-        version: 4.7.0
       fabric:
         specifier: ^6.9.0
         version: 6.9.0(encoding@0.1.13)
@@ -2859,9 +2856,6 @@ packages:
 
   '@vue/reactivity@3.5.24':
     resolution: {integrity: sha512-BM8kBhtlkkbnyl4q+HiF5R5BL0ycDPfihowulm02q3WYp2vxgPcJuZO866qa/0u3idbMntKEtVNuAUp5bw4teg==}
-
-  '@vue/repl@4.7.0':
-    resolution: {integrity: sha512-1veaAsfO6xYLblo8jr2hQDlegdPjaCZkchZuG7PRhC9zX0bN2aLenu2rT7AEPAXDXK0OXCsB2+WIUevOTyMvLg==}
 
   '@vue/runtime-core@3.5.24':
     resolution: {integrity: sha512-RYP/byyKDgNIqfX/gNb2PB55dJmM97jc9wyF3jK7QUInYKypK2exmZMNwnjueWwGceEkP6NChd3D2ZVEp9undQ==}
@@ -11446,8 +11440,6 @@ snapshots:
   '@vue/reactivity@3.5.24':
     dependencies:
       '@vue/shared': 3.5.24
-
-  '@vue/repl@4.7.0': {}
 
   '@vue/runtime-core@3.5.24':
     dependencies:
