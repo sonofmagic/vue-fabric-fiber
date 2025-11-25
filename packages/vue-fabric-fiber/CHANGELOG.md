@@ -1,5 +1,11 @@
 # vue-fabric-fiber
 
+## 1.0.1
+
+### Patch Changes
+
+- [`557c96a`](https://github.com/sonofmagic/vue-fabric-fiber/commit/557c96a79daa7a8b043c8512211ef3668ff37032) Thanks [@sonofmagic](https://github.com/sonofmagic)! - set FabricCanvas default pixel ratio to 1 and expose a helper for opting into the system pixel ratio
+
 ## 1.0.0
 
 ### Major Changes
