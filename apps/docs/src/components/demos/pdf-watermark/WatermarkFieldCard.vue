@@ -4,6 +4,8 @@ import type { WatermarkField } from './types'
 const props = defineProps<{
   resolveColorDisplay: (value: unknown) => string
   onColorEdited: () => void
+  xMax: number
+  bottomMax: number
 }>()
 
 const field = defineModel<WatermarkField>({ required: true })
@@ -41,11 +43,11 @@ const field = defineModel<WatermarkField>({ required: true })
     <div class="mt-3 grid gap-3 sm:grid-cols-4">
       <label class="flex flex-col gap-1 text-[11px] uppercase tracking-[0.22em] text-[var(--fp-text-dim)]">
         <span>X</span>
-        <input v-model.number="field.x" class="w-full rounded-xl border border-[var(--fp-border-color)] bg-[var(--fp-panel-bg)] px-3 py-2.5 text-sm text-[var(--fp-text-primary)]" type="number" min="0" max="320" step="1">
+        <input v-model.number="field.x" class="w-full rounded-xl border border-[var(--fp-border-color)] bg-[var(--fp-panel-bg)] px-3 py-2.5 text-sm text-[var(--fp-text-primary)]" type="number" min="0" :max="props.xMax" step="1">
       </label>
       <label class="flex flex-col gap-1 text-[11px] uppercase tracking-[0.22em] text-[var(--fp-text-dim)]">
         <span>Y (自底部)</span>
-        <input v-model.number="field.bottom" class="w-full rounded-xl border border-[var(--fp-border-color)] bg-[var(--fp-panel-bg)] px-3 py-2.5 text-sm text-[var(--fp-text-primary)]" type="number" min="0" max="200" step="1">
+        <input v-model.number="field.bottom" class="w-full rounded-xl border border-[var(--fp-border-color)] bg-[var(--fp-panel-bg)] px-3 py-2.5 text-sm text-[var(--fp-text-primary)]" type="number" min="0" :max="props.bottomMax" step="1">
       </label>
       <label class="flex flex-col gap-1 text-[11px] uppercase tracking-[0.22em] text-[var(--fp-text-dim)]">
         <span>字号</span>

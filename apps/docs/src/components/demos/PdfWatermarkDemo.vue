@@ -22,13 +22,16 @@ if (typeof window !== 'undefined') {
   GlobalWorkerOptions.workerSrc = pdfjsWorker
 }
 
-const CANVAS_WIDTH = 540
-const CANVAS_HEIGHT = 760
-const PAGE_WIDTH = 360
-const PAGE_HEIGHT = 540
+const CANVAS_WIDTH = 440
+const CANVAS_HEIGHT = 660
+const PAGE_WIDTH = 420
+const PAGE_HEIGHT = 630
+const WATERMARK_MARGIN = 24
 const pageLeft = (CANVAS_WIDTH - PAGE_WIDTH) / 2
 const pageTop = (CANVAS_HEIGHT - PAGE_HEIGHT) / 2
 const pageBottom = pageTop + PAGE_HEIGHT
+const watermarkXMax = PAGE_WIDTH - WATERMARK_MARGIN * 2
+const watermarkBottomMax = Math.round(PAGE_HEIGHT * 0.4)
 
 const canvasOptions = {
   width: CANVAS_WIDTH,
@@ -524,6 +527,8 @@ watch(
               :key="field.id"
               v-model="watermarkFields[index]"
               :resolve-color-display="resolveColorDisplay"
+              :x-max="watermarkXMax"
+              :bottom-max="watermarkBottomMax"
               :on-color-edited="() => markWatermarkColorEdited(field.id)"
             />
           </div>
@@ -567,7 +572,7 @@ watch(
         <div
           class="overflow-hidden rounded-[20px] border border-[var(--fp-border-color)] bg-[var(--fp-panel-bg)] bg-[linear-gradient(45deg,rgba(148,163,184,0.08)_25%,transparent_25%),linear-gradient(-45deg,rgba(148,163,184,0.08)_25%,transparent_25%),linear-gradient(45deg,transparent_75%,rgba(148,163,184,0.08)_75%),linear-gradient(-45deg,transparent_75%,rgba(148,163,184,0.08)_75%)] bg-[length:48px_48px] bg-[position:0_0,0_24px,24px_-24px,-24px_0]"
         >
-          <FabricCanvas :canvas-options="canvasOptions" @ready="handleCanvasReady">
+          <FabricCanvas class="fp-pdf-canvas" :canvas-options="canvasOptions" @ready="handleCanvasReady">
             <RenderGroup :priority="0">
               <FabricRect v-model="pageMatte" />
             </RenderGroup>
@@ -595,3 +600,12 @@ watch(
     </section>
   </div>
 </template>
+
+<style scoped>
+.fp-pdf-canvas :deep(canvas) {
+  width: 100%;
+  height: auto;
+  display: block;
+  max-width: 440px;
+}
+</style>
