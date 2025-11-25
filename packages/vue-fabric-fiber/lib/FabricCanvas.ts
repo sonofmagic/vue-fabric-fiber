@@ -28,6 +28,7 @@ function isDevEnvironment(): boolean {
 }
 
 export type FabricCanvasOptions = Partial<fabric.CanvasOptions>
+const DEFAULT_PIXEL_RATIO = 1
 
 export type FabricCanvasOptionKey = keyof FabricCanvasOptions
 
@@ -104,14 +105,18 @@ function extractCanvasOptions(source?: FabricCanvasOptions) {
   return removeUndefined(source)
 }
 
-function getDevicePixelRatio(explicit?: number) {
-  if (typeof explicit === 'number' && Number.isFinite(explicit)) {
-    return Math.max(explicit, 1)
-  }
+export function getSystemPixelRatio() {
   if (typeof window === 'undefined') {
-    return 1
+    return DEFAULT_PIXEL_RATIO
   }
-  return Math.max(window.devicePixelRatio || 1, 1)
+  return Math.max(window.devicePixelRatio || DEFAULT_PIXEL_RATIO, DEFAULT_PIXEL_RATIO)
+}
+
+function resolvePixelRatio(value?: number) {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return Math.max(value, DEFAULT_PIXEL_RATIO)
+  }
+  return DEFAULT_PIXEL_RATIO
 }
 
 interface SyncResolutionOptions {
@@ -125,7 +130,7 @@ function syncCanvasResolution(
   height: number,
   options?: SyncResolutionOptions,
 ) {
-  const resolvedRatio = options?.pixelRatio ?? getDevicePixelRatio()
+  const resolvedRatio = options?.pixelRatio ?? getSystemPixelRatio()
   const ratio = canvas.enableRetinaScaling === false ? 1 : resolvedRatio
   const targetWidth = Math.max(Math.round(width), 1)
   const targetHeight = Math.max(Math.round(height), 1)
@@ -211,7 +216,7 @@ export const FabricCanvas = defineComponent({
     },
     pixelRatio: {
       type: Number,
-      default: undefined,
+      default: DEFAULT_PIXEL_RATIO,
     },
   },
   emits: ['update:canvasOptions', 'ready'],
@@ -219,7 +224,7 @@ export const FabricCanvas = defineComponent({
     const instance = getCurrentInstance()
     const canvasOptions = useModel(props, 'canvasOptions')
     const resolvedPixelRatio = computed(() => {
-      return getDevicePixelRatio(props.pixelRatio)
+      return resolvePixelRatio(props.pixelRatio)
     })
 
     const taskQueue = new PQueue({ concurrency: 1, autoStart: false })

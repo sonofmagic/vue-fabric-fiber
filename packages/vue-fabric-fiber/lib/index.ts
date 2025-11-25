@@ -29,6 +29,7 @@ import {
   FABRIC_CANVAS_OPTION_KEYS,
   FABRIC_CANVAS_PRESETS,
   FabricCanvas,
+  getSystemPixelRatio,
 } from './FabricCanvas'
 import {
   FABRIC_IMAGE_BINDABLE_KEYS,
@@ -66,6 +67,7 @@ export {
   FabricRect,
   FabricText,
   FabricTriangle,
+  getSystemPixelRatio,
   RenderGroup,
 }
 
