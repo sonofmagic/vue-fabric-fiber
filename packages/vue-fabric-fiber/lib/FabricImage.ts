@@ -44,6 +44,7 @@ export interface FabricImageModelValue extends FabricImageOptionalProps {
    */
   height?: number | string
   crossOrigin?: TCrossOrigin
+  [key: string]: unknown
 }
 
 export type FabricImageOptionKey = keyof FabricImageOptionalProps

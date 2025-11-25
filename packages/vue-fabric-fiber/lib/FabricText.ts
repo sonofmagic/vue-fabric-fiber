@@ -121,6 +121,7 @@ type FabricTextOptionalProps = Partial<Pick<BaseTextProps, FabricTextOptionKey>>
 
 export interface FabricTextModelValue extends FabricTextOptionalProps {
   text: string
+  [key: string]: unknown
 }
 
 type FabricTextSyncEvent = FabricObjectSyncEvent
