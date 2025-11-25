@@ -222,17 +222,71 @@ export const FabricCanvas = defineComponent({
       return getDevicePixelRatio(props.pixelRatio)
     })
 
-    const taskQueue = new PQueue({ concurrency: 1 })
+    const taskQueue = new PQueue({ concurrency: 1, autoStart: false })
+    let queueStartScheduled = false
     const ctx = shallowReactive<Partial<Context>>({
       taskQueue,
     })
 
-    function addObject(obj: fabric.Object) {
-      return ctx.fabricCanvas?.add(obj)
+    const objectMeta = new WeakMap<fabric.Object, { priority?: number, sequence: number }>()
+    let nextSequenceId = 0
+
+    function ensureQueueStart() {
+      if (queueStartScheduled) {
+        return
+      }
+      queueStartScheduled = true
+      Promise.resolve().then(() => {
+        queueStartScheduled = false
+        ctx.taskQueue?.start()
+      })
+    }
+
+    function reorderObjects() {
+      if (!ctx.fabricCanvas) {
+        return
+      }
+      const objects = ctx.fabricCanvas.getObjects()
+      const decorated = objects.map((obj, index) => {
+        const meta = objectMeta.get(obj)
+        return {
+          obj,
+          priority: meta?.priority ?? 0,
+          sequence: meta?.sequence ?? index,
+        }
+      })
+
+      decorated
+        .sort((a, b) => {
+          if (a.priority !== b.priority) {
+            return a.priority - b.priority
+          }
+          return a.sequence - b.sequence
+        })
+        .forEach(({ obj }, index) => {
+          const moveFn = (
+            // Fabric v6 renamed `moveTo` to `moveObjectTo`; prefer the new API when present.
+            (ctx.fabricCanvas as any)?.moveObjectTo
+            ?? (ctx.fabricCanvas as any)?.moveTo
+          ) as ((target: fabric.Object, position: number) => void) | undefined
+          moveFn?.call(ctx.fabricCanvas, obj, index)
+        })
+
+      ctx.fabricCanvas.requestRenderAll()
+    }
+
+    function addObject(obj: fabric.Object, priority?: number) {
+      objectMeta.set(obj, {
+        priority,
+        sequence: nextSequenceId++,
+      })
+      ctx.fabricCanvas?.add(obj)
+      reorderObjects()
     }
 
     function removeObject(obj: fabric.Object) {
       ctx.fabricCanvas?.remove(obj)
+      objectMeta.delete(obj)
     }
 
     function runTaskImmediately(task: SequentialTask) {
@@ -244,11 +298,14 @@ export const FabricCanvas = defineComponent({
         return runTaskImmediately(task)
       }
 
-      const queueOptions = options?.priority !== undefined
-        ? { priority: options.priority }
+      const queuePriority = options?.priority !== undefined ? -options.priority : undefined
+      const queueOptions = queuePriority !== undefined
+        ? { priority: queuePriority }
         : undefined
 
-      return ctx.taskQueue.add(() => task(), queueOptions)
+      const queuedTask = ctx.taskQueue.add(() => task(), queueOptions)
+      ensureQueueStart()
+      return queuedTask
     }
 
     ctx.addObject = addObject

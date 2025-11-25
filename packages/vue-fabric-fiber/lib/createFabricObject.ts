@@ -11,7 +11,27 @@ import {
 import { ContextKey } from './symbols'
 import { removeUndefined } from './utils'
 
-type ModelRecord = Record<string, any>
+type ModelRecord = Record<string, unknown>
+export type FabricObjectSyncEvent = 'modified' | 'moving' | 'scaling' | 'rotating'
+export const DEFAULT_SYNC_EVENTS: readonly FabricObjectSyncEvent[] = ['modified', 'moving', 'scaling', 'rotating']
+
+export function bindFabricSyncEvents<TModel extends ModelRecord, TObject extends FabricObject>(
+  instance: TObject,
+  events: readonly FabricObjectSyncEvent[],
+  snapshot: (source: TObject) => TModel,
+  emit: (payload: TModel) => void,
+) {
+  const disposers: VoidFunction[] = []
+  events.forEach((eventName) => {
+    const disposer = instance.on(eventName as never, () => {
+      emit(snapshot(instance))
+    })
+    if (typeof disposer === 'function') {
+      disposers.push(disposer)
+    }
+  })
+  return disposers
+}
 
 export interface CreateFabricObjectComponentOptions<
   TModel extends ModelRecord,
@@ -38,6 +58,15 @@ export function createFabricObjectComponent<
           return {
             ...(options.defaults ? options.defaults() : {}),
           } as TModel
+        },
+      },
+      /**
+       * Fabric events that should push updated props back through v-model.
+       */
+      syncOn: {
+        type: Array as PropType<FabricObjectSyncEvent[]>,
+        default: () => {
+          return [...DEFAULT_SYNC_EVENTS]
         },
       },
     },
@@ -67,6 +96,23 @@ export function createFabricObjectComponent<
         return Object.keys(boundModel.value) as (keyof TModel & string)[]
       })
 
+      const resolvedSyncEvents = computed<readonly FabricObjectSyncEvent[]>(() => {
+        const base = Array.isArray(props.syncOn) && props.syncOn.length > 0 ? props.syncOn : DEFAULT_SYNC_EVENTS
+        return Array.from(new Set(base))
+      })
+
+      function emitModelSnapshot(source: TObject) {
+        const payload = removeUndefined(
+          Object.fromEntries(
+            observedKeys.value.map((key) => {
+              const value = (source as unknown as Record<string, unknown>)[key]
+              return [key, value]
+            }),
+          ),
+        ) as TModel
+        return payload
+      }
+
       function applyToInstance(next: TModel) {
         if (!instance) {
           return
@@ -89,22 +135,13 @@ export function createFabricObjectComponent<
           return
         }
 
-        disposers.push(
-          instance.on('modified', () => {
-            if (!instance) {
-              return
-            }
-            const payload = removeUndefined(
-              Object.fromEntries(
-                observedKeys.value.map((key) => {
-                  const value = (instance as unknown as Record<string, unknown>)[key]
-                  return [key, value]
-                }),
-              ),
-            ) as TModel
-            emit('update:modelValue', payload)
-          }),
+        const eventDisposers = bindFabricSyncEvents(
+          instance,
+          resolvedSyncEvents.value,
+          () => emitModelSnapshot(instance!),
+          payload => emit('update:modelValue', payload),
         )
+        disposers.push(...eventDisposers)
 
         if (ctx?.addSequentialTask) {
           ctx.addSequentialTask(() => {

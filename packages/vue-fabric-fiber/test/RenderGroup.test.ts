@@ -1,5 +1,5 @@
-import type PQueue from 'p-queue'
 import type { AddSequentialTaskOptions, Context, SequentialTask } from '../lib/types'
+import PQueue from 'p-queue'
 import { describe, expect, it } from 'vitest'
 import { defineComponent, h, inject, nextTick, onMounted } from 'vue'
 import { RenderGroup } from '../lib/RenderGroup'
@@ -15,8 +15,10 @@ function createParentContext(overrides: Partial<Context> = {}) {
     return undefined
   }
 
+  const addObject = vi.fn<Context['addObject']>()
+
   const ctx: Context = {
-    addObject: vi.fn(),
+    addObject,
     removeObject: vi.fn(),
     addSequentialTask,
     taskQueue: {} as PQueue,
@@ -27,6 +29,28 @@ function createParentContext(overrides: Partial<Context> = {}) {
   }
 
   return { ctx, recordedCalls }
+}
+
+function createQueuedParentContext() {
+  const queue = new PQueue({ concurrency: 1 })
+
+  const ctx: Context = {
+    addObject: vi.fn(),
+    removeObject: vi.fn(),
+    addSequentialTask(task, options) {
+      const queuePriority = options?.priority !== undefined ? -options.priority : undefined
+      const queueOptions = queuePriority !== undefined ? { priority: queuePriority } : undefined
+      return queue.add(async () => {
+        await task()
+      }, queueOptions)
+    },
+    taskQueue: queue,
+    fabricCanvas: undefined,
+    canvasEl: undefined,
+    containerEl: undefined,
+  }
+
+  return { ctx, queue }
 }
 
 function createConsumer(trackers: number[]) {
@@ -45,6 +69,34 @@ function createConsumer(trackers: number[]) {
         queuedTaskRunner(() => {
           trackers.push(1)
         })
+      })
+      return () => null
+    },
+  })
+}
+
+function createValueConsumer(trackers: number[], value: number) {
+  return defineComponent({
+    name: `TaskConsumer${value}`,
+    setup() {
+      const ctx = inject<Context | undefined>(ContextKey, undefined)
+      onMounted(() => {
+        ctx?.addSequentialTask?.(() => {
+          trackers.push(value)
+        })
+      })
+      return () => null
+    },
+  })
+}
+
+function createAddObjectConsumer(value: number) {
+  return defineComponent({
+    name: `AddObjectConsumer${value}`,
+    setup() {
+      const ctx = inject<Context | undefined>(ContextKey, undefined)
+      onMounted(() => {
+        ctx?.addObject?.({} as never)
       })
       return () => null
     },
@@ -92,5 +144,53 @@ describe('RenderGroup', () => {
     const [, options] = firstCall!
     expect(options).toEqual({ bypassQueue: true })
     expect(taskTracker).toHaveLength(1)
+  })
+
+  it('forwards priority when adding objects via addObject', async () => {
+    const { ctx: parentCtx } = createParentContext()
+    const Consumer = createAddObjectConsumer(1)
+
+    mountComponent(RenderGroup, {
+      props: { priority: 9 },
+      provide: [[ContextKey, parentCtx]],
+      slots: {
+        default: () => [h(Consumer)],
+      },
+    })
+
+    await nextTick()
+    expect(parentCtx.addObject).toHaveBeenCalledTimes(1)
+    expect(parentCtx.addObject).toHaveBeenCalledWith(expect.anything(), 9)
+  })
+
+  it('runs higher priority groups after lower ones to preserve stacking order', async () => {
+    const { ctx: parentCtx, queue } = createQueuedParentContext()
+    const taskTracker: number[] = []
+
+    const Consumer0 = createValueConsumer(taskTracker, 0)
+    const Consumer1 = createValueConsumer(taskTracker, 1)
+    const Consumer2 = createValueConsumer(taskTracker, 2)
+    const Consumer3 = createValueConsumer(taskTracker, 3)
+
+    const Host = defineComponent({
+      name: 'RenderGroupPriorityHost',
+      setup() {
+        return () => [
+          h(RenderGroup, { priority: 0 }, { default: () => [h(Consumer0)] }),
+          h(RenderGroup, { priority: 1 }, { default: () => [h(Consumer1)] }),
+          h(RenderGroup, { priority: 2 }, { default: () => [h(Consumer2)] }),
+          h(RenderGroup, { priority: 3 }, { default: () => [h(Consumer3)] }),
+        ]
+      },
+    })
+
+    mountComponent(Host, {
+      provide: [[ContextKey, parentCtx]],
+    })
+
+    await nextTick()
+    await queue.onIdle()
+
+    expect(taskTracker).toEqual([0, 1, 2, 3])
   })
 })

@@ -1,4 +1,4 @@
-import type { Context, SequentialTask } from './types'
+import type { AddSequentialTaskOptions, Context, SequentialTask } from './types'
 import { defineComponent, inject, provide, shallowReactive } from 'vue'
 import { ContextKey } from './symbols'
 
@@ -22,28 +22,42 @@ export const RenderGroup = defineComponent({
     })
 
     const parentAddSequentialTask = injectCtx?.addSequentialTask
+    const parentAddObject = injectCtx?.addObject
 
     function fallbackRun(task: SequentialTask) {
       return Promise.resolve().then(() => task())
     }
 
-    function addSequentialTask(task: SequentialTask) {
+    function addSequentialTask(task: SequentialTask, options?: AddSequentialTaskOptions) {
       if (!parentAddSequentialTask) {
         return fallbackRun(task)
       }
 
-      if (props.disableQueue) {
-        return parentAddSequentialTask(task, { bypassQueue: true })
+      const mergedOptions: AddSequentialTaskOptions = {}
+
+      if (props.priority !== undefined) {
+        mergedOptions.priority = props.priority
       }
 
-      const options = props.priority !== undefined
-        ? { priority: props.priority }
-        : undefined
+      if (options?.priority !== undefined) {
+        mergedOptions.priority = options.priority
+      }
 
-      return parentAddSequentialTask(task, options)
+      const bypassQueue = props.disableQueue || options?.bypassQueue === true
+      if (bypassQueue) {
+        mergedOptions.bypassQueue = true
+      }
+
+      const hasOptions = mergedOptions.priority !== undefined || mergedOptions.bypassQueue === true
+      return parentAddSequentialTask(task, hasOptions ? mergedOptions : undefined)
+    }
+
+    function addObject(obj: Parameters<Context['addObject']>[0]) {
+      return parentAddObject?.(obj, props.priority)
     }
 
     ctx.addSequentialTask = addSequentialTask
+    ctx.addObject = addObject
 
     provide(ContextKey, ctx as Context)
     return () => slots.default?.() ?? null

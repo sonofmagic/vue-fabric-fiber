@@ -5,6 +5,7 @@ export type DemoCardSlug
     | 'textPlayground'
     | 'composite'
     | 'shapes'
+    | 'pdfWatermark'
 
 export type DemoTagKey
   = | 'text'
@@ -71,5 +72,12 @@ export const demoCards: DemoCard[] = [
     titleKey: 'demos.cards.shapes.title',
     descriptionKey: 'demos.cards.shapes.description',
     tagKeys: ['shapes', 'primitives'],
+  },
+  {
+    slug: 'pdfWatermark',
+    to: '/demos/pdf-watermark',
+    titleKey: 'demos.cards.pdfWatermark.title',
+    descriptionKey: 'demos.cards.pdfWatermark.description',
+    tagKeys: ['image', 'text', 'bindings'],
   },
 ]

@@ -84,7 +84,7 @@ Complex additions or async loads should wrap content in `RenderGroup` so the tas
 
 `RenderGroup` also exposes a couple of props for advanced orchestration:
 
-- `priority` — queue priority passed to `p-queue`, letting you mix sequential ordering with a manual stack/z-index plan.
+- `priority` — higher numbers run later (toward the top of the stack). Values are flipped before hitting the queue so you can think in z-index terms.
 - `disableQueue` — skips the sequential queue entirely so lightweight objects can attach to the canvas immediately.
 
 ## Type Exports

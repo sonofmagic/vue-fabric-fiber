@@ -1,5 +1,6 @@
 import type { ImageProps, TCrossOrigin } from 'fabric'
 import type { PropType } from 'vue'
+import type { FabricObjectSyncEvent } from './createFabricObject'
 import type { Context } from './types'
 import * as fabric from 'fabric'
 import {
@@ -12,6 +13,7 @@ import {
   watch,
 } from 'vue'
 import { normalizeKeySelection, pickDefinedOptions, pickFromUnknown } from './binding-helpers'
+import { bindFabricSyncEvents, DEFAULT_SYNC_EVENTS } from './createFabricObject'
 import { ContextKey } from './symbols'
 
 type ExcludedImagePropKeys
@@ -126,6 +128,8 @@ export const FABRIC_IMAGE_BINDABLE_KEYS = [
 export type FabricImageBindableKey = typeof FABRIC_IMAGE_BINDABLE_KEYS[number]
 
 const FABRIC_IMAGE_BINDABLE_KEY_SET = new Set<FabricImageBindableKey>(FABRIC_IMAGE_BINDABLE_KEYS)
+
+type FabricImageSyncEvent = FabricObjectSyncEvent
 
 export interface FabricImagePresetConfig {
   label: string
@@ -365,6 +369,15 @@ export const FabricImage = defineComponent({
       type: Array as PropType<FabricImageBindableKey[]>,
       default: undefined,
     },
+    /**
+     * Fabric events that should trigger a v-model emit with updated props.
+     */
+    syncOn: {
+      type: Array as PropType<FabricImageSyncEvent[]>,
+      default: () => {
+        return [...DEFAULT_SYNC_EVENTS]
+      },
+    },
   },
   emits: ['update:modelValue'],
   setup(props, { emit }) {
@@ -399,6 +412,13 @@ export const FabricImage = defineComponent({
       keys.add('src')
 
       return Array.from(keys)
+    })
+
+    const resolvedSyncEvents = computed<readonly FabricImageSyncEvent[]>(() => {
+      const normalized = Array.isArray(props.syncOn) && props.syncOn.length > 0
+        ? props.syncOn
+        : DEFAULT_SYNC_EVENTS
+      return Array.from(new Set(normalized))
     })
 
     const disposerCollection: VoidFunction[] = []
@@ -441,17 +461,6 @@ export const FabricImage = defineComponent({
       }
     }
 
-    function bindFabricEvent(
-      instance: fabric.FabricImage,
-      eventName: string,
-      handler: (event: any) => void,
-    ) {
-      instance.on(eventName as never, handler as never)
-      disposerCollection.push(() => {
-        instance.off(eventName as never, handler as never)
-      })
-    }
-
     function emitModelSnapshot(target: fabric.FabricImage) {
       const next = pickFromUnknown(target, resolvedBoundKeys.value) as Partial<FabricImageModelValue>
 
@@ -471,20 +480,25 @@ export const FabricImage = defineComponent({
         next.height = target.getScaledHeight()
       }
 
-      emit('update:modelValue', {
+      return {
         ...modelValue.value,
         ...next,
-      } as FabricImageModelValue)
+      } as FabricImageModelValue
     }
 
     function attachEventListeners(instance: fabric.FabricImage) {
-      bindFabricEvent(instance, 'modified', (event) => {
-        const target = event.target as fabric.FabricImage | undefined
-        if (!target) {
-          return
-        }
-        emitModelSnapshot(target)
-      })
+      const disposers = bindFabricSyncEvents(
+        instance,
+        resolvedSyncEvents.value,
+        emitModelSnapshot,
+        (payload) => {
+          emit('update:modelValue', {
+            ...modelValue.value,
+            ...payload,
+          } as FabricImageModelValue)
+        },
+      )
+      disposerCollection.push(...disposers)
     }
 
     async function instantiateImage(value: FabricImageModelValue) {

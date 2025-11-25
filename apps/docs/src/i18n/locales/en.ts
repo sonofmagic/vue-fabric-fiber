@@ -221,6 +221,11 @@ const en = {
         description: 'Rectangles, polylines, paths, and more using the Fabric shape components.',
         tags: ['shapes', 'primitives'],
       },
+      pdfWatermark: {
+        title: 'PDF Upload & Crop',
+        description: 'Import a PDF, rotate/move/scale it, and keep paired bottom-left watermarks pinned to the page.',
+        tags: ['image', 'text', 'bindings'],
+      },
     },
     detail: {
       common: {
@@ -238,6 +243,8 @@ const en = {
           'RenderGroup queues, async imagery, and toggled layers stay in sync so you can study how the bindings orchestrate complex scenes.',
         shapes:
           'Every primitive—from rectangles and polygons to custom paths—runs through the same Fabric bindings so you can remix them safely.',
+        pdfWatermark:
+          'Upload a PDF, rotate or drag it on the FabricCanvas, and keep dual FabricText watermarks anchored to the bottom-left edge.',
       },
       notes: {
         basic: {
@@ -266,6 +273,10 @@ const en = {
         shapes: {
           intro: 'Primitives are wired inside components/demos/ShapesShowcaseDemo.vue',
           outro: ', mapping each Fabric shape wrapper to real refs.',
+        },
+        pdfWatermark: {
+          intro: 'PDF upload + watermark alignment sits in components/demos/PdfWatermarkDemo.vue',
+          outro: ', showing rotation buttons, drag handles, and bottom-aligned FabricText pairs.',
         },
       },
     },

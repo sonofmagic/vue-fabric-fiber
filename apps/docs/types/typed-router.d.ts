@@ -58,6 +58,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/demos/pdf-watermark': RouteRecordInfo<
+      '/demos/pdf-watermark',
+      '/demos/pdf-watermark',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/demos/playground': RouteRecordInfo<
       '/demos/playground',
       '/demos/playground',
@@ -126,6 +133,12 @@ declare module 'vue-router/auto-routes' {
     'src/pages/demos/composite.vue': {
       routes:
         | '/demos/composite'
+      views:
+        | never
+    }
+    'src/pages/demos/pdf-watermark.vue': {
+      routes:
+        | '/demos/pdf-watermark'
       views:
         | never
     }

@@ -1,5 +1,6 @@
 import type { TextProps } from 'fabric'
 import type { PropType } from 'vue'
+import type { FabricObjectSyncEvent } from './createFabricObject'
 import * as fabric from 'fabric'
 import {
   computed,
@@ -11,6 +12,7 @@ import {
   watch,
 } from 'vue'
 import { normalizeKeySelection, pickDefinedOptions, pickFromUnknown } from './binding-helpers'
+import { bindFabricSyncEvents, DEFAULT_SYNC_EVENTS } from './createFabricObject'
 import { ContextKey } from './symbols'
 
 type ExcludedTextPropKeys
@@ -120,6 +122,8 @@ type FabricTextOptionalProps = Partial<Pick<BaseTextProps, FabricTextOptionKey>>
 export interface FabricTextModelValue extends FabricTextOptionalProps {
   text: string
 }
+
+type FabricTextSyncEvent = FabricObjectSyncEvent
 
 export interface FabricTextPresetConfig {
   label: string
@@ -253,6 +257,16 @@ export const FabricText = defineComponent({
       type: Array as PropType<FabricTextBindableKey[]>,
       default: undefined,
     },
+    /**
+     * Fabric events that should trigger a v-model emit with fresh props.
+     * Defaults to drag/scale/rotate + modified.
+     */
+    syncOn: {
+      type: Array as PropType<FabricTextSyncEvent[]>,
+      default: () => {
+        return [...DEFAULT_SYNC_EVENTS]
+      },
+    },
   },
   emits: ['update:modelValue'],
   setup(props, { emit }) {
@@ -288,6 +302,23 @@ export const FabricText = defineComponent({
       return Array.from(keys)
     })
 
+    const resolvedSyncEvents = computed<readonly FabricTextSyncEvent[]>(() => {
+      const normalized = Array.isArray(props.syncOn) && props.syncOn.length > 0
+        ? props.syncOn
+        : DEFAULT_SYNC_EVENTS
+      return Array.from(new Set(normalized))
+    })
+
+    function emitModelValueUpdate(source: fabric.FabricText) {
+      const next = pickFromUnknown(source, resolvedBoundKeys.value) as Partial<FabricTextModelValue>
+      next.text = typeof source.text === 'string' ? source.text : modelValue.value.text
+
+      return {
+        ...modelValue.value,
+        ...next,
+      } as FabricTextModelValue
+    }
+
     const disposerCollection: VoidFunction[] = []
 
     onMounted(() => {
@@ -301,22 +332,13 @@ export const FabricText = defineComponent({
         creationOptions as Partial<TextProps>,
       )
 
-      disposerCollection.push(
-        textObj.on('modified', (event) => {
-          const target = event.target as fabric.FabricText | undefined
-          if (!target) {
-            return
-          }
-
-          const next = pickFromUnknown(target, resolvedBoundKeys.value) as Partial<FabricTextModelValue>
-          next.text = typeof target.text === 'string' ? target.text : modelValue.value.text
-
-          emit('update:modelValue', {
-            ...modelValue.value,
-            ...next,
-          } as FabricTextModelValue)
-        }),
+      const syncDisposers = bindFabricSyncEvents(
+        textObj,
+        resolvedSyncEvents.value,
+        () => emitModelValueUpdate(textObj!),
+        payload => emit('update:modelValue', payload),
       )
+      disposerCollection.push(...syncDisposers)
 
       ctx?.addSequentialTask(() => {
         ctx?.addObject?.(textObj!)

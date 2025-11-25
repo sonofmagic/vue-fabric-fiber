@@ -210,6 +210,11 @@ const zh = {
         description: '使用 Fabric 形状组件创建矩形、多段线、路径等基础图元。',
         tags: ['shapes', 'primitives'],
       },
+      pdfWatermark: {
+        title: 'PDF 上传裁剪',
+        description: '导入 PDF 后支持旋转、移动、等比缩放，并在左下角固定双文本水印。',
+        tags: ['image', 'text', 'bindings'],
+      },
     },
     detail: {
       common: {
@@ -222,6 +227,7 @@ const zh = {
         textPlayground: '把滑块、输入与切换直接绑定到 FabricText 属性，每次敲击都能看到画布更新。',
         composite: 'RenderGroup 队列、异步图像与可切换图层保持同步，便于研究绑定如何编排复杂场景。',
         shapes: '从矩形、多边形到自定义路径，所有基础图元都使用同一套 Fabric 绑定，方便安全复用。',
+        pdfWatermark: '上传 PDF，拖拽或旋转处理文件，左下角的两个 FabricText 水印始终按固定坐标展示。',
       },
       notes: {
         basic: {
@@ -247,6 +253,10 @@ const zh = {
         shapes: {
           intro: '全部基础图元集中在 components/demos/ShapesShowcaseDemo.vue',
           outro: '，便于对照各个 Fabric 组件的用法。',
+        },
+        pdfWatermark: {
+          intro: 'PDF 上传与水印定位示例位于 components/demos/PdfWatermarkDemo.vue',
+          outro: '，演示旋转按钮、拖拽与贴底文本对齐。',
         },
       },
     },
