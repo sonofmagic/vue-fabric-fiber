@@ -99,8 +99,8 @@ const props = defineProps<{
             :resolve-color-display="props.resolveColorDisplay"
             :x-max="props.watermarkXMax"
             :bottom-max="props.watermarkBottomMax"
-            @update:model-value="(value: WatermarkField) => props.onUpdateField(index, value)"
             :on-color-edited="() => props.onColorEdited(field.id)"
+            @update:model-value="(value: WatermarkField) => props.onUpdateField(index, value)"
           />
         </div>
       </StepCard>

@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import type { WatermarkField } from './pdf-watermark/types'
 import { canvasOptions, watermarkBottomMax, watermarkXMax } from './pdf-watermark/constants'
+import PdfWatermarkControls from './pdf-watermark/PdfWatermarkControls.vue'
+import PdfWatermarkPreview from './pdf-watermark/PdfWatermarkPreview.vue'
 import { useCanvasFrame } from './pdf-watermark/useCanvasFrame'
 import { usePdfLoader } from './pdf-watermark/usePdfLoader'
 import { useSnapshotExport } from './pdf-watermark/useSnapshotExport'
 import { useThemeMode } from './pdf-watermark/useThemeMode'
 import { useWatermarkFields } from './pdf-watermark/useWatermarkFields'
-import PdfWatermarkControls from './pdf-watermark/PdfWatermarkControls.vue'
-import PdfWatermarkPreview from './pdf-watermark/PdfWatermarkPreview.vue'
 
 const { themeMode } = useThemeMode()
 const { pageMatte, pageOutline, placeholderLabel } = useCanvasFrame(themeMode)
@@ -37,7 +37,7 @@ const {
   exportSnapshot,
 } = useSnapshotExport()
 
-const updateWatermarkField = (index: number, value: WatermarkField) => {
+function updateWatermarkField(index: number, value: WatermarkField) {
   watermarkFields[index] = value
 }
 </script>

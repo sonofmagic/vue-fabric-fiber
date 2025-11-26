@@ -1,11 +1,12 @@
 import type { FabricImageModelValue } from 'vue-fabric-fiber'
 import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist'
-import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url'
 import { computed, ref } from 'vue'
 import { PAGE_HEIGHT, PAGE_WIDTH, pageLeft, pageTop } from './constants'
 
+const workerSrc = new URL('pdfjs-dist/build/pdf.worker.min.mjs', import.meta.url).toString()
+
 if (typeof window !== 'undefined') {
-  GlobalWorkerOptions.workerSrc = pdfjsWorker
+  GlobalWorkerOptions.workerSrc = workerSrc
 }
 
 function normalizeFileType(file: File) {
