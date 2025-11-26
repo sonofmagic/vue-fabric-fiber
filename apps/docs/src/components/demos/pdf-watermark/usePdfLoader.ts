@@ -73,12 +73,17 @@ export function usePdfLoader() {
       const availableHeight = PAGE_HEIGHT - padding
       const fitScale = Math.min(availableWidth / viewport.width, availableHeight / viewport.height, 1)
 
+      const width = viewport.width * fitScale
+      const height = viewport.height * fitScale
+      const centerLeft = pageLeft + width / 2
+      const centerTop = pageTop + height / 2
+
       pdfLayer.value = {
         src,
-        left: pageLeft + PAGE_WIDTH / 2,
-        top: pageTop + PAGE_HEIGHT / 2,
-        width: viewport.width * fitScale,
-        height: viewport.height * fitScale,
+        left: centerLeft,
+        top: centerTop,
+        width,
+        height,
         originX: 'center',
         originY: 'center',
         angle: 0,
