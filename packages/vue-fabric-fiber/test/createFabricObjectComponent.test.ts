@@ -50,11 +50,13 @@ function createMockContext(overrides: Partial<Context> = {}): Context {
   const addSequentialTask = vi.fn(async (task: () => unknown) => {
     return task()
   })
+  let nextSequenceId = 0
 
   return {
     addObject,
     removeObject,
     addSequentialTask,
+    claimObjectSequence: () => nextSequenceId++,
     taskQueue: {} as PQueue,
     canvasEl: undefined,
     containerEl: undefined,

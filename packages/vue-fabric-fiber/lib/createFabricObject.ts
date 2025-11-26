@@ -15,6 +15,12 @@ type ModelRecord = Record<string, unknown>
 export type FabricObjectSyncEvent = 'modified' | 'moving' | 'scaling' | 'rotating'
 export const DEFAULT_SYNC_EVENTS: readonly FabricObjectSyncEvent[] = ['modified', 'moving', 'scaling', 'rotating']
 
+interface FabricObjectComponentProps<TModel extends ModelRecord> {
+  modelValue: TModel
+  syncOn: FabricObjectSyncEvent[]
+  stackOrder?: number
+}
+
 export function bindFabricSyncEvents<TModel extends ModelRecord, TObject extends FabricObject>(
   instance: TObject,
   events: readonly FabricObjectSyncEvent[],
@@ -78,11 +84,12 @@ export function createFabricObjectComponent<
       },
     },
     emits: ['update:modelValue'],
-    setup(props, { emit }) {
-      const propsWithModel = props as unknown as { modelValue: TModel }
-
+    setup(
+      props: Readonly<FabricObjectComponentProps<TModel>>,
+      { emit },
+    ) {
       const model = computed<TModel>({
-        get: () => propsWithModel.modelValue,
+        get: () => props.modelValue,
         set: value => emit('update:modelValue', value),
       })
       const ctx = inject(ContextKey)

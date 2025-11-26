@@ -6,6 +6,11 @@ import { RenderGroup } from '../lib/RenderGroup'
 import { ContextKey } from '../lib/symbols'
 import { mountComponent } from './test-utils'
 
+function createSequenceClaimer() {
+  let next = 0
+  return () => next++
+}
+
 function createParentContext(overrides: Partial<Context> = {}) {
   const recordedCalls: Array<[SequentialTask, AddSequentialTaskOptions | undefined]> = []
 
@@ -21,6 +26,7 @@ function createParentContext(overrides: Partial<Context> = {}) {
     addObject,
     removeObject: vi.fn(),
     addSequentialTask,
+    claimObjectSequence: createSequenceClaimer(),
     taskQueue: {} as PQueue,
     fabricCanvas: undefined,
     canvasEl: undefined,
@@ -44,6 +50,7 @@ function createQueuedParentContext() {
         await task()
       }, queueOptions)
     },
+    claimObjectSequence: createSequenceClaimer(),
     taskQueue: queue,
     fabricCanvas: undefined,
     canvasEl: undefined,
