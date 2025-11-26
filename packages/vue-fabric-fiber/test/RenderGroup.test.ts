@@ -167,7 +167,7 @@ describe('RenderGroup', () => {
 
     await nextTick()
     expect(parentCtx.addObject).toHaveBeenCalledTimes(1)
-    expect(parentCtx.addObject).toHaveBeenCalledWith(expect.anything(), 9)
+    expect(parentCtx.addObject).toHaveBeenCalledWith(expect.anything(), 9, undefined)
   })
 
   it('runs higher priority groups after lower ones to preserve stacking order', async () => {

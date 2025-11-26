@@ -86,7 +86,7 @@ describe('createFabricObjectComponent', () => {
     await nextTick()
     expect(createInstance).toHaveBeenCalledWith({ width: 80, height: 40 })
     expect(mockCtx.addSequentialTask).toHaveBeenCalledTimes(1)
-    expect(mockCtx.addObject).toHaveBeenCalledWith(instance)
+    expect(mockCtx.addObject).toHaveBeenCalledWith(instance, undefined, 0)
 
     wrapper.unmount()
     expect(mockCtx.removeObject).toHaveBeenCalledWith(instance)
