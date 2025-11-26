@@ -1,10 +1,8 @@
 import type { Context } from '../lib/types'
-import * as fabric from 'fabric'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import type { FabricMockModule } from './mocks/fabric'
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
-import { FabricText } from '../lib/FabricText'
 import { ContextKey } from '../lib/symbols'
-
 import { createFabricMock } from './mocks/fabric'
 import { mountComponent } from './test-utils'
 
@@ -27,6 +25,15 @@ vi.mock('fabric', () => {
 })
 
 const getFabricMock = () => fabricMockState.getAccessor()()
+const UPDATE_MODEL_VALUE_EVENT = 'onUpdate:modelValue' as const
+type FabricTextModule = typeof import('../lib/FabricText')
+
+let FabricText: FabricTextModule['FabricText']
+
+beforeAll(async () => {
+  const mod = await import('../lib/FabricText')
+  FabricText = mod.FabricText
+})
 
 async function flushTextTasks() {
   await Promise.resolve()
@@ -34,15 +41,16 @@ async function flushTextTasks() {
 }
 
 function createTextContext(overrides: Partial<Context> = {}) {
+  const mockFabric: FabricMockModule = getFabricMock()
   const canvasElement = document.createElement('canvas')
-  const fabricCanvas = new fabric.Canvas(canvasElement, { width: 500, height: 300 }) as fabric.Canvas & {
+  const fabricCanvas = new mockFabric.Canvas(canvasElement, { width: 500, height: 300 }) as InstanceType<FabricMockModule['Canvas']> & {
     renderAll: ReturnType<typeof vi.fn>
   }
   fabricCanvas.renderAll = vi.fn()
-  const addObject = vi.fn((obj: fabric.Object) => {
+  const addObject = vi.fn((obj: InstanceType<FabricMockModule['Object']>) => {
     fabricCanvas.add(obj)
   })
-  const removeObject = vi.fn((obj: fabric.Object) => {
+  const removeObject = vi.fn((obj: InstanceType<FabricMockModule['Object']>) => {
     fabricCanvas.remove(obj)
   })
   return {
@@ -69,22 +77,23 @@ describe('FabricText', () => {
 
     const wrapper = mountComponent(FabricText, {
       props: {
-        'modelValue': {
+        modelValue: {
           text: 'Hello',
           fontSize: 32,
           fill: '#000',
         },
-        'preset': 'headline',
-        'boundKeys': ['text', 'fontSize', 'left'],
-        'onUpdate:modelValue': updateSpy,
+        preset: 'headline',
+        boundKeys: ['text', 'fontSize', 'left'],
+        [UPDATE_MODEL_VALUE_EVENT]: updateSpy,
       },
       provide: [[ContextKey, ctx]],
     })
 
     await nextTick()
     await flushTextTasks()
-    const [[textObj]] = ctx.addObject.mock.calls as [[fabric.FabricText, number | undefined, number | undefined][]]
-    expect(textObj).toBeInstanceOf(fabric.FabricText)
+    const mockFabric: FabricMockModule = getFabricMock()
+    const [[textObj]] = ctx.addObject.mock.calls as [[InstanceType<FabricMockModule['FabricText']>, number | undefined, number | undefined][]]
+    expect(textObj).toBeInstanceOf(mockFabric.FabricText)
     expect(ctx.addSequentialTask).toHaveBeenCalled()
 
     await flushTextTasks()

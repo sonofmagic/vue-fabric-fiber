@@ -1,5 +1,15 @@
 type EventHandler = (event?: unknown) => void
 
+interface DimensionCall {
+  dim: Record<string, number | undefined>
+  options?: Record<string, unknown>
+}
+
+interface CanvasEventLog {
+  event: string
+  payload?: unknown
+}
+
 class MockFabricObject {
   canvas?: Canvas
   private listeners = new Map<string, Set<EventHandler>>()
@@ -34,9 +44,9 @@ class Canvas {
   height: number
   enableRetinaScaling = true
   objects: MockFabricObject[] = []
-  dimensionCalls: Array<{ dim: Record<string, number | undefined>, options?: Record<string, unknown> }> = []
+  dimensionCalls: DimensionCall[] = []
   renderCount = 0
-  events: Array<{ event: string, payload?: unknown }> = []
+  events: CanvasEventLog[] = []
   disposed = false
   calcCalled = false
 
@@ -273,3 +283,5 @@ export function createFabricMock(): FabricMock {
     Triangle,
   }
 }
+
+export type FabricMockModule = ReturnType<typeof createFabricMock>

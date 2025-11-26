@@ -1,19 +1,8 @@
 import type { Context } from '../lib/types'
-import { describe, expect, it, vi } from 'vitest'
+import { beforeAll, describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
-import {
-  FabricCircle,
-  FabricEllipse,
-  FabricLine,
-  FabricPath,
-  FabricPolygon,
-  FabricPolyline,
-  FabricRect,
-  FabricTriangle,
-} from '../lib/FabricShapes'
 import { ContextKey } from '../lib/symbols'
 import { createFabricMock } from './mocks/fabric'
-
 import { mountComponent } from './test-utils'
 
 const fabricMockState = vi.hoisted(() => {
@@ -34,6 +23,13 @@ vi.mock('fabric', () => {
   return mock.module
 })
 
+type FabricShapesModule = typeof import('../lib/FabricShapes')
+let Shapes: FabricShapesModule | undefined
+
+beforeAll(async () => {
+  Shapes = await import('../lib/FabricShapes')
+})
+
 function createShapeContext(): Context {
   return {
     addObject: vi.fn(),
@@ -49,15 +45,16 @@ function createShapeContext(): Context {
 
 describe('Fabric shape components', () => {
   it('instantiates each shape through the shared factory', async () => {
+    const module = Shapes!
     const shapes = [
-      ['circle', FabricCircle, { radius: 20 }],
-      ['ellipse', FabricEllipse, { rx: 30, ry: 20 }],
-      ['line', FabricLine, { points: [0, 0, 10, 10] }],
-      ['path', FabricPath, { path: 'M0 0 L10 10' }],
-      ['polygon', FabricPolygon, { points: [{ x: 0, y: 0 }] }],
-      ['polyline', FabricPolyline, { points: [{ x: 0, y: 0 }, { x: 10, y: 10 }] }],
-      ['rect', FabricRect, { width: 40, height: 20 }],
-      ['triangle', FabricTriangle, { width: 30, height: 30 }],
+      ['circle', module.FabricCircle, { radius: 20 }],
+      ['ellipse', module.FabricEllipse, { rx: 30, ry: 20 }],
+      ['line', module.FabricLine, { points: [0, 0, 10, 10] }],
+      ['path', module.FabricPath, { path: 'M0 0 L10 10' }],
+      ['polygon', module.FabricPolygon, { points: [{ x: 0, y: 0 }] }],
+      ['polyline', module.FabricPolyline, { points: [{ x: 0, y: 0 }, { x: 10, y: 10 }] }],
+      ['rect', module.FabricRect, { width: 40, height: 20 }],
+      ['triangle', module.FabricTriangle, { width: 30, height: 30 }],
     ] as const
 
     for (const [, component, modelValue] of shapes) {

@@ -1,8 +1,7 @@
 import type { Context } from '../lib/types'
-import * as fabric from 'fabric'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import type { FabricMockModule } from './mocks/fabric'
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { defineComponent, h, inject, nextTick, onMounted } from 'vue'
-import { FabricCanvas, getSystemPixelRatio } from '../lib/FabricCanvas'
 import { ContextKey } from '../lib/symbols'
 import { createFabricMock } from './mocks/fabric'
 import { mountComponent } from './test-utils'
@@ -45,6 +44,17 @@ vi.mock('p-queue', () => {
 })
 
 const getFabricMock = () => fabricMockState.getAccessor()()
+
+type FabricCanvasModule = typeof import('../lib/FabricCanvas')
+
+let FabricCanvas: FabricCanvasModule['FabricCanvas']
+let getSystemPixelRatio: FabricCanvasModule['getSystemPixelRatio']
+
+beforeAll(async () => {
+  const mod = await import('../lib/FabricCanvas')
+  FabricCanvas = mod.FabricCanvas
+  getSystemPixelRatio = mod.getSystemPixelRatio
+})
 
 async function flushTasks() {
   await Promise.resolve()
@@ -140,8 +150,9 @@ describe('FabricCanvas', () => {
     }, { bypassQueue: true })
     await ctx.taskQueue?.onIdle?.()
 
-    const objA = new fabric.Circle({ id: 'first' })
-    const objB = new fabric.Circle({ id: 'second' })
+    const fabricModule: FabricMockModule = getFabricMock()
+    const objA = new fabricModule.Circle({ id: 'first' })
+    const objB = new fabricModule.Circle({ id: 'second' })
     const seq0 = ctx.claimObjectSequence?.() ?? 0
     const seq1 = ctx.claimObjectSequence?.() ?? 0
     ctx.addObject?.(objB, undefined, seq0)

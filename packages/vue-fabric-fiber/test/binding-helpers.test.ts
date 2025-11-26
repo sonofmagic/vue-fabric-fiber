@@ -17,7 +17,6 @@ describe('binding helpers', () => {
 
     expect(normalizeKeySelection(undefined, validKeys)).toEqual([])
   })
-
   it('picks defined props from a typed source', () => {
     const payload = {
       width: 100,
@@ -33,7 +32,6 @@ describe('binding helpers', () => {
 
     expect(pickDefinedProps(undefined, ['width'] as const)).toEqual({})
   })
-
   it('picks properties from unknown sources safely', () => {
     const payload = {
       width: 42,

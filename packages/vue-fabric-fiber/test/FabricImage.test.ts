@@ -1,8 +1,7 @@
 import type { Context } from '../lib/types'
-import * as fabric from 'fabric'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import type { FabricMockModule } from './mocks/fabric'
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
-import { FabricImage } from '../lib/FabricImage'
 import { ContextKey } from '../lib/symbols'
 import { createFabricMock } from './mocks/fabric'
 import { mountComponent } from './test-utils'
@@ -26,6 +25,14 @@ vi.mock('fabric', () => {
 })
 
 const getFabricMock = () => fabricMockState.getAccessor()()
+const UPDATE_MODEL_VALUE_EVENT = 'onUpdate:modelValue' as const
+type FabricImageModule = typeof import('../lib/FabricImage')
+let FabricImage: FabricImageModule['FabricImage']
+
+beforeAll(async () => {
+  const mod = await import('../lib/FabricImage')
+  FabricImage = mod.FabricImage
+})
 
 async function flushImageTasks() {
   await Promise.resolve()
@@ -33,10 +40,11 @@ async function flushImageTasks() {
 }
 
 function createImageContext(overrides: Partial<Context> = {}) {
+  const mockFabric: FabricMockModule = getFabricMock()
   const canvasElement = document.createElement('canvas')
   canvasElement.width = 600
   canvasElement.height = 400
-  const fabricCanvas = new fabric.Canvas(canvasElement, { width: 600, height: 400 })
+  const fabricCanvas = new mockFabric.Canvas(canvasElement, { width: 600, height: 400 })
   return {
     addObject: vi.fn(),
     removeObject: vi.fn(),
@@ -62,23 +70,24 @@ describe('FabricImage', () => {
 
     const wrapper = mountComponent(FabricImage, {
       props: {
-        'modelValue': {
+        modelValue: {
           src: 'mock-src',
           width: '50%',
           height: '100%',
           crossOrigin: 'anonymous',
           selectable: true,
         },
-        'stackOrder': 9,
-        'onUpdate:modelValue': updateSpy,
+        stackOrder: 9,
+        [UPDATE_MODEL_VALUE_EVENT]: updateSpy,
       },
       provide: [[ContextKey, ctx]],
     })
 
     await nextTick()
     await flushImageTasks()
-    const [[imageInstance]] = ctx.addObject.mock.calls as [[fabric.FabricImage, number | undefined, number | undefined][]]
-    expect(imageInstance).toBeInstanceOf(fabric.FabricImage)
+    const mockFabric: FabricMockModule = getFabricMock()
+    const [[imageInstance]] = ctx.addObject.mock.calls as [[InstanceType<FabricMockModule['FabricImage']>, number | undefined, number | undefined][]]
+    expect(imageInstance).toBeInstanceOf(mockFabric.FabricImage)
     expect(ctx.addObject).toHaveBeenCalledWith(imageInstance, undefined, 9)
     expect(imageInstance.scaleX).toBeGreaterThan(0)
     expect(imageInstance.scaleY).toBeGreaterThan(0)
@@ -121,14 +130,15 @@ describe('FabricImage', () => {
     const ctx = createImageContext()
     let slowReject: (() => void) | undefined
 
-    const loadSpy = vi.spyOn(fabric.FabricImage, 'fromURL').mockImplementation((src: string, loadOptions: { signal?: AbortSignal } = {}) => {
+    const mockFabric: FabricMockModule = getFabricMock()
+    const loadSpy = vi.spyOn(mockFabric.FabricImage, 'fromURL').mockImplementation((src: string, loadOptions: { signal?: AbortSignal } = {}) => {
       if (src === 'slow') {
         return new Promise((_resolve, reject) => {
           slowReject = () => reject(new DOMException('Aborted', 'AbortError'))
           loadOptions.signal?.addEventListener('abort', () => slowReject?.())
         })
       }
-      return Promise.resolve(new fabric.FabricImage({ src }))
+      return Promise.resolve(new mockFabric.FabricImage({ src }))
     })
 
     const wrapper = mountComponent(FabricImage, {
