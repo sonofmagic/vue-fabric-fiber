@@ -27,24 +27,24 @@ const watermarkOrderText = defineModel<FabricTextModelValue>('watermarkOrderText
 </script>
 
 <template>
-  <section class="rounded-[28px] border border-[var(--fp-border-color)] bg-[var(--fp-panel-bg)] p-4 sm:p-5 shadow-[0_24px_60px_-45px_rgba(15,23,42,0.4)]">
+  <section class="rounded-[28px] border border-(--fp-border-color) bg-(--fp-panel-bg) p-4 sm:p-5 shadow-[0_24px_60px_-45px_rgba(15,23,42,0.4)]">
     <div class="flex items-center justify-between">
       <div class="space-y-1">
-        <p class="text-sm font-semibold text-[var(--fp-text-primary)]">
+        <p class="text-sm font-semibold text-(--fp-text-primary)">
           裁剪预览
         </p>
-        <p class="text-xs text-[var(--fp-text-muted)]">
+        <p class="text-xs text-(--fp-text-muted)">
           未上传时显示占位状态，导入后可直接拖拽 PDF。
         </p>
       </div>
-      <span class="rounded-full border border-[var(--fp-border-color)] bg-[var(--fp-panel-bg-soft)] px-3 py-1 text-[11px] uppercase tracking-[0.28em] text-[var(--fp-text-muted)]">
+      <span class="rounded-full border border-(--fp-border-color) bg-(--fp-panel-bg-soft) px-3 py-1 text-[11px] uppercase tracking-[0.28em] text-(--fp-text-muted)">
         FabricCanvas
       </span>
     </div>
 
-    <div class="mt-4 rounded-[24px] border border-[var(--fp-border-color)] bg-[var(--fp-panel-bg-soft)] p-3 shadow-[0_30px_80px_-55px_rgba(15,23,42,0.9)]">
+    <div class="mt-4 rounded-3xl border border-(--fp-border-color) bg-(--fp-panel-bg-soft) p-3 shadow-[0_30px_80px_-55px_rgba(15,23,42,0.9)]">
       <div
-        class="overflow-hidden rounded-[20px] border border-[var(--fp-border-color)] bg-[var(--fp-panel-bg)] bg-[linear-gradient(45deg,rgba(148,163,184,0.08)_25%,transparent_25%),linear-gradient(-45deg,rgba(148,163,184,0.08)_25%,transparent_25%),linear-gradient(45deg,transparent_75%,rgba(148,163,184,0.08)_75%),linear-gradient(-45deg,transparent_75%,rgba(148,163,184,0.08)_75%)] bg-[length:48px_48px] bg-[position:0_0,0_24px,24px_-24px,-24px_0]"
+        class="overflow-hidden rounded-[20px] border border-(--fp-border-color) bg-(--fp-panel-bg) bg-[linear-gradient(45deg,rgba(148,163,184,0.08)_25%,transparent_25%),linear-gradient(-45deg,rgba(148,163,184,0.08)_25%,transparent_25%),linear-gradient(45deg,transparent_75%,rgba(148,163,184,0.08)_75%),linear-gradient(-45deg,transparent_75%,rgba(148,163,184,0.08)_75%)] bg-size-[48px_48px] bg-position-[0_0,0_24px,24px_-24px,-24px_0]"
       >
         <FabricCanvas class="fp-pdf-canvas" :canvas-options="props.canvasOptions" @ready="props.onCanvasReady">
           <RenderGroup :priority="0">

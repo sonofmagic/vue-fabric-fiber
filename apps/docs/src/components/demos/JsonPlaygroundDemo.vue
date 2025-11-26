@@ -160,9 +160,15 @@ const SCENE_PRESETS: ScenePreset[] = [
   },
 ]
 
-const fallbackScene = SCENE_PRESETS[0].nodes
-const selectedPresetId = ref(SCENE_PRESETS[0].id)
-const sceneSource = ref(JSON.stringify(SCENE_PRESETS[0].nodes, null, 2))
+const defaultPreset = SCENE_PRESETS[0] ?? {
+  id: 'custom',
+  label: 'Custom',
+  nodes: [] as SceneNode[],
+}
+
+const fallbackScene = defaultPreset.nodes
+const selectedPresetId = ref(defaultPreset.id)
+const sceneSource = ref(JSON.stringify(defaultPreset.nodes, null, 2))
 
 watch(selectedPresetId, (id) => {
   const preset = SCENE_PRESETS.find(entry => entry.id === id)
@@ -171,7 +177,7 @@ watch(selectedPresetId, (id) => {
   }
 })
 
-const parsedScene = computed(() => {
+const parsedScene = computed<{ nodes: SceneNode[]; error: string | null }>(() => {
   try {
     const parsed = JSON.parse(sceneSource.value)
     if (!Array.isArray(parsed)) {
@@ -213,7 +219,7 @@ function buildBindings(node: SceneNode) {
 <template>
   <div class="grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(320px,1fr)]">
     <div class="rounded-[28px] border border-panel bg-panel p-3 sm:p-4">
-      <div class="canvas-shell aspect-[16/9] overflow-hidden rounded-[24px] border border-panel-soft bg-overlay-strong">
+      <div class="canvas-shell aspect-video overflow-hidden rounded-3xl border border-panel-soft bg-overlay-strong">
         <FabricCanvas :canvas-options="{ width: 980, height: 540, preserveObjectStacking: true, backgroundColor: '#020617' }">
           <component
             :is="resolveComponent(node.type)"
@@ -225,7 +231,7 @@ function buildBindings(node: SceneNode) {
       </div>
     </div>
 
-    <section class="space-y-4 rounded-[24px] border border-panel bg-panel-soft p-4 text-[13px] text-primary">
+    <section class="space-y-4 rounded-3xl border border-panel bg-panel-soft p-4 text-[13px] text-primary">
       <div class="space-y-1">
         <span class="eyebrow">Scene blueprint</span>
         <p class="text-sm text-muted">
