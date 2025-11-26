@@ -76,8 +76,8 @@ export function usePdfLoader() {
 
       const width = viewport.width * fitScale
       const height = viewport.height * fitScale
-      const centerLeft = pageLeft + width / 2
-      const centerTop = pageTop + height / 2
+      const centerLeft = pageLeft + (PAGE_WIDTH - width) / 2
+      const centerTop = pageTop + (PAGE_HEIGHT - height) / 2
 
       pdfLayer.value = {
         src,
@@ -85,12 +85,12 @@ export function usePdfLoader() {
         top: centerTop,
         width,
         height,
-        originX: 'center',
-        originY: 'center',
+        originX: 'left',
+        originY: 'top',
         angle: 0,
         hoverCursor: 'move',
         centeredRotation: true,
-        centeredScaling: true,
+        centeredScaling: false,
         lockScalingFlip: true,
         lockUniScaling: true,
         hasRotatingPoint: false,

@@ -110,7 +110,7 @@ const watermarkOrderText = defineModel<FabricTextModelValue>('watermarkOrderText
 <style scoped>
 .fp-pdf-canvas :deep(canvas) {
   display: block;
-  width: min(100%, 500px);
+  width: min(100%, 420px);
   height: auto;
   margin-inline: auto;
 }
