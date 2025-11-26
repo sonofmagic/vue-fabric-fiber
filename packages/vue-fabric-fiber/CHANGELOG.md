@@ -1,5 +1,11 @@
 # vue-fabric-fiber
 
+## 1.0.2
+
+### Patch Changes
+
+- [`c7102ae`](https://github.com/sonofmagic/vue-fabric-fiber/commit/c7102ae939849c6b0b49e0d7493905370e340b89) Thanks [@sonofmagic](https://github.com/sonofmagic)! - Fix PDF watermark overlay so it aligns top-left while rotating around its center and keep Fabric image origins applied; refresh docs demo styles and typings alongside canonical Tailwind variable classes.
+
 ## 1.0.1
 
 ### Patch Changes
