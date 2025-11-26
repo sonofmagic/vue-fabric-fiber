@@ -177,7 +177,7 @@ watch(selectedPresetId, (id) => {
   }
 })
 
-const parsedScene = computed<{ nodes: SceneNode[]; error: string | null }>(() => {
+const parsedScene = computed<{ nodes: SceneNode[], error: string | null }>(() => {
   try {
     const parsed = JSON.parse(sceneSource.value)
     if (!Array.isArray(parsed)) {
