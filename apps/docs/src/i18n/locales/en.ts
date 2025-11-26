@@ -279,6 +279,17 @@ const en = {
           outro: ', showing rotation buttons, drag handles, and bottom-aligned FabricText pairs.',
         },
       },
+      pdfWatermarkStack: {
+        title: 'Layer order without RenderGroup',
+        lede:
+          'This demo now relies on stack-order props to keep the canvas sorted by template order, even while the PDF image loads asynchronously.',
+        points: {
+          orderedInsert: 'Each Fabric component accepts stack-order so you can pin z-order without extra RenderGroup wrappers.',
+          asyncImage: 'FabricImage grabs its stack order before loading, so the bitmap drops into the right slot once the download completes.',
+          snapshot: 'Watermarks still emit updates through v-model; stack-order only affects placement, not data binding.',
+        },
+        snippetTitle: 'Stack a PDF layer and two watermarks in template order',
+      },
     },
   },
   docs: {

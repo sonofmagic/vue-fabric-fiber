@@ -10,7 +10,7 @@ import { useThemeMode } from './pdf-watermark/useThemeMode'
 import { useWatermarkFields } from './pdf-watermark/useWatermarkFields'
 
 const { themeMode } = useThemeMode()
-const { pageMatte, pageOutline, placeholderLabel } = useCanvasFrame(themeMode)
+const { placeholderLabel } = useCanvasFrame(themeMode)
 const {
   watermarkFields,
   watermarkSkuText,
@@ -66,8 +66,6 @@ function updateWatermarkField(index: number, value: WatermarkField) {
     />
 
     <PdfWatermarkPreview
-      v-model:page-matte="pageMatte"
-      v-model:page-outline="pageOutline"
       v-model:pdf-layer="pdfLayer"
       v-model:placeholder-label="placeholderLabel"
       v-model:watermark-sku-text="watermarkSkuText"

@@ -23,6 +23,7 @@ export const RenderGroup = defineComponent({
 
     const parentAddSequentialTask = injectCtx?.addSequentialTask
     const parentAddObject = injectCtx?.addObject
+    const parentClaimObjectSequence = injectCtx?.claimObjectSequence
 
     function fallbackRun(task: SequentialTask) {
       return Promise.resolve().then(() => task())
@@ -52,12 +53,17 @@ export const RenderGroup = defineComponent({
       return parentAddSequentialTask(task, hasOptions ? mergedOptions : undefined)
     }
 
-    function addObject(obj: Parameters<Context['addObject']>[0]) {
-      return parentAddObject?.(obj, props.priority)
+    function addObject(
+      obj: Parameters<Context['addObject']>[0],
+      priority?: number,
+      sequence?: number,
+    ) {
+      return parentAddObject?.(obj, props.priority ?? priority, sequence)
     }
 
     ctx.addSequentialTask = addSequentialTask
     ctx.addObject = addObject
+    ctx.claimObjectSequence = () => parentClaimObjectSequence?.() ?? 0
 
     provide(ContextKey, ctx as Context)
     return () => slots.default?.() ?? null

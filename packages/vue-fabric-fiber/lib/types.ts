@@ -15,8 +15,9 @@ export interface Context {
   canvasEl?: HTMLCanvasElement
   fabricCanvas?: fabric.Canvas
   containerEl?: HTMLDivElement
-  addObject: (obj: fabric.Object, priority?: number) => void
+  addObject: (obj: fabric.Object, priority?: number, sequence?: number) => void
   removeObject: (obj: fabric.Object) => void
   taskQueue: PQueue
   addSequentialTask: (task: SequentialTask, options?: AddSequentialTaskOptions) => Promise<unknown>
+  claimObjectSequence: () => number
 }

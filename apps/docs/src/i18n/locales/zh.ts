@@ -259,6 +259,16 @@ const zh = {
           outro: '，演示旋转按钮、拖拽与贴底文本对齐。',
         },
       },
+      pdfWatermarkStack: {
+        title: '不依赖 RenderGroup 的图层排序',
+        lede: '现在通过 stack-order 属性按模板顺序排布对象，即便 PDF 图像异步加载也不会乱序。',
+        points: {
+          orderedInsert: '每个 Fabric 组件都能接收 stack-order，用数值锁定 z 轴，无需额外的 RenderGroup 包裹。',
+          asyncImage: 'FabricImage 在加载前就领取序号，下载完成后会被放进正确的位置。',
+          snapshot: '水印依旧通过 v-model 同步属性；stack-order 只影响叠放顺序，不干扰数据绑定。',
+        },
+        snippetTitle: '按模板顺序堆叠 PDF 与双水印',
+      },
     },
   },
   docs: {

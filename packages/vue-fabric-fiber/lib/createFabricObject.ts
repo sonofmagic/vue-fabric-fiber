@@ -69,6 +69,13 @@ export function createFabricObjectComponent<
           return [...DEFAULT_SYNC_EVENTS]
         },
       },
+      /**
+       * Optional stack order hint. Lower numbers render beneath higher ones.
+       */
+      stackOrder: {
+        type: Number,
+        default: undefined,
+      },
     },
     emits: ['update:modelValue'],
     setup(props, { emit }) {
@@ -79,6 +86,7 @@ export function createFabricObjectComponent<
         set: value => emit('update:modelValue', value),
       })
       const ctx = inject(ContextKey)
+      const sequenceHint = props.stackOrder ?? ctx?.claimObjectSequence?.()
 
       let instance: TObject | undefined
       const disposers: VoidFunction[] = []
@@ -145,11 +153,11 @@ export function createFabricObjectComponent<
 
         if (ctx?.addSequentialTask) {
           ctx.addSequentialTask(() => {
-            ctx.addObject?.(instance!)
+            ctx.addObject?.(instance!, undefined, sequenceHint)
           })
         }
         else {
-          ctx?.addObject?.(instance)
+          ctx?.addObject?.(instance, undefined, sequenceHint)
         }
       })
 

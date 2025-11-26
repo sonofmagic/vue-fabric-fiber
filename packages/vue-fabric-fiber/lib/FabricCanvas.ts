@@ -280,10 +280,14 @@ export const FabricCanvas = defineComponent({
       ctx.fabricCanvas.requestRenderAll()
     }
 
-    function addObject(obj: fabric.Object, priority?: number) {
+    function claimObjectSequence() {
+      return nextSequenceId++
+    }
+
+    function addObject(obj: fabric.Object, priority?: number, sequence?: number) {
       objectMeta.set(obj, {
         priority,
-        sequence: nextSequenceId++,
+        sequence: sequence ?? nextSequenceId++,
       })
       ctx.fabricCanvas?.add(obj)
       reorderObjects()
@@ -316,6 +320,7 @@ export const FabricCanvas = defineComponent({
     ctx.addObject = addObject
     ctx.removeObject = removeObject
     ctx.addSequentialTask = addSequentialTask
+    ctx.claimObjectSequence = claimObjectSequence
 
     const presetConfig = computed<FabricCanvasPresetConfig>(() => {
       return FABRIC_CANVAS_PRESETS[props.preset] ?? FABRIC_CANVAS_PRESETS.default

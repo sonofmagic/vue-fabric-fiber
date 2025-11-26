@@ -393,12 +393,20 @@ export const FabricImage = defineComponent({
         return [...DEFAULT_SYNC_EVENTS]
       },
     },
+    /**
+     * Optional stack order hint. Lower numbers render beneath higher ones.
+     */
+    stackOrder: {
+      type: Number,
+      default: undefined,
+    },
   },
   emits: ['update:modelValue'],
   setup(props, { emit }) {
     const modelValue = useModel(props, 'modelValue')
 
     const ctx = inject(ContextKey)
+    const sequenceHint = props.stackOrder ?? ctx?.claimObjectSequence?.()
 
     let imageObj: fabric.FabricImage | undefined
     let activeAbortController: AbortController | undefined
@@ -567,7 +575,7 @@ export const FabricImage = defineComponent({
         attachEventListeners(instance)
 
         imageObj = instance
-        ctx?.addObject?.(instance)
+        ctx?.addObject?.(instance, undefined, sequenceHint)
         ctx?.fabricCanvas?.requestRenderAll?.()
       }
       catch (error: unknown) {

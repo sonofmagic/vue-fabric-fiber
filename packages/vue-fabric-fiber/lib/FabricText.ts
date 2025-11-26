@@ -268,12 +268,20 @@ export const FabricText = defineComponent({
         return [...DEFAULT_SYNC_EVENTS]
       },
     },
+    /**
+     * Optional stack order hint. Lower numbers render beneath higher ones.
+     */
+    stackOrder: {
+      type: Number,
+      default: undefined,
+    },
   },
   emits: ['update:modelValue'],
   setup(props, { emit }) {
     const modelValue = useModel(props, 'modelValue')
 
     const ctx = inject(ContextKey)
+    const sequenceHint = props.stackOrder ?? ctx?.claimObjectSequence?.()
 
     let textObj: fabric.Text | undefined
 
@@ -342,7 +350,7 @@ export const FabricText = defineComponent({
       disposerCollection.push(...syncDisposers)
 
       ctx?.addSequentialTask(() => {
-        ctx?.addObject?.(textObj!)
+        ctx?.addObject?.(textObj!, undefined, sequenceHint)
       })
     })
 
