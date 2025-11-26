@@ -119,6 +119,33 @@ describe('createFabricObjectComponent', () => {
     expect(applyProps).toHaveBeenCalledWith(instance, { width: 30, fill: '#fff' })
   })
 
+  it('uses instance.set when no custom applyProps handler is provided', async () => {
+    const instance = createStubInstance({ width: 10 })
+    const createInstance = vi.fn(() => instance)
+    const mockCtx = createMockContext({
+      addSequentialTask: undefined as unknown as Context['addSequentialTask'],
+    })
+
+    const TestObject = createFabricObjectComponent({
+      name: 'StubSetFallback',
+      defaults: () => ({ width: 5, height: 5 }),
+      createInstance,
+    })
+
+    const wrapper = mountComponent(TestObject, {
+      props: {
+        modelValue: { width: 12 },
+      },
+      provide: [[ContextKey, mockCtx]],
+    })
+
+    await nextTick()
+    await wrapper.updateProps({ modelValue: { width: 18, height: undefined } })
+    expect(instance.set).toHaveBeenCalledWith({ width: 18 })
+    expect(instance.canvas.requestRenderAll).toHaveBeenCalled()
+    expect(mockCtx.addObject).toHaveBeenCalledWith(instance, undefined, 0)
+  })
+
   it('emits sanitized model values when the fabric instance mutates', async () => {
     const instance = createStubInstance({ left: 10, top: 20, width: 50 })
     const createInstance = vi.fn(() => instance)
@@ -147,5 +174,27 @@ describe('createFabricObjectComponent', () => {
     instance.trigger('modified')
 
     expect(updateSpy).toHaveBeenCalledWith({ left: 120 })
+  })
+
+  it('skips setup when the factory returns no instance', async () => {
+    const createInstance = vi.fn(() => undefined as unknown as FabricObject)
+    const mockCtx = createMockContext()
+
+    const TestObject = createFabricObjectComponent({
+      name: 'Empty',
+      defaults: () => ({ width: 1 }),
+      createInstance,
+    })
+
+    const wrapper = mountComponent(TestObject, {
+      props: {
+        modelValue: { width: 5 },
+      },
+      provide: [[ContextKey, mockCtx]],
+    })
+
+    await nextTick()
+    expect(mockCtx.addObject).not.toHaveBeenCalled()
+    wrapper.unmount()
   })
 })

@@ -37,4 +37,9 @@ describe('removeUndefined', () => {
     const payload = ['keep', undefined, 'also-keep', undefined]
     expect(removeUndefined(payload)).toEqual(['keep', 'also-keep'])
   })
+
+  it('returns non-object values untouched', () => {
+    expect(removeUndefined('plain-value')).toBe('plain-value')
+    expect(removeUndefined(0)).toBe(0)
+  })
 })

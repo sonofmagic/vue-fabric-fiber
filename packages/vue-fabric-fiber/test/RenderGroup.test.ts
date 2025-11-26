@@ -132,6 +132,38 @@ describe('RenderGroup', () => {
     expect(taskTracker).toHaveLength(1)
   })
 
+  it('allows per-call options to override the priority and bypass queue', async () => {
+    const { ctx: parentCtx, recordedCalls } = createParentContext()
+    const logs: number[] = []
+
+    const Consumer = defineComponent({
+      name: 'OverrideConsumer',
+      setup() {
+        const ctx = inject<Context | undefined>(ContextKey, undefined)
+        onMounted(() => {
+          ctx?.addSequentialTask?.(() => {
+            logs.push(1)
+          }, { priority: 3, bypassQueue: true })
+        })
+        return () => null
+      },
+    })
+
+    mountComponent(RenderGroup, {
+      props: { priority: 1 },
+      provide: [[ContextKey, parentCtx]],
+      slots: {
+        default: () => [h(Consumer)],
+      },
+    })
+
+    await nextTick()
+    expect(recordedCalls).toHaveLength(1)
+    const [, options] = recordedCalls[0]!
+    expect(options).toEqual({ priority: 3, bypassQueue: true })
+    expect(logs).toEqual([1])
+  })
+
   it('bypasses the queue when disableQueue is set', async () => {
     const { ctx: parentCtx, recordedCalls } = createParentContext()
     const taskTracker: number[] = []
@@ -168,6 +200,20 @@ describe('RenderGroup', () => {
     await nextTick()
     expect(parentCtx.addObject).toHaveBeenCalledTimes(1)
     expect(parentCtx.addObject).toHaveBeenCalledWith(expect.anything(), 9, undefined)
+  })
+
+  it('runs tasks immediately when no parent context exists', async () => {
+    const trackers: number[] = []
+    const Consumer = createConsumer(trackers)
+
+    mountComponent(RenderGroup, {
+      slots: {
+        default: () => [h(Consumer)],
+      },
+    })
+
+    await nextTick()
+    expect(trackers).toEqual([1])
   })
 
   it('runs higher priority groups after lower ones to preserve stacking order', async () => {
