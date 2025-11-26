@@ -62,6 +62,7 @@ export function usePdfLoader() {
       renderCanvas.height = viewport.height
 
       await page.render({
+        canvas: renderCanvas,
         canvasContext: context,
         viewport,
       }).promise

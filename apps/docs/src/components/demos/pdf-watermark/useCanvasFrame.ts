@@ -1,5 +1,6 @@
 import type { Ref } from 'vue'
 import type { FabricRectModelValue, FabricTextModelValue } from 'vue-fabric-fiber'
+import { Shadow } from 'fabric'
 import { onMounted, ref, watchEffect } from 'vue'
 import {
   canvasCenterX,
@@ -22,6 +23,15 @@ function measurePlaceholderTextWidth() {
   context.font = '600 16px "DM Sans", "Inter", system-ui, -apple-system, sans-serif'
   const metrics = context.measureText(placeholderTextContent)
   return metrics.width
+}
+
+function createShadow(color: string, blur: number, offsetY: number) {
+  return new Shadow({
+    color,
+    blur,
+    offsetX: 0,
+    offsetY,
+  })
 }
 
 export function useCanvasFrame(themeMode: Ref<'light' | 'dark'>) {
@@ -68,7 +78,7 @@ export function useCanvasFrame(themeMode: Ref<'light' | 'dark'>) {
     textAlign: 'center',
     fill: '#cbd5f5',
     opacity: 0.72,
-    shadow: 'rgba(2,6,23,0.35) 0px 12px 32px',
+    shadow: createShadow('rgba(2,6,23,0.35)', 32, 12),
     selectable: false,
     evented: false,
   })
@@ -85,7 +95,9 @@ export function useCanvasFrame(themeMode: Ref<'light' | 'dark'>) {
     pageOutline.value.fill = isLight ? 'rgba(15,23,42,0.05)' : 'rgba(148,163,184,0.05)'
     pageOutline.value.stroke = isLight ? '#0ea5e9' : '#38bdf8'
     placeholderLabel.value.fill = isLight ? '#475569' : '#cbd5f5'
-    placeholderLabel.value.shadow = isLight ? 'rgba(15,23,42,0.22) 0px 10px 26px' : 'rgba(2,6,23,0.35) 0px 12px 32px'
+    placeholderLabel.value.shadow = isLight
+      ? createShadow('rgba(15,23,42,0.22)', 26, 10)
+      : createShadow('rgba(2,6,23,0.35)', 32, 12)
   })
 
   return {

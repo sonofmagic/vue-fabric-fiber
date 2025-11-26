@@ -39,7 +39,7 @@ export function useWatermarkFields(themeMode: Ref<'light' | 'dark'>) {
     sku: false,
     order: false,
   })
-  const watermarkFields = reactive<WatermarkField[]>([
+  const watermarkFields = reactive<[WatermarkField, WatermarkField]>([
     {
       id: 'sku',
       label: '发货SKU Code或Repack',
