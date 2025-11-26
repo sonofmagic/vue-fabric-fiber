@@ -30,8 +30,10 @@ const WATERMARK_MARGIN = 24
 const pageLeft = (CANVAS_WIDTH - PAGE_WIDTH) / 2
 const pageTop = (CANVAS_HEIGHT - PAGE_HEIGHT) / 2
 const pageBottom = pageTop + PAGE_HEIGHT
+const canvasCenterX = CANVAS_WIDTH / 2
 const watermarkXMax = PAGE_WIDTH - WATERMARK_MARGIN * 2
 const watermarkBottomMax = Math.round(PAGE_HEIGHT * 0.4)
+const placeholderTextContent = '等待上传 PDF 文件'
 
 const canvasOptions = {
   width: CANVAS_WIDTH,
@@ -69,15 +71,32 @@ const pageOutline = ref<FabricRectModelValue>({
   evented: false,
 })
 
+function measurePlaceholderTextWidth() {
+  if (typeof document === 'undefined') {
+    return placeholderTextContent.length * 8
+  }
+  const canvas = document.createElement('canvas')
+  const context = canvas.getContext('2d')
+  if (!context) {
+    return placeholderTextContent.length * 8
+  }
+  context.font = '600 16px "DM Sans", "Inter", system-ui, -apple-system, sans-serif'
+  const metrics = context.measureText(placeholderTextContent)
+  return metrics.width
+}
+
+const placeholderTextWidth = ref(measurePlaceholderTextWidth())
+
 const placeholderLabel = ref<FabricTextModelValue>({
-  text: '等待上传 PDF 文件',
-  left: pageLeft + PAGE_WIDTH / 2,
+  text: placeholderTextContent,
+  left: canvasCenterX - placeholderTextWidth.value / 2,
   top: pageTop + PAGE_HEIGHT / 2,
-  originX: 'center',
+  originX: 'left',
   originY: 'center',
   fontSize: 16,
   fontFamily: 'DM Sans',
   fontWeight: '600',
+  textAlign: 'center',
   fill: '#cbd5f5',
   opacity: 0.72,
   shadow: 'rgba(2,6,23,0.35) 0px 12px 32px',
@@ -106,19 +125,19 @@ const watermarkFields = reactive<WatermarkField[]>([
     text: 'ItemCode',
     color: '#f8fafc',
     x: 12,
-    bottom: 12,
+    bottom: 40,
     opacity: 0.92,
-    fontSize: 12,
+    fontSize: 24,
   },
   {
     id: 'order',
     label: '销售订单号（订单号过长时超出部分裁断）',
     text: 'Sales Order Number',
     color: '#f8fafc',
-    x: 130,
-    bottom: 12,
+    x: 170,
+    bottom: 40,
     opacity: 0.92,
-    fontSize: 12,
+    fontSize: 24,
   },
 ])
 
@@ -206,6 +225,8 @@ onMounted(() => {
   syncThemeMode()
   themeObserver = new MutationObserver(syncThemeMode)
   themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
+  placeholderTextWidth.value = measurePlaceholderTextWidth()
+  placeholderLabel.value.left = canvasCenterX - placeholderTextWidth.value / 2
 })
 
 onBeforeUnmount(() => {
@@ -603,9 +624,9 @@ watch(
 
 <style scoped>
 .fp-pdf-canvas :deep(canvas) {
-  width: 100%;
-  height: auto;
   display: block;
+  width: 100%;
   max-width: 440px;
+  height: auto;
 }
 </style>
