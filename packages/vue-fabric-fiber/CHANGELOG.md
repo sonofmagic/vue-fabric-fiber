@@ -1,5 +1,11 @@
 # vue-fabric-fiber
 
+## 1.0.3
+
+### Patch Changes
+
+- [`bfa3556`](https://github.com/sonofmagic/vue-fabric-fiber/commit/bfa3556dd7e78586342a39dcae3cf3bb450bb52a) Thanks [@sonofmagic](https://github.com/sonofmagic)! - Add a `stackOrder` prop so Fabric objects keep template ordering without `RenderGroup`, and update the PDF watermark demo/docs to showcase the new stacking flow.
+
 ## 1.0.2
 
 ### Patch Changes
