@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { WatermarkField } from './pdf-watermark/types'
-import { canvasOptions, watermarkBottomMax, watermarkXMax } from './pdf-watermark/constants'
+import { canvasOptions, watermarkXMax, watermarkYMax } from './pdf-watermark/constants'
 import PdfWatermarkControls from './pdf-watermark/PdfWatermarkControls.vue'
 import PdfWatermarkPreview from './pdf-watermark/PdfWatermarkPreview.vue'
 import { useCanvasFrame } from './pdf-watermark/useCanvasFrame'
@@ -17,6 +17,7 @@ const {
   watermarkOrderText,
   resolveColorDisplay,
   markWatermarkColorEdited,
+  origin,
 } = useWatermarkFields(themeMode)
 const {
   pdfLayer,
@@ -49,11 +50,13 @@ function updateWatermarkField(index: number, value: WatermarkField) {
       :pdf-file-name="pdfFileName"
       :pdf-error="pdfError"
       :pdf-loaded="pdfLoaded"
+      v-model:pdf-layer="pdfLayer"
       :rotation-label="rotationLabel"
       :scale-label="scaleLabel"
       :watermark-fields="watermarkFields"
       :watermark-x-max="watermarkXMax"
-      :watermark-bottom-max="watermarkBottomMax"
+      :watermark-y-max="watermarkYMax"
+      v-model:origin="origin"
       :resolve-color-display="resolveColorDisplay"
       :exporting="exporting"
       :export-error="exportError"
@@ -70,6 +73,7 @@ function updateWatermarkField(index: number, value: WatermarkField) {
       v-model:placeholder-label="placeholderLabel"
       v-model:watermark-sku-text="watermarkSkuText"
       v-model:watermark-order-text="watermarkOrderText"
+      :origin="origin"
       :canvas-options="canvasOptions"
       :on-canvas-ready="handleCanvasReady"
     />

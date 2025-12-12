@@ -1,6 +1,7 @@
 import type { TextProps } from 'fabric'
 import type { PropType } from 'vue'
 import type { FabricObjectSyncEvent } from './createFabricObject'
+import type { PositionOrigin } from './positioning'
 import * as fabric from 'fabric'
 import {
   computed,
@@ -13,6 +14,9 @@ import {
 } from 'vue'
 import { normalizeKeySelection, pickDefinedOptions, pickFromUnknown } from './binding-helpers'
 import { bindFabricSyncEvents, DEFAULT_SYNC_EVENTS } from './createFabricObject'
+import {
+  applyPositionIntent,
+} from './positioning'
 import { ContextKey } from './symbols'
 
 type ExcludedTextPropKeys
@@ -275,6 +279,10 @@ export const FabricText = defineComponent({
       type: Number,
       default: undefined,
     },
+    positionOrigin: {
+      type: String as PropType<PositionOrigin>,
+      default: undefined,
+    },
   },
   emits: ['update:modelValue'],
   setup(props, { emit }) {
@@ -284,6 +292,10 @@ export const FabricText = defineComponent({
     const sequenceHint = props.stackOrder ?? ctx?.claimObjectSequence?.()
 
     let textObj: fabric.Text | undefined
+
+    const resolvedOrigin = computed<PositionOrigin>(() => {
+      return props.positionOrigin ?? ctx?.positionOrigin ?? 'top-left'
+    })
 
     const presetConfig = computed<FabricTextPresetConfig>(() => {
       return FABRIC_TEXT_PRESETS[props.preset] ?? FABRIC_TEXT_PRESETS[DEFAULT_PRESET_ID]
@@ -325,16 +337,23 @@ export const FabricText = defineComponent({
       return {
         ...modelValue.value,
         ...next,
+        left: source.left,
+        top: source.top,
       } as FabricTextModelValue
     }
 
     const disposerCollection: VoidFunction[] = []
 
     onMounted(() => {
-      const creationOptions = {
-        ...resolvedInitialProps.value,
-        ...(pickDefinedOptions(modelValue.value, FABRIC_TEXT_OPTION_KEYS) as Partial<FabricTextModelValue>),
-      }
+      const creationOptions = applyPositionIntent(
+        {
+          ...resolvedInitialProps.value,
+          ...(pickDefinedOptions(modelValue.value, FABRIC_TEXT_OPTION_KEYS) as Partial<FabricTextModelValue>),
+        },
+        ctx,
+        undefined,
+        resolvedOrigin.value,
+      )
 
       textObj = new fabric.FabricText(
         modelValue.value.text,
@@ -367,7 +386,17 @@ export const FabricText = defineComponent({
           payload.text = newValue.text
         }
 
-        textObj.set(payload as Record<string, unknown>)
+        const normalizedPayload = applyPositionIntent(
+          payload as FabricTextModelValue,
+          ctx,
+          {
+            left: textObj.left,
+            top: textObj.top,
+          },
+          resolvedOrigin.value,
+        )
+
+        textObj.set(normalizedPayload as Record<string, unknown>)
         textObj.canvas?.renderAll()
       },
       { deep: true },

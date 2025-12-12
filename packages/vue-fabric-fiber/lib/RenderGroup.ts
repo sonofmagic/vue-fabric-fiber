@@ -1,5 +1,7 @@
+import type { PropType } from 'vue'
+import type { PositionOrigin } from './positioning'
 import type { AddSequentialTaskOptions, Context, SequentialTask } from './types'
-import { defineComponent, inject, provide, shallowReactive } from 'vue'
+import { defineComponent, inject, provide, shallowReactive, watch } from 'vue'
 import { ContextKey } from './symbols'
 
 // 设置渲染优先级
@@ -14,6 +16,10 @@ export const RenderGroup = defineComponent({
       type: Boolean,
       default: false,
     },
+    positionOrigin: {
+      type: String as PropType<PositionOrigin>,
+      default: undefined,
+    },
   },
   setup(props, { slots }) {
     const injectCtx = inject<Context | undefined>(ContextKey, undefined)
@@ -24,6 +30,14 @@ export const RenderGroup = defineComponent({
     const parentAddSequentialTask = injectCtx?.addSequentialTask
     const parentAddObject = injectCtx?.addObject
     const parentClaimObjectSequence = injectCtx?.claimObjectSequence
+
+    watch(
+      () => [props.positionOrigin, injectCtx?.positionOrigin],
+      ([nextOrigin, parentOrigin]) => {
+        ctx.positionOrigin = nextOrigin ?? parentOrigin
+      },
+      { immediate: true },
+    )
 
     function fallbackRun(task: SequentialTask) {
       return Promise.resolve().then(() => task())

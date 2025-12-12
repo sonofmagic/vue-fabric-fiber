@@ -25,6 +25,7 @@ import type {
   FabricTextPresetConfig,
   FabricTextPresetId,
 } from './FabricText'
+import type { PositionOrigin } from './positioning'
 import {
   FABRIC_CANVAS_OPTION_KEYS,
   FABRIC_CANVAS_PRESETS,
@@ -91,6 +92,7 @@ export type {
   FabricTextPresetConfig,
   FabricTextPresetId,
   FabricTriangleModelValue,
+  PositionOrigin,
 }
 
 export {

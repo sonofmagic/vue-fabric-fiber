@@ -1,7 +1,7 @@
 import type { ImageProps, TCrossOrigin } from 'fabric'
 import type { PropType } from 'vue'
 import type { FabricObjectSyncEvent } from './createFabricObject'
-import type { Context } from './types'
+import type { PositionOrigin } from './positioning'
 import * as fabric from 'fabric'
 import {
   computed,
@@ -14,6 +14,10 @@ import {
 } from 'vue'
 import { normalizeKeySelection, pickDefinedOptions, pickFromUnknown } from './binding-helpers'
 import { bindFabricSyncEvents, DEFAULT_SYNC_EVENTS } from './createFabricObject'
+import {
+  applyPositionIntent,
+  getCanvasDimensions,
+} from './positioning'
 import { ContextKey } from './symbols'
 
 type ExcludedImagePropKeys
@@ -33,15 +37,7 @@ type FabricImageOptionalProps = Partial<
 
 export interface FabricImageModelValue extends FabricImageOptionalProps {
   src: string
-  /**
-   * Desired rendered width. Numbers are treated as pixel values.
-   * Percentages are resolved against the canvas; e.g. `"100%"` fills the canvas width.
-   */
   width?: number | string
-  /**
-   * Desired rendered height. Numbers are treated as pixel values.
-   * Percentages are resolved against the canvas; e.g. `"100%"` fills the canvas height.
-   */
   height?: number | string
   crossOrigin?: TCrossOrigin
   [key: string]: unknown
@@ -357,18 +353,16 @@ function applyDimensionIntent(
   instance.setCoords()
 }
 
-function getCanvasDimensions(ctx?: Context) {
-  const width = ctx?.fabricCanvas?.getWidth() ?? ctx?.canvasEl?.width
-  const height = ctx?.fabricCanvas?.getHeight() ?? ctx?.canvasEl?.height
-  return { width, height }
-}
-
 export const FabricImage = defineComponent({
   name: 'FabricImage',
   props: {
     modelValue: {
       type: Object as PropType<FabricImageModelValue>,
       required: true,
+    },
+    positionOrigin: {
+      type: String as PropType<PositionOrigin>,
+      default: undefined,
     },
     preset: {
       type: String as PropType<FabricImagePresetId>,
@@ -410,6 +404,10 @@ export const FabricImage = defineComponent({
 
     let imageObj: fabric.FabricImage | undefined
     let activeAbortController: AbortController | undefined
+
+    const resolvedOrigin = computed<PositionOrigin>(() => {
+      return props.positionOrigin ?? ctx?.positionOrigin ?? 'top-left'
+    })
 
     const presetConfig = computed<FabricImagePresetConfig>(() => {
       return FABRIC_IMAGE_PRESETS[props.preset] ?? FABRIC_IMAGE_PRESETS[DEFAULT_PRESET_ID]
@@ -506,6 +504,8 @@ export const FabricImage = defineComponent({
       return {
         ...modelValue.value,
         ...next,
+        left: target.left,
+        top: target.top,
       } as FabricImageModelValue
     }
 
@@ -548,13 +548,20 @@ export const FabricImage = defineComponent({
       }
 
       try {
-        const instance = await fabric.FabricImage.fromURL(
-          value.src,
-          loadOptions,
+        const creationOptions = applyPositionIntent(
           {
             ...resolvedInitialProps.value,
             ...(pickDefinedOptions(value, FABRIC_IMAGE_OPTION_KEYS) as Partial<FabricImageModelValue>),
-          } as Partial<ImageProps>,
+          },
+          ctx,
+          undefined,
+          resolvedOrigin.value,
+        )
+
+        const instance = await fabric.FabricImage.fromURL(
+          value.src,
+          loadOptions,
+          creationOptions as Partial<ImageProps>,
         )
 
         if (controller.signal.aborted) {
@@ -562,10 +569,15 @@ export const FabricImage = defineComponent({
         }
 
         const latestValue = modelValue.value.src === value.src ? modelValue.value : value
-        const hydratedOptions = {
-          ...resolvedInitialProps.value,
-          ...(pickDefinedOptions(latestValue, FABRIC_IMAGE_OPTION_KEYS) as Partial<FabricImageModelValue>),
-        }
+        const hydratedOptions = applyPositionIntent(
+          {
+            ...resolvedInitialProps.value,
+            ...(pickDefinedOptions(latestValue, FABRIC_IMAGE_OPTION_KEYS) as Partial<FabricImageModelValue>),
+          },
+          ctx,
+          undefined,
+          resolvedOrigin.value,
+        )
 
         instance.set(hydratedOptions as Record<string, unknown>)
 
@@ -625,8 +637,18 @@ export const FabricImage = defineComponent({
           delete nextOptions.height
         }
 
-        if (Object.keys(nextOptions).length > 0) {
-          imageObj.set(nextOptions as Record<string, unknown>)
+        const normalizedOptions = applyPositionIntent(
+          nextOptions as FabricImageModelValue,
+          ctx,
+          {
+            left: imageObj.left,
+            top: imageObj.top,
+          },
+          resolvedOrigin.value,
+        )
+
+        if (Object.keys(normalizedOptions).length > 0) {
+          imageObj.set(normalizedOptions as Record<string, unknown>)
         }
 
         const { width: canvasWidth, height: canvasHeight } = getCanvasDimensions(ctx)

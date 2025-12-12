@@ -1,5 +1,13 @@
 # vue-fabric-fiber
 
+## 1.1.0
+
+### Minor Changes
+
+- [`3396763`](https://github.com/sonofmagic/vue-fabric-fiber/commit/3396763103fd2d7360ac2f936fe0a1e6bc243b9f) Thanks [@sonofmagic](https://github.com/sonofmagic)! - Add structured `position` support with per-axis px/% units for Fabric bindings and update the PDF watermark demo to show and edit both pixel and percentage offsets.
+
+- [`1984ddc`](https://github.com/sonofmagic/vue-fabric-fiber/commit/1984ddc37868277a90c17d4ca7f9c75052eb71f4) Thanks [@sonofmagic](https://github.com/sonofmagic)! - Add origin-aware percent offsets to v-model snapshots and simplify the PDF watermark demo to bind X/Y percent directly from emitted `leftPercent`/`topPercent` values.
+
 ## 1.0.3
 
 ### Patch Changes

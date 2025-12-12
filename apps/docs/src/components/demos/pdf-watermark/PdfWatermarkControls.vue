@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import type { WatermarkField } from './types'
+import type { WatermarkField, WatermarkOrigin } from './types'
 import StepCard from './StepCard.vue'
 import WatermarkFieldCard from './WatermarkFieldCard.vue'
+import type { FabricImageModelValue } from 'vue-fabric-fiber'
+import { computed } from 'vue'
 
 const props = defineProps<{
   pdfLoading: boolean
@@ -12,7 +14,7 @@ const props = defineProps<{
   scaleLabel: string
   watermarkFields: WatermarkField[]
   watermarkXMax: number
-  watermarkBottomMax: number
+  watermarkYMax: number
   resolveColorDisplay: (value: unknown) => string
   exporting: boolean
   exportError: string | null
@@ -23,6 +25,70 @@ const props = defineProps<{
   onColorEdited: (id: WatermarkField['id']) => void
   onUpdateField: (index: number, value: WatermarkField) => void
 }>()
+
+const originModel = defineModel<WatermarkOrigin>('origin', { required: true })
+const pdfLayerModel = defineModel<FabricImageModelValue | null>('pdfLayer')
+
+const originOptions = computed(() => ([
+  { value: 'top-left', label: '左上' },
+  { value: 'top-right', label: '右上' },
+  { value: 'bottom-left', label: '左下' },
+  { value: 'bottom-right', label: '右下' },
+] satisfies { value: WatermarkOrigin, label: string }[]))
+
+const pdfLeft = computed({
+  get: () => pdfLayerModel.value?.left ?? 0,
+  set: (val: number) => {
+    if (pdfLayerModel.value) {
+      pdfLayerModel.value.left = Number.isFinite(val) ? val : 0
+    }
+  },
+})
+
+const pdfTop = computed({
+  get: () => pdfLayerModel.value?.top ?? 0,
+  set: (val: number) => {
+    if (pdfLayerModel.value) {
+      pdfLayerModel.value.top = Number.isFinite(val) ? val : 0
+    }
+  },
+})
+
+const pdfAngle = computed({
+  get: () => pdfLayerModel.value?.angle ?? 0,
+  set: (val: number) => {
+    if (pdfLayerModel.value) {
+      pdfLayerModel.value.angle = Number.isFinite(val) ? val : 0
+    }
+  },
+})
+
+const pdfOpacity = computed({
+  get: () => pdfLayerModel.value?.opacity ?? 1,
+  set: (val: number) => {
+    if (pdfLayerModel.value) {
+      const clamped = Math.min(1, Math.max(0, val))
+      pdfLayerModel.value.opacity = Number.isFinite(clamped) ? clamped : 1
+    }
+  },
+})
+
+const pdfScale = computed({
+  get: () => {
+    if (!pdfLayerModel.value) {
+      return 1
+    }
+    const { scaleX = 1, scaleY = 1 } = pdfLayerModel.value
+    return Math.min(scaleX, scaleY)
+  },
+  set: (val: number) => {
+    if (pdfLayerModel.value) {
+      const safe = Number.isFinite(val) ? val : 1
+      pdfLayerModel.value.scaleX = safe
+      pdfLayerModel.value.scaleY = safe
+    }
+  },
+})
 </script>
 
 <template>
@@ -87,10 +153,59 @@ const props = defineProps<{
               <span>拖动四角圆点可实现等比例缩放。</span>
             </div>
           </div>
+          <div
+            v-if="pdfLayerModel"
+            class="mt-3 grid gap-3 rounded-xl border border-(--fp-border-color) bg-(--fp-panel-bg) p-3 text-xs text-(--fp-text-primary)"
+          >
+            <div class="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.24em] text-(--fp-text-dim)">
+              <span>PDF 图层属性</span>
+            </div>
+            <div class="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
+              <label class="flex flex-col gap-1">
+                <span class="text-[11px] uppercase tracking-[0.22em] text-(--fp-text-dim)">Left (px)</span>
+                <input v-model.number="pdfLeft" class="w-full rounded-xl border border-(--fp-border-color) bg-(--fp-panel-bg-soft) px-3 py-2.5 text-sm" type="number" step="1">
+              </label>
+              <label class="flex flex-col gap-1">
+                <span class="text-[11px] uppercase tracking-[0.22em] text-(--fp-text-dim)">Top (px)</span>
+                <input v-model.number="pdfTop" class="w-full rounded-xl border border-(--fp-border-color) bg-(--fp-panel-bg-soft) px-3 py-2.5 text-sm" type="number" step="1">
+              </label>
+              <label class="flex flex-col gap-1">
+                <span class="text-[11px] uppercase tracking-[0.22em] text-(--fp-text-dim)">角度 (°)</span>
+                <input v-model.number="pdfAngle" class="w-full rounded-xl border border-(--fp-border-color) bg-(--fp-panel-bg-soft) px-3 py-2.5 text-sm" type="number" step="1">
+              </label>
+              <label class="flex flex-col gap-1">
+                <span class="text-[11px] uppercase tracking-[0.22em] text-(--fp-text-dim)">透明度</span>
+                <input v-model.number="pdfOpacity" class="w-full rounded-xl border border-(--fp-border-color) bg-(--fp-panel-bg-soft) px-3 py-2.5 text-sm" type="number" min="0" max="1" step="0.05">
+              </label>
+              <label class="flex flex-col gap-1">
+                <span class="text-[11px] uppercase tracking-[0.22em] text-(--fp-text-dim)">缩放</span>
+                <input v-model.number="pdfScale" class="w-full rounded-xl border border-(--fp-border-color) bg-(--fp-panel-bg-soft) px-3 py-2.5 text-sm" type="number" min="0.2" max="3" step="0.05">
+              </label>
+            </div>
+          </div>
         </div>
       </StepCard>
 
-      <StepCard :index="3" title="打水印" desc="X 为左侧偏移，Y 以底部为基准；文本始终贴在页面左下角并排展示。">
+      <StepCard :index="3" title="打水印" desc="X/Y 均以左上角为原点（px/%），可同时查看和调整像素与百分比。">
+        <div class="flex flex-wrap items-center gap-2 text-xs text-(--fp-text-muted)">
+          <span class="text-(--fp-text-primary)">原点</span>
+          <div class="inline-flex flex-wrap gap-1">
+            <button
+              v-for="option in originOptions"
+              :key="option.value"
+              class="rounded-lg border px-2.5 py-1 transition"
+              :class="[
+                option.value === originModel
+                  ? 'border-sky-400 bg-sky-500/10 text-sky-200'
+                  : 'border-(--fp-border-color) bg-(--fp-panel-bg) text-(--fp-text-muted) hover:border-(--fp-border-color-strong)',
+              ]"
+              type="button"
+              @click="originModel = option.value"
+            >
+              {{ option.label }}
+            </button>
+          </div>
+        </div>
         <div class="grid gap-4">
           <WatermarkFieldCard
             v-for="(field, index) in props.watermarkFields"
@@ -98,7 +213,8 @@ const props = defineProps<{
             :model-value="field"
             :resolve-color-display="props.resolveColorDisplay"
             :x-max="props.watermarkXMax"
-            :bottom-max="props.watermarkBottomMax"
+            :y-max="props.watermarkYMax"
+            :origin="originModel"
             :on-color-edited="() => props.onColorEdited(field.id)"
             @update:model-value="(value: WatermarkField) => props.onUpdateField(index, value)"
           />

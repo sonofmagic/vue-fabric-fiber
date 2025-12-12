@@ -1,14 +1,84 @@
 <script setup lang="ts">
-import type { WatermarkField } from './types'
+import type { WatermarkField, WatermarkOrigin } from './types'
+import { computed } from 'vue'
+import { PAGE_HEIGHT, PAGE_WIDTH } from './constants'
 
 const props = defineProps<{
   resolveColorDisplay: (value: unknown) => string
   onColorEdited: () => void
   xMax: number
-  bottomMax: number
+  yMax: number
+  origin: WatermarkOrigin
 }>()
 
 const field = defineModel<WatermarkField>({ required: true })
+
+const clampNumber = (value: number) => (Number.isFinite(value) ? value : 0)
+function toOriginPx(px: number, total: number, origin: WatermarkOrigin, axis: 'x' | 'y') {
+  if ((origin === 'top-right' && axis === 'x') || (origin === 'bottom-right' && axis === 'x')) {
+    return total - px
+  }
+  if ((origin === 'bottom-left' && axis === 'y') || (origin === 'bottom-right' && axis === 'y')) {
+    return total - px
+  }
+  return px
+}
+
+function fromOriginPx(value: number, total: number, origin: WatermarkOrigin, axis: 'x' | 'y') {
+  if ((origin === 'top-right' && axis === 'x') || (origin === 'bottom-right' && axis === 'x')) {
+    return total - value
+  }
+  if ((origin === 'bottom-left' && axis === 'y') || (origin === 'bottom-right' && axis === 'y')) {
+    return total - value
+  }
+  return value
+}
+
+const xPx = computed({
+  get: () => toOriginPx(field.value.x.px, PAGE_WIDTH, props.origin, 'x'),
+  set: (val: number) => {
+    const pxFromOrigin = Math.round(clampNumber(val))
+    const basePx = fromOriginPx(pxFromOrigin, PAGE_WIDTH, props.origin, 'x')
+    field.value.x.px = basePx
+    field.value.x.percent = Math.round((basePx / (PAGE_WIDTH || 1)) * 10000) / 100
+  },
+})
+
+const xPercent = computed({
+  get: () => {
+    return field.value.x.percent
+  },
+  set: (val: number) => {
+    const percent = clampNumber(val)
+    const originPx = Math.round((percent / 100) * (PAGE_WIDTH || 1))
+    const basePx = fromOriginPx(originPx, PAGE_WIDTH, props.origin, 'x')
+    field.value.x.percent = percent
+    field.value.x.px = basePx
+  },
+})
+
+const yPx = computed({
+  get: () => toOriginPx(field.value.y.px, PAGE_HEIGHT, props.origin, 'y'),
+  set: (val: number) => {
+    const pxFromOrigin = Math.round(clampNumber(val))
+    const basePx = fromOriginPx(pxFromOrigin, PAGE_HEIGHT, props.origin, 'y')
+    field.value.y.px = basePx
+    field.value.y.percent = Math.round((basePx / (PAGE_HEIGHT || 1)) * 10000) / 100
+  },
+})
+
+const yPercent = computed({
+  get: () => {
+    return field.value.y.percent
+  },
+  set: (val: number) => {
+    const percent = clampNumber(val)
+    const originPx = Math.round((percent / 100) * (PAGE_HEIGHT || 1))
+    const basePx = fromOriginPx(originPx, PAGE_HEIGHT, props.origin, 'y')
+    field.value.y.percent = percent
+    field.value.y.px = basePx
+  },
+})
 </script>
 
 <template>
@@ -40,18 +110,56 @@ const field = defineModel<WatermarkField>({ required: true })
         <input v-model.number="field.opacity" class="w-full rounded-xl border border-(--fp-border-color) bg-(--fp-panel-bg) px-3 py-2.5 text-sm text-(--fp-text-primary)" type="number" min="0" max="1" step="0.05">
       </label>
     </div>
-    <div class="mt-3 grid gap-3 sm:grid-cols-4">
+    <div class="mt-3 grid gap-3 sm:grid-cols-5">
       <label class="flex flex-col gap-1 text-[11px] uppercase tracking-[0.22em] text-(--fp-text-dim)">
-        <span>X</span>
-        <input v-model.number="field.x" class="w-full rounded-xl border border-(--fp-border-color) bg-(--fp-panel-bg) px-3 py-2.5 text-sm text-(--fp-text-primary)" type="number" min="0" :max="props.xMax" step="1">
+        <span class="whitespace-nowrap">X (px)</span>
+        <input
+          v-model.number="xPx"
+          class="w-full rounded-xl border border-(--fp-border-color) bg-(--fp-panel-bg) px-3 py-2.5 text-sm text-(--fp-text-primary)"
+          type="number"
+          :max="props.xMax"
+          step="1"
+        >
       </label>
       <label class="flex flex-col gap-1 text-[11px] uppercase tracking-[0.22em] text-(--fp-text-dim)">
-        <span>Y (自底部)</span>
-        <input v-model.number="field.bottom" class="w-full rounded-xl border border-(--fp-border-color) bg-(--fp-panel-bg) px-3 py-2.5 text-sm text-(--fp-text-primary)" type="number" min="0" :max="props.bottomMax" step="1">
+        <span class="whitespace-nowrap">X (%)</span>
+        <input
+          v-model.number="xPercent"
+          class="w-full rounded-xl border border-(--fp-border-color) bg-(--fp-panel-bg) px-3 py-2.5 text-sm text-(--fp-text-primary)"
+          type="number"
+          step="0.25"
+        >
+      </label>
+      <label class="flex flex-col gap-1 text-[11px] uppercase tracking-[0.22em] text-(--fp-text-dim)">
+        <span class="whitespace-nowrap">Y (px)</span>
+        <input
+          v-model.number="yPx"
+          class="w-full rounded-xl border border-(--fp-border-color) bg-(--fp-panel-bg) px-3 py-2.5 text-sm text-(--fp-text-primary)"
+          type="number"
+          :max="props.yMax"
+          step="1"
+        >
+      </label>
+      <label class="flex flex-col gap-1 text-[11px] uppercase tracking-[0.22em] text-(--fp-text-dim)">
+        <span class="whitespace-nowrap">Y (%)</span>
+        <input
+          v-model.number="yPercent"
+          class="w-full rounded-xl border border-(--fp-border-color) bg-(--fp-panel-bg) px-3 py-2.5 text-sm text-(--fp-text-primary)"
+          type="number"
+          step="0.25"
+        >
       </label>
       <label class="flex flex-col gap-1 text-[11px] uppercase tracking-[0.22em] text-(--fp-text-dim)">
         <span>字号</span>
         <input v-model.number="field.fontSize" class="w-full rounded-xl border border-(--fp-border-color) bg-(--fp-panel-bg) px-3 py-2.5 text-sm text-(--fp-text-primary)" type="number" min="8" max="32" step="1">
+      </label>
+      <label class="flex flex-col gap-1 text-[11px] uppercase tracking-[0.22em] text-(--fp-text-dim)">
+        <span>旋转 (°)</span>
+        <input v-model.number="field.angle" class="w-full rounded-xl border border-(--fp-border-color) bg-(--fp-panel-bg) px-3 py-2.5 text-sm text-(--fp-text-primary)" type="number" min="-180" max="180" step="1">
+      </label>
+      <label class="flex flex-col gap-1 text-[11px] uppercase tracking-[0.22em] text-(--fp-text-dim)">
+        <span>缩放</span>
+        <input v-model.number="field.scale" class="w-full rounded-xl border border-(--fp-border-color) bg-(--fp-panel-bg) px-3 py-2.5 text-sm text-(--fp-text-primary)" type="number" min="0.2" max="3" step="0.05">
       </label>
     </div>
   </div>

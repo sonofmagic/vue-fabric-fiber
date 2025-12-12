@@ -176,6 +176,129 @@ describe('createFabricObjectComponent', () => {
     expect(updateSpy).toHaveBeenCalledWith({ left: 120 })
   })
 
+  it('applies percent-based positions and emits resolved coordinates', async () => {
+    const instance = createStubInstance({ left: 0, top: 0 })
+    const createInstance = vi.fn(() => instance)
+    const mockCtx = createMockContext({
+      fabricCanvas: {
+        getWidth: () => 200,
+        getHeight: () => 100,
+      } as unknown as Context['fabricCanvas'],
+    })
+    const updateSpy = vi.fn()
+
+    const TestObject = createFabricObjectComponent({
+      name: 'StubWithPercent',
+      defaults: () => ({ width: 10, height: 10 }),
+      createInstance,
+    })
+
+    mountComponent(TestObject, {
+      props: {
+        'modelValue': {
+          left: '50%',
+          top: '25%',
+        },
+        'onUpdate:modelValue': updateSpy,
+      },
+      provide: [[ContextKey, mockCtx]],
+    })
+
+    await nextTick()
+    expect(createInstance).toHaveBeenCalledWith({ width: 10, height: 10, left: 100, top: 25 })
+
+    instance.left = 120
+    instance.top = 30
+    instance.trigger('modified')
+
+    expect(updateSpy).toHaveBeenCalledWith({ left: 120, top: 30, leftPercent: 60, topPercent: 30 })
+  })
+
+  it('accepts leftPercent/topPercent inputs without explicit coordinates', async () => {
+    const instance = createStubInstance({ left: 0, top: 0 })
+    const createInstance = vi.fn((initial: Record<string, unknown>) => {
+      Object.assign(instance, initial)
+      return instance
+    })
+    const mockCtx = createMockContext({
+      fabricCanvas: {
+        getWidth: () => 300,
+        getHeight: () => 150,
+      } as unknown as Context['fabricCanvas'],
+    })
+
+    const TestObject = createFabricObjectComponent({
+      name: 'StubWithPercentCoords',
+      defaults: () => ({}),
+      createInstance,
+    })
+
+    const wrapper = mountComponent(TestObject, {
+      props: {
+        modelValue: {
+          leftPercent: 10,
+          topPercent: 20,
+        },
+      },
+      provide: [[ContextKey, mockCtx]],
+    })
+
+    await nextTick()
+    expect(createInstance).toHaveBeenCalledWith({ left: 30, top: 30 })
+
+    await wrapper.updateProps({
+      modelValue: {
+        leftPercent: 50,
+        topPercent: 40,
+      },
+    })
+
+    expect(instance.set).toHaveBeenCalledWith({ left: 150, top: 60 })
+  })
+
+  it('inherits position origin from the canvas context', async () => {
+    const instance = createStubInstance({ left: 0, top: 0 })
+    const createInstance = vi.fn(() => instance)
+    const mockCtx = createMockContext({
+      fabricCanvas: {
+        getWidth: () => 200,
+        getHeight: () => 100,
+      } as unknown as Context['fabricCanvas'],
+      positionOrigin: 'bottom-right',
+    })
+
+    const TestObject = createFabricObjectComponent({
+      name: 'StubWithOrigin',
+      defaults: () => ({ width: 10, height: 10 }),
+      createInstance,
+    })
+
+    const updateSpy = vi.fn()
+    mountComponent(TestObject, {
+      props: {
+        'modelValue': {
+          left: 10,
+          top: 5,
+        },
+        'onUpdate:modelValue': updateSpy,
+      },
+      provide: [[ContextKey, mockCtx]],
+    })
+
+    await nextTick()
+    expect(createInstance).toHaveBeenCalledWith({ width: 10, height: 10, left: 190, top: 95 })
+
+    instance.left = 180
+    instance.top = 80
+    instance.trigger('modified')
+    expect(updateSpy).toHaveBeenCalledWith({
+      left: 180,
+      top: 80,
+      leftPercent: 10,
+      topPercent: 20,
+    })
+  })
+
   it('skips setup when the factory returns no instance', async () => {
     const createInstance = vi.fn(() => undefined as unknown as FabricObject)
     const mockCtx = createMockContext()

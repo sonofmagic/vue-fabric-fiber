@@ -44,14 +44,14 @@ function createTextContext(overrides: Partial<Context> = {}) {
   const mockFabric: FabricMockModule = getFabricMock()
   const canvasElement = document.createElement('canvas')
   const fabricCanvas = new mockFabric.Canvas(canvasElement, { width: 500, height: 300 }) as InstanceType<FabricMockModule['Canvas']> & {
-    renderAll: ReturnType<typeof vi.fn>
+    renderAll: () => void
   }
-  fabricCanvas.renderAll = vi.fn()
+  fabricCanvas.renderAll = vi.fn() as unknown as typeof fabricCanvas.renderAll
   const addObject = vi.fn((obj: InstanceType<FabricMockModule['Object']>) => {
-    fabricCanvas.add(obj)
+    fabricCanvas.add(obj as any)
   })
   const removeObject = vi.fn((obj: InstanceType<FabricMockModule['Object']>) => {
-    fabricCanvas.remove(obj)
+    fabricCanvas.remove(obj as any)
   })
   return {
     addObject,
@@ -63,7 +63,11 @@ function createTextContext(overrides: Partial<Context> = {}) {
     claimObjectSequence: vi.fn(() => 4),
     taskQueue: {} as any,
     ...overrides,
-  } as Context
+  } as Context & {
+    addObject: ReturnType<typeof addObject>
+    removeObject: ReturnType<typeof removeObject>
+    fabricCanvas: typeof fabricCanvas
+  }
 }
 
 describe('FabricText', () => {
@@ -92,12 +96,13 @@ describe('FabricText', () => {
     await nextTick()
     await flushTextTasks()
     const mockFabric: FabricMockModule = getFabricMock()
-    const [[textObj]] = ctx.addObject.mock.calls as [[InstanceType<FabricMockModule['FabricText']>, number | undefined, number | undefined][]]
+    const addObjectMock = ctx.addObject as unknown as ReturnType<typeof vi.fn>
+    const textObj = addObjectMock.mock.calls[0]?.[0] as InstanceType<FabricMockModule['FabricText']> | undefined
     expect(textObj).toBeInstanceOf(mockFabric.FabricText)
     expect(ctx.addSequentialTask).toHaveBeenCalled()
 
     await flushTextTasks()
-    textObj.emit('modified')
+    textObj?.emit('modified')
     expect(updateSpy).toHaveBeenCalled()
 
     await wrapper.updateProps({
@@ -111,6 +116,6 @@ describe('FabricText', () => {
     await flushTextTasks()
     expect(ctx.fabricCanvas?.renderAll).toHaveBeenCalled()
     wrapper.unmount()
-    expect(ctx.removeObject).toHaveBeenCalledWith(textObj)
+    expect(ctx.removeObject).toHaveBeenCalledWith(textObj as any)
   })
 })
