@@ -45,9 +45,17 @@ function createImageContext(overrides: Partial<Context> = {}) {
   canvasElement.width = 600
   canvasElement.height = 400
   const fabricCanvas = new mockFabric.Canvas(canvasElement, { width: 600, height: 400 })
+  const addObject = vi.fn((obj: unknown, priority?: number, sequence?: number) => {
+    void priority
+    void sequence
+    fabricCanvas.add(obj as any)
+  })
+  const removeObject = vi.fn((obj: unknown) => {
+    fabricCanvas.remove(obj as any)
+  })
   return {
-    addObject: vi.fn(),
-    removeObject: vi.fn(),
+    addObject,
+    removeObject,
     fabricCanvas,
     canvasEl: canvasElement,
     containerEl: document.createElement('div'),
@@ -55,7 +63,11 @@ function createImageContext(overrides: Partial<Context> = {}) {
     claimObjectSequence: vi.fn(() => 11),
     taskQueue: {} as any,
     ...overrides,
-  } as Context
+  } as Context & {
+    addObject: ReturnType<typeof addObject>
+    removeObject: ReturnType<typeof removeObject>
+    fabricCanvas: typeof fabricCanvas
+  }
 }
 
 describe('FabricImage', () => {
@@ -86,14 +98,15 @@ describe('FabricImage', () => {
     await nextTick()
     await flushImageTasks()
     const mockFabric: FabricMockModule = getFabricMock()
-    const [[imageInstance]] = ctx.addObject.mock.calls as [[InstanceType<FabricMockModule['FabricImage']>, number | undefined, number | undefined][]]
+    const addObjectMock = ctx.addObject as unknown as ReturnType<typeof vi.fn>
+    const imageInstance = addObjectMock.mock.calls[0]?.[0] as InstanceType<FabricMockModule['FabricImage']> | undefined
     expect(imageInstance).toBeInstanceOf(mockFabric.FabricImage)
-    expect(ctx.addObject).toHaveBeenCalledWith(imageInstance, undefined, 9)
-    expect(imageInstance.scaleX).toBeGreaterThan(0)
-    expect(imageInstance.scaleY).toBeGreaterThan(0)
+    expect(addObjectMock).toHaveBeenCalledWith(imageInstance, undefined, 9)
+    expect(imageInstance?.scaleX).toBeGreaterThan(0)
+    expect(imageInstance?.scaleY).toBeGreaterThan(0)
 
     await flushImageTasks()
-    imageInstance.emit('modified')
+    imageInstance?.emit('modified')
     expect(updateSpy).toHaveBeenCalled()
 
     await wrapper.updateProps({
@@ -105,7 +118,8 @@ describe('FabricImage', () => {
       },
     })
     await flushImageTasks()
-    expect(ctx.fabricCanvas.renderCount).toBeGreaterThan(0)
+    const fabricCanvas = ctx.fabricCanvas!
+    expect(fabricCanvas.renderCount).toBeGreaterThan(0)
 
     getFabricMock().FabricImage.failureSources.add('broken')
     await wrapper.updateProps({
@@ -113,7 +127,7 @@ describe('FabricImage', () => {
         src: 'broken',
       },
     })
-    expect(ctx.fabricCanvas.events.at(-1)).toMatchObject({ event: 'fabric:image-error' })
+    expect(fabricCanvas.events.at(-1)).toMatchObject({ event: 'fabric:image-error' })
 
     await wrapper.updateProps({
       modelValue: {

@@ -64,7 +64,9 @@ async function flushTasks() {
 class MockResizeObserver implements ResizeObserver {
   observed: Element | null = null
   disconnected = false
-  constructor(private readonly callback: ResizeObserverCallback) {
+  private readonly callback: ResizeObserverCallback
+  constructor(callback: ResizeObserverCallback) {
+    this.callback = callback
     MockResizeObserver.instances.push(this)
   }
 
@@ -135,7 +137,7 @@ describe('FabricCanvas', () => {
 
     await nextTick()
     await flushTasks()
-    const canvasInstance = getFabricMock().Canvas.instances[0]
+    const canvasInstance = getFabricMock().Canvas.instances[0]!
     expect(readySpy).toHaveBeenCalledWith(canvasInstance)
     expect(canvasInstance.renderCount).toBeGreaterThan(0)
     const ctx = ctxRef.value!
@@ -155,16 +157,16 @@ describe('FabricCanvas', () => {
     const objB = new fabricModule.Circle({ id: 'second' })
     const seq0 = ctx.claimObjectSequence?.() ?? 0
     const seq1 = ctx.claimObjectSequence?.() ?? 0
-    ctx.addObject?.(objB, undefined, seq0)
-    ctx.addObject?.(objA, 2, seq1)
-    ctx.removeObject?.(objA)
+    ctx.addObject?.(objB as any, undefined, seq0)
+    ctx.addObject?.(objA as any, 2, seq1)
+    ctx.removeObject?.(objA as any)
 
     expect(taskLog).toEqual(['queued', 'override'])
     expect(bypassSpy).toHaveBeenCalledWith('bypass')
     expect(canvasInstance.getObjects()).toHaveLength(1)
     expect(canvasInstance.dimensionCalls.length).toBeGreaterThanOrEqual(2)
 
-    const initialObserver = MockResizeObserver.instances[0]
+    const initialObserver = MockResizeObserver.instances[0]!
     expect(initialObserver.observed).toBeInstanceOf(HTMLElement)
     initialObserver.trigger(420, 300)
     expect(canvasInstance.dimensionCalls.some(call => call.dim.width === 420)).toBe(true)

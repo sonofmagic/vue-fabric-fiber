@@ -1,8 +1,8 @@
 import type { Ref } from 'vue'
 import type { FabricTextModelValue } from 'vue-fabric-fiber'
-import type { WatermarkField } from './types'
+import type { WatermarkAxis, WatermarkField } from './types'
 import { reactive, ref, watch, watchEffect } from 'vue'
-import { pageBottom, pageLeft } from './constants'
+import { PAGE_HEIGHT, PAGE_WIDTH, pageBottom, pageLeft } from './constants'
 
 function normalizeText(value: unknown) {
   return typeof value === 'string' ? value : value == null ? '' : String(value)
@@ -34,6 +34,76 @@ function resolveColorDisplay(value: unknown) {
   return resolved || normalized
 }
 
+function percentFromPx(px: number, total: number) {
+  if (!Number.isFinite(px) || !Number.isFinite(total) || total === 0) {
+    return 0
+  }
+  return Number(((px / total) * 100).toFixed(2))
+}
+
+function pxFromPercent(percent: number, total: number) {
+  if (!Number.isFinite(percent) || !Number.isFinite(total)) {
+    return 0
+  }
+  return (percent / 100) * total
+}
+
+function refreshAxis(axis: WatermarkAxis, total: number) {
+  if (!axis) {
+    return
+  }
+  if (axis.unit === '%') {
+    axis.percent = Math.max(0, axis.percent)
+    axis.px = Math.round(pxFromPercent(axis.percent, total))
+  }
+  else {
+    axis.px = Math.max(0, Math.round(axis.px))
+    axis.percent = percentFromPx(axis.px, total)
+  }
+}
+
+function resolveFieldPosition(field: WatermarkField) {
+  refreshAxis(field.x, PAGE_WIDTH)
+  refreshAxis(field.bottom, PAGE_HEIGHT)
+
+  const leftPx = pageLeft + field.x.px
+  const topPx = pageBottom - field.bottom.px
+  const leftUnit = field.x.unit
+  const topUnit = field.bottom.unit === '%' ? '%' : 'px'
+  const leftPercent = percentFromPx(leftPx, PAGE_WIDTH)
+  const topPercent = percentFromPx(topPx, PAGE_HEIGHT)
+
+  return {
+    leftPx,
+    topPx,
+    position: {
+      left: {
+        value: leftUnit === '%' ? field.x.percent : leftPx,
+        unit: leftUnit,
+        px: leftPx,
+        percent: leftPercent,
+      },
+      top: {
+        value: topUnit === '%' ? topPercent : topPx,
+        unit: topUnit,
+        px: topPx,
+        percent: topPercent,
+      },
+    },
+  }
+}
+
+function selectFieldSnapshot(field: WatermarkField) {
+  return {
+    x: { ...field.x },
+    bottom: { ...field.bottom },
+    opacity: field.opacity,
+    fontSize: field.fontSize,
+    text: field.text,
+    color: field.color,
+  }
+}
+
 export function useWatermarkFields(themeMode: Ref<'light' | 'dark'>) {
   const watermarkColorEdited = reactive<Record<WatermarkField['id'], boolean>>({
     sku: false,
@@ -45,8 +115,16 @@ export function useWatermarkFields(themeMode: Ref<'light' | 'dark'>) {
       label: '发货SKU Code或Repack',
       text: 'ItemCode',
       color: '#f8fafc',
-      x: 12,
-      bottom: 40,
+      x: {
+        px: 12,
+        percent: percentFromPx(12, PAGE_WIDTH),
+        unit: 'px',
+      },
+      bottom: {
+        px: 40,
+        percent: percentFromPx(40, PAGE_HEIGHT),
+        unit: 'px',
+      },
       opacity: 0.92,
       fontSize: 24,
     },
@@ -55,17 +133,29 @@ export function useWatermarkFields(themeMode: Ref<'light' | 'dark'>) {
       label: '销售订单号（订单号过长时超出部分裁断）',
       text: 'Sales Order Number',
       color: '#f8fafc',
-      x: 170,
-      bottom: 40,
+      x: {
+        px: 170,
+        percent: percentFromPx(170, PAGE_WIDTH),
+        unit: 'px',
+      },
+      bottom: {
+        px: 40,
+        percent: percentFromPx(40, PAGE_HEIGHT),
+        unit: 'px',
+      },
       opacity: 0.92,
       fontSize: 24,
     },
   ])
 
+  const initialSkuPosition = resolveFieldPosition(watermarkFields[0])
+  const initialOrderPosition = resolveFieldPosition(watermarkFields[1])
+
   const watermarkSkuText = ref<FabricTextModelValue>({
     text: 'ItemCode',
-    left: pageLeft + watermarkFields[0].x,
-    top: pageBottom - watermarkFields[0].bottom,
+    left: initialSkuPosition.leftPx,
+    top: initialSkuPosition.topPx,
+    position: initialSkuPosition.position,
     originX: 'left',
     originY: 'bottom',
     fontSize: watermarkFields[0].fontSize,
@@ -82,8 +172,9 @@ export function useWatermarkFields(themeMode: Ref<'light' | 'dark'>) {
 
   const watermarkOrderText = ref<FabricTextModelValue>({
     text: 'Sales Order Number',
-    left: pageLeft + watermarkFields[1].x,
-    top: pageBottom - watermarkFields[1].bottom,
+    left: initialOrderPosition.leftPx,
+    top: initialOrderPosition.topPx,
+    position: initialOrderPosition.position,
     originX: 'left',
     originY: 'bottom',
     fontSize: watermarkFields[1].fontSize,
@@ -115,8 +206,11 @@ export function useWatermarkFields(themeMode: Ref<'light' | 'dark'>) {
   })
 
   const syncFieldToModel = (field: WatermarkField, target: FabricTextModelValue) => {
-    target.left = pageLeft + field.x
-    target.top = pageBottom - field.bottom
+    const { leftPx, topPx, position } = resolveFieldPosition(field)
+
+    target.left = leftPx
+    target.top = topPx
+    target.position = position
     target.opacity = field.opacity
     target.fontSize = field.fontSize
     target.text = normalizeText(field.text)
@@ -130,9 +224,18 @@ export function useWatermarkFields(themeMode: Ref<'light' | 'dark'>) {
     const left = rect ? rect.left : target.left ?? pageLeft
     const bottomCoord = rect ? rect.top + (rect.height ?? 0) : target.top ?? pageBottom
 
+    const leftPx = Math.max(0, Math.round(left - pageLeft))
+    const bottomPx = Math.max(0, Math.round(pageBottom - bottomCoord))
+
     syncingFromModel.value = true
-    field.x = Math.round(left - pageLeft)
-    field.bottom = Math.round(pageBottom - bottomCoord)
+    field.x.px = leftPx
+    field.x.percent = percentFromPx(leftPx, PAGE_WIDTH)
+    refreshAxis(field.x, PAGE_WIDTH)
+
+    field.bottom.px = bottomPx
+    field.bottom.percent = percentFromPx(bottomPx, PAGE_HEIGHT)
+    refreshAxis(field.bottom, PAGE_HEIGHT)
+
     field.opacity = typeof target.opacity === 'number' ? target.opacity : field.opacity
     field.fontSize = typeof target.fontSize === 'number' ? target.fontSize : field.fontSize
     field.text = normalizeText(target.text)
@@ -141,37 +244,25 @@ export function useWatermarkFields(themeMode: Ref<'light' | 'dark'>) {
   }
 
   watch(
-    () => ({
-      x: watermarkFields[0].x,
-      bottom: watermarkFields[0].bottom,
-      opacity: watermarkFields[0].opacity,
-      fontSize: watermarkFields[0].fontSize,
-      text: watermarkFields[0].text,
-      color: watermarkFields[0].color,
-    }),
+    () => selectFieldSnapshot(watermarkFields[0]),
     () => {
       if (syncingFromModel.value) {
         return
       }
       syncFieldToModel(watermarkFields[0], watermarkSkuText.value)
     },
+    { deep: true },
   )
 
   watch(
-    () => ({
-      x: watermarkFields[1].x,
-      bottom: watermarkFields[1].bottom,
-      opacity: watermarkFields[1].opacity,
-      fontSize: watermarkFields[1].fontSize,
-      text: watermarkFields[1].text,
-      color: watermarkFields[1].color,
-    }),
+    () => selectFieldSnapshot(watermarkFields[1]),
     () => {
       if (syncingFromModel.value) {
         return
       }
       syncFieldToModel(watermarkFields[1], watermarkOrderText.value)
     },
+    { deep: true },
   )
 
   watch(

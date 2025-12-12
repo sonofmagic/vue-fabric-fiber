@@ -90,7 +90,7 @@ const props = defineProps<{
         </div>
       </StepCard>
 
-      <StepCard :index="3" title="打水印" desc="X 为左侧偏移，Y 以底部为基准；文本始终贴在页面左下角并排展示。">
+      <StepCard :index="3" title="打水印" desc="X 为左侧偏移（px/%），Y 以底部为基准；可同时查看和调整像素与百分比，文本始终贴在页面左下角并排展示。">
         <div class="grid gap-4">
           <WatermarkFieldCard
             v-for="(field, index) in props.watermarkFields"

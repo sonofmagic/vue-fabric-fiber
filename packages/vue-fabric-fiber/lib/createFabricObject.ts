@@ -8,6 +8,11 @@ import {
   onMounted,
   watch,
 } from 'vue'
+import {
+  applyPositionIntent,
+  buildPositionSnapshot,
+  createPositionConflictLogger,
+} from './positioning'
 import { ContextKey } from './symbols'
 import { removeUndefined } from './utils'
 
@@ -116,6 +121,8 @@ export function createFabricObjectComponent<
         return Array.from(new Set(base))
       })
 
+      const warnPositionConflict = createPositionConflictLogger(options.name)
+
       function emitModelSnapshot(source: TObject) {
         const payload = removeUndefined(
           Object.fromEntries(
@@ -125,14 +132,35 @@ export function createFabricObjectComponent<
             }),
           ),
         ) as TModel
-        return payload
+
+        const positionSnapshot = buildPositionSnapshot(
+          model.value,
+          {
+            left: (source as unknown as Record<'left', number>).left,
+            top: (source as unknown as Record<'top', number>).top,
+          },
+          ctx,
+        )
+
+        return {
+          ...payload,
+          ...positionSnapshot,
+        } as TModel
       }
 
       function applyToInstance(next: TModel) {
         if (!instance) {
           return
         }
-        const sanitized = removeUndefined(next) as TModel
+        const sanitized = applyPositionIntent(
+          removeUndefined(next) as TModel,
+          ctx,
+          {
+            left: (instance as unknown as Record<'left', number | undefined>).left,
+            top: (instance as unknown as Record<'top', number | undefined>).top,
+          },
+          warnPositionConflict,
+        )
         if (options.applyProps) {
           options.applyProps(instance, sanitized)
         }
@@ -143,7 +171,12 @@ export function createFabricObjectComponent<
       }
 
       onMounted(() => {
-        const initial = removeUndefined(resolvedModel.value)
+        const initial = applyPositionIntent(
+          removeUndefined(resolvedModel.value),
+          ctx,
+          undefined,
+          warnPositionConflict,
+        )
         instance = options.createInstance(initial)
 
         if (!instance) {

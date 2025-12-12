@@ -176,6 +176,53 @@ describe('createFabricObjectComponent', () => {
     expect(updateSpy).toHaveBeenCalledWith({ left: 120 })
   })
 
+  it('applies percent-based positions and emits snapshot with preserved units', async () => {
+    const instance = createStubInstance({ left: 0, top: 0 })
+    const createInstance = vi.fn(() => instance)
+    const mockCtx = createMockContext({
+      fabricCanvas: {
+        getWidth: () => 200,
+        getHeight: () => 100,
+      } as unknown as Context['fabricCanvas'],
+    })
+    const updateSpy = vi.fn()
+
+    const TestObject = createFabricObjectComponent({
+      name: 'StubWithPercent',
+      defaults: () => ({ width: 10, height: 10 }),
+      createInstance,
+    })
+
+    mountComponent(TestObject, {
+      props: {
+        'modelValue': {
+          position: {
+            left: { value: 50, unit: '%' },
+            top: { value: 25, unit: '%' },
+          },
+        },
+        'onUpdate:modelValue': updateSpy,
+      },
+      provide: [[ContextKey, mockCtx]],
+    })
+
+    await nextTick()
+    expect(createInstance).toHaveBeenCalledWith({ width: 10, height: 10, left: 100, top: 25 })
+
+    instance.left = 120
+    instance.top = 30
+    instance.trigger('modified')
+
+    expect(updateSpy).toHaveBeenCalledWith({
+      left: 120,
+      top: 30,
+      position: {
+        left: { value: 60, unit: '%', px: 120, percent: 60 },
+        top: { value: 30, unit: '%', px: 30, percent: 30 },
+      },
+    })
+  })
+
   it('skips setup when the factory returns no instance', async () => {
     const createInstance = vi.fn(() => undefined as unknown as FabricObject)
     const mockCtx = createMockContext()
