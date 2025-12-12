@@ -12,7 +12,7 @@ const props = defineProps<{
   scaleLabel: string
   watermarkFields: WatermarkField[]
   watermarkXMax: number
-  watermarkBottomMax: number
+  watermarkYMax: number
   resolveColorDisplay: (value: unknown) => string
   exporting: boolean
   exportError: string | null
@@ -90,7 +90,7 @@ const props = defineProps<{
         </div>
       </StepCard>
 
-      <StepCard :index="3" title="打水印" desc="X 为左侧偏移（px/%），Y 以底部为基准；可同时查看和调整像素与百分比，文本始终贴在页面左下角并排展示。">
+      <StepCard :index="3" title="打水印" desc="X/Y 均以左上角为原点（px/%），可同时查看和调整像素与百分比。">
         <div class="grid gap-4">
           <WatermarkFieldCard
             v-for="(field, index) in props.watermarkFields"
@@ -98,7 +98,7 @@ const props = defineProps<{
             :model-value="field"
             :resolve-color-display="props.resolveColorDisplay"
             :x-max="props.watermarkXMax"
-            :bottom-max="props.watermarkBottomMax"
+            :y-max="props.watermarkYMax"
             :on-color-edited="() => props.onColorEdited(field.id)"
             @update:model-value="(value: WatermarkField) => props.onUpdateField(index, value)"
           />

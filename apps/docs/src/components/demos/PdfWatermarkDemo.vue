@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { WatermarkField } from './pdf-watermark/types'
-import { canvasOptions, watermarkBottomMax, watermarkXMax } from './pdf-watermark/constants'
+import { canvasOptions, watermarkXMax, watermarkYMax } from './pdf-watermark/constants'
 import PdfWatermarkControls from './pdf-watermark/PdfWatermarkControls.vue'
 import PdfWatermarkPreview from './pdf-watermark/PdfWatermarkPreview.vue'
 import { useCanvasFrame } from './pdf-watermark/useCanvasFrame'
@@ -53,7 +53,7 @@ function updateWatermarkField(index: number, value: WatermarkField) {
       :scale-label="scaleLabel"
       :watermark-fields="watermarkFields"
       :watermark-x-max="watermarkXMax"
-      :watermark-bottom-max="watermarkBottomMax"
+      :watermark-y-max="watermarkYMax"
       :resolve-color-display="resolveColorDisplay"
       :exporting="exporting"
       :export-error="exportError"

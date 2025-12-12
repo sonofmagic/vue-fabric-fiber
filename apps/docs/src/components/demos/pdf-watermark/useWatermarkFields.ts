@@ -2,7 +2,7 @@ import type { Ref } from 'vue'
 import type { FabricTextModelValue } from 'vue-fabric-fiber'
 import type { WatermarkAxis, WatermarkField } from './types'
 import { reactive, ref, watch, watchEffect } from 'vue'
-import { PAGE_HEIGHT, PAGE_WIDTH, pageBottom, pageLeft } from './constants'
+import { PAGE_HEIGHT, PAGE_WIDTH, pageLeft, pageTop } from './constants'
 
 function normalizeText(value: unknown) {
   return typeof value === 'string' ? value : value == null ? '' : String(value)
@@ -64,12 +64,12 @@ function refreshAxis(axis: WatermarkAxis, total: number) {
 
 function resolveFieldPosition(field: WatermarkField) {
   refreshAxis(field.x, PAGE_WIDTH)
-  refreshAxis(field.bottom, PAGE_HEIGHT)
+  refreshAxis(field.y, PAGE_HEIGHT)
 
   const leftPx = pageLeft + field.x.px
-  const topPx = pageBottom - field.bottom.px
+  const topPx = pageTop + field.y.px
   const leftUnit = field.x.unit
-  const topUnit = field.bottom.unit === '%' ? '%' : 'px'
+  const topUnit = field.y.unit === '%' ? '%' : 'px'
   const leftPercent = percentFromPx(leftPx, PAGE_WIDTH)
   const topPercent = percentFromPx(topPx, PAGE_HEIGHT)
 
@@ -96,7 +96,7 @@ function resolveFieldPosition(field: WatermarkField) {
 function selectFieldSnapshot(field: WatermarkField) {
   return {
     x: { ...field.x },
-    bottom: { ...field.bottom },
+    y: { ...field.y },
     opacity: field.opacity,
     fontSize: field.fontSize,
     text: field.text,
@@ -120,7 +120,7 @@ export function useWatermarkFields(themeMode: Ref<'light' | 'dark'>) {
         percent: percentFromPx(12, PAGE_WIDTH),
         unit: 'px',
       },
-      bottom: {
+      y: {
         px: 40,
         percent: percentFromPx(40, PAGE_HEIGHT),
         unit: 'px',
@@ -138,7 +138,7 @@ export function useWatermarkFields(themeMode: Ref<'light' | 'dark'>) {
         percent: percentFromPx(170, PAGE_WIDTH),
         unit: 'px',
       },
-      bottom: {
+      y: {
         px: 40,
         percent: percentFromPx(40, PAGE_HEIGHT),
         unit: 'px',
@@ -157,7 +157,7 @@ export function useWatermarkFields(themeMode: Ref<'light' | 'dark'>) {
     top: initialSkuPosition.topPx,
     position: initialSkuPosition.position,
     originX: 'left',
-    originY: 'bottom',
+    originY: 'top',
     fontSize: watermarkFields[0].fontSize,
     fontFamily: 'Inter',
     fontWeight: '600',
@@ -176,7 +176,7 @@ export function useWatermarkFields(themeMode: Ref<'light' | 'dark'>) {
     top: initialOrderPosition.topPx,
     position: initialOrderPosition.position,
     originX: 'left',
-    originY: 'bottom',
+    originY: 'top',
     fontSize: watermarkFields[1].fontSize,
     fontFamily: 'Inter',
     fontWeight: '600',
@@ -222,19 +222,19 @@ export function useWatermarkFields(themeMode: Ref<'light' | 'dark'>) {
       ? (target as any).getBoundingRect(true, true)
       : null
     const left = rect ? rect.left : target.left ?? pageLeft
-    const bottomCoord = rect ? rect.top + (rect.height ?? 0) : target.top ?? pageBottom
+    const topCoord = rect ? rect.top : target.top ?? pageTop
 
     const leftPx = Math.max(0, Math.round(left - pageLeft))
-    const bottomPx = Math.max(0, Math.round(pageBottom - bottomCoord))
+    const topPx = Math.max(0, Math.round(topCoord - pageTop))
 
     syncingFromModel.value = true
     field.x.px = leftPx
     field.x.percent = percentFromPx(leftPx, PAGE_WIDTH)
     refreshAxis(field.x, PAGE_WIDTH)
 
-    field.bottom.px = bottomPx
-    field.bottom.percent = percentFromPx(bottomPx, PAGE_HEIGHT)
-    refreshAxis(field.bottom, PAGE_HEIGHT)
+    field.y.px = topPx
+    field.y.percent = percentFromPx(topPx, PAGE_HEIGHT)
+    refreshAxis(field.y, PAGE_HEIGHT)
 
     field.opacity = typeof target.opacity === 'number' ? target.opacity : field.opacity
     field.fontSize = typeof target.fontSize === 'number' ? target.fontSize : field.fontSize
@@ -255,20 +255,20 @@ export function useWatermarkFields(themeMode: Ref<'light' | 'dark'>) {
   )
 
   watch(
+    watermarkSkuText,
+    (next) => {
+      syncModelToField(next, watermarkFields[0])
+    },
+    { deep: true },
+  )
+
+  watch(
     () => selectFieldSnapshot(watermarkFields[1]),
     () => {
       if (syncingFromModel.value) {
         return
       }
       syncFieldToModel(watermarkFields[1], watermarkOrderText.value)
-    },
-    { deep: true },
-  )
-
-  watch(
-    watermarkSkuText,
-    (next) => {
-      syncModelToField(next, watermarkFields[0])
     },
     { deep: true },
   )

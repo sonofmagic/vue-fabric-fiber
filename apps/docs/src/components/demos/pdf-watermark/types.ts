@@ -12,7 +12,7 @@ export interface WatermarkField {
   text: string
   color: string
   x: WatermarkAxis
-  bottom: WatermarkAxis
+  y: WatermarkAxis
   opacity: number
   fontSize: number
 }

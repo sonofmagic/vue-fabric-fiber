@@ -1,29 +1,66 @@
 <script setup lang="ts">
-import type { WatermarkAxis, WatermarkField } from './types'
+import type { WatermarkField } from './types'
+import { computed } from 'vue'
 import { PAGE_HEIGHT, PAGE_WIDTH } from './constants'
 
 const props = defineProps<{
   resolveColorDisplay: (value: unknown) => string
   onColorEdited: () => void
   xMax: number
-  bottomMax: number
+  yMax: number
 }>()
 
 const field = defineModel<WatermarkField>({ required: true })
 
 const clampNumber = (value: number) => (Number.isFinite(value) ? value : 0)
-
-function syncAxisFromPx(axis: WatermarkAxis, total: number) {
-  axis.px = Math.max(0, Math.round(clampNumber(axis.px)))
-  axis.percent = Number(((axis.px / total) * 100).toFixed(2))
-  axis.unit = 'px'
+const percentFromPx = (px: number, total: number) => {
+  const safeTotal = total || 1
+  return Number(((px / safeTotal) * 100).toFixed(2))
+}
+const pxFromPercent = (percent: number, total: number) => {
+  const safePercent = clampNumber(percent)
+  return Math.round((safePercent / 100) * (total || 1))
 }
 
-function syncAxisFromPercent(axis: WatermarkAxis, total: number) {
-  axis.percent = Math.max(0, clampNumber(axis.percent))
-  axis.px = Math.round((axis.percent / 100) * total)
-  axis.unit = '%'
-}
+const xPx = computed({
+  get: () => field.value.x.px,
+  set: (val: number) => {
+    const px = Math.max(0, Math.round(clampNumber(val)))
+    field.value.x.px = px
+    field.value.x.percent = percentFromPx(px, PAGE_WIDTH)
+    field.value.x.unit = 'px'
+  },
+})
+
+const xPercent = computed({
+  get: () => field.value.x.percent,
+  set: (val: number) => {
+    const percent = Math.max(0, clampNumber(val))
+    field.value.x.percent = percent
+    field.value.x.px = pxFromPercent(percent, PAGE_WIDTH)
+    field.value.x.unit = '%'
+  },
+})
+
+const yPx = computed({
+  get: () => field.value.y.px,
+  set: (val: number) => {
+    const px = Math.max(0, Math.round(clampNumber(val)))
+    field.value.y.px = px
+    field.value.y.percent = percentFromPx(px, PAGE_HEIGHT)
+    field.value.y.unit = 'px'
+  },
+})
+
+const yPercent = computed({
+  get: () => field.value.y.percent,
+  set: (val: number) => {
+    const percent = Math.max(0, clampNumber(val))
+    field.value.y.percent = percent
+    field.value.y.px = pxFromPercent(percent, PAGE_HEIGHT)
+    field.value.y.unit = '%'
+  },
+})
 </script>
 
 <template>
@@ -59,49 +96,45 @@ function syncAxisFromPercent(axis: WatermarkAxis, total: number) {
       <label class="flex flex-col gap-1 text-[11px] uppercase tracking-[0.22em] text-(--fp-text-dim)">
         <span class="whitespace-nowrap">X (px)</span>
         <input
-          v-model.number="field.x.px"
+          v-model.number="xPx"
           class="w-full rounded-xl border border-(--fp-border-color) bg-(--fp-panel-bg) px-3 py-2.5 text-sm text-(--fp-text-primary)"
           type="number"
           min="0"
           :max="props.xMax"
           step="1"
-          @input="syncAxisFromPx(field.x, PAGE_WIDTH)"
         >
       </label>
       <label class="flex flex-col gap-1 text-[11px] uppercase tracking-[0.22em] text-(--fp-text-dim)">
         <span class="whitespace-nowrap">X (%)</span>
         <input
-          v-model.number="field.x.percent"
+          v-model.number="xPercent"
           class="w-full rounded-xl border border-(--fp-border-color) bg-(--fp-panel-bg) px-3 py-2.5 text-sm text-(--fp-text-primary)"
           type="number"
           min="0"
           max="100"
           step="0.25"
-          @input="syncAxisFromPercent(field.x, PAGE_WIDTH)"
         >
       </label>
       <label class="flex flex-col gap-1 text-[11px] uppercase tracking-[0.22em] text-(--fp-text-dim)">
-        <span class="whitespace-nowrap">Y (px，自底部)</span>
+        <span class="whitespace-nowrap">Y (px)</span>
         <input
-          v-model.number="field.bottom.px"
+          v-model.number="yPx"
           class="w-full rounded-xl border border-(--fp-border-color) bg-(--fp-panel-bg) px-3 py-2.5 text-sm text-(--fp-text-primary)"
           type="number"
           min="0"
-          :max="props.bottomMax"
+          :max="props.yMax"
           step="1"
-          @input="syncAxisFromPx(field.bottom, PAGE_HEIGHT)"
         >
       </label>
       <label class="flex flex-col gap-1 text-[11px] uppercase tracking-[0.22em] text-(--fp-text-dim)">
         <span class="whitespace-nowrap">Y (%)</span>
         <input
-          v-model.number="field.bottom.percent"
+          v-model.number="yPercent"
           class="w-full rounded-xl border border-(--fp-border-color) bg-(--fp-panel-bg) px-3 py-2.5 text-sm text-(--fp-text-primary)"
           type="number"
           min="0"
           max="100"
           step="0.25"
-          @input="syncAxisFromPercent(field.bottom, PAGE_HEIGHT)"
         >
       </label>
       <label class="flex flex-col gap-1 text-[11px] uppercase tracking-[0.22em] text-(--fp-text-dim)">
@@ -110,7 +143,7 @@ function syncAxisFromPercent(axis: WatermarkAxis, total: number) {
       </label>
     </div>
     <p class="mt-1 text-[11px] text-(--fp-text-muted)">
-      当前单位：X={{ field.x.unit }} · Y={{ field.bottom.unit }}
+      当前单位：X={{ field.x.unit }} · Y={{ field.y.unit }}
     </p>
   </div>
 </template>

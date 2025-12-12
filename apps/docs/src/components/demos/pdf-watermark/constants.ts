@@ -9,7 +9,7 @@ export const pageTop = 0
 export const pageBottom = PAGE_HEIGHT
 export const canvasCenterX = PAGE_WIDTH / 2
 export const watermarkXMax = PAGE_WIDTH - WATERMARK_MARGIN * 2
-export const watermarkBottomMax = Math.round(PAGE_HEIGHT * 0.4)
+export const watermarkYMax = PAGE_HEIGHT - WATERMARK_MARGIN * 2
 export const placeholderTextContent = '等待上传 PDF 文件'
 
 export const canvasOptions = {
