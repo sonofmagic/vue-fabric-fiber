@@ -1,5 +1,6 @@
 import type * as fabric from 'fabric'
 import type PQueue from 'p-queue'
+import type { PositionOrigin } from './positioning'
 
 export type SequentialTask = () => Promise<void> | void
 
@@ -20,4 +21,5 @@ export interface Context {
   taskQueue: PQueue
   addSequentialTask: (task: SequentialTask, options?: AddSequentialTaskOptions) => Promise<unknown>
   claimObjectSequence: () => number
+  positionOrigin?: PositionOrigin
 }

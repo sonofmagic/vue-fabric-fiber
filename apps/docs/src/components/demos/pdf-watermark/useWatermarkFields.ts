@@ -1,6 +1,6 @@
 import type { Ref } from 'vue'
 import type { FabricTextModelValue } from 'vue-fabric-fiber'
-import type { WatermarkAxis, WatermarkField } from './types'
+import type { WatermarkAxis, WatermarkField, WatermarkOrigin } from './types'
 import { reactive, ref, watch, watchEffect } from 'vue'
 import { PAGE_HEIGHT, PAGE_WIDTH, pageLeft, pageTop } from './constants'
 
@@ -41,55 +41,38 @@ function percentFromPx(px: number, total: number) {
   return Number(((px / total) * 100).toFixed(2))
 }
 
-function pxFromPercent(percent: number, total: number) {
-  if (!Number.isFinite(percent) || !Number.isFinite(total)) {
-    return 0
-  }
-  return (percent / 100) * total
+function actualFromAxis(axis: WatermarkAxis, total: number, origin: WatermarkOrigin | undefined, type: 'x' | 'y') {
+  const resolvedOrigin = origin ?? 'top-left'
+  const offsetPx = axis.px
+  const isFromEnd = (type === 'x' && resolvedOrigin.endsWith('right')) || (type === 'y' && resolvedOrigin.startsWith('bottom'))
+  return isFromEnd ? total - offsetPx : offsetPx
+}
+
+function axisFromActual(actual: number, total: number, origin: WatermarkOrigin | undefined, type: 'x' | 'y'): WatermarkAxis {
+  const resolvedOrigin = origin ?? 'top-left'
+  const isFromEnd = (type === 'x' && resolvedOrigin.endsWith('right')) || (type === 'y' && resolvedOrigin.startsWith('bottom'))
+  const offsetPx = isFromEnd ? total - actual : actual
+  const percent = percentFromPx(offsetPx, total)
+  return { px: offsetPx, percent }
 }
 
 function refreshAxis(axis: WatermarkAxis, total: number) {
   if (!axis) {
     return
   }
-  if (axis.unit === '%') {
-    axis.percent = Math.max(0, axis.percent)
-    axis.px = Math.round(pxFromPercent(axis.percent, total))
-  }
-  else {
-    axis.px = Math.max(0, Math.round(axis.px))
-    axis.percent = percentFromPx(axis.px, total)
-  }
+  axis.px = Math.round(axis.px)
+  axis.percent = percentFromPx(axis.px, total)
 }
 
-function resolveFieldPosition(field: WatermarkField) {
+function resolveFieldPosition(field: WatermarkField, origin: WatermarkOrigin) {
   refreshAxis(field.x, PAGE_WIDTH)
   refreshAxis(field.y, PAGE_HEIGHT)
 
-  const leftPx = pageLeft + field.x.px
-  const topPx = pageTop + field.y.px
-  const leftUnit = field.x.unit
-  const topUnit = field.y.unit === '%' ? '%' : 'px'
-  const leftPercent = percentFromPx(leftPx, PAGE_WIDTH)
-  const topPercent = percentFromPx(topPx, PAGE_HEIGHT)
-
+  const leftPx = pageLeft + actualFromAxis(field.x, PAGE_WIDTH, origin, 'x')
+  const topPx = pageTop + actualFromAxis(field.y, PAGE_HEIGHT, origin, 'y')
   return {
     leftPx,
     topPx,
-    position: {
-      left: {
-        value: leftUnit === '%' ? field.x.percent : leftPx,
-        unit: leftUnit,
-        px: leftPx,
-        percent: leftPercent,
-      },
-      top: {
-        value: topUnit === '%' ? topPercent : topPx,
-        unit: topUnit,
-        px: topPx,
-        percent: topPercent,
-      },
-    },
   }
 }
 
@@ -105,6 +88,7 @@ function selectFieldSnapshot(field: WatermarkField) {
 }
 
 export function useWatermarkFields(themeMode: Ref<'light' | 'dark'>) {
+  const origin = ref<WatermarkOrigin>('top-left')
   const watermarkColorEdited = reactive<Record<WatermarkField['id'], boolean>>({
     sku: false,
     order: false,
@@ -118,12 +102,10 @@ export function useWatermarkFields(themeMode: Ref<'light' | 'dark'>) {
       x: {
         px: 12,
         percent: percentFromPx(12, PAGE_WIDTH),
-        unit: 'px',
       },
       y: {
         px: 40,
         percent: percentFromPx(40, PAGE_HEIGHT),
-        unit: 'px',
       },
       opacity: 0.92,
       fontSize: 24,
@@ -136,26 +118,23 @@ export function useWatermarkFields(themeMode: Ref<'light' | 'dark'>) {
       x: {
         px: 170,
         percent: percentFromPx(170, PAGE_WIDTH),
-        unit: 'px',
       },
       y: {
         px: 40,
         percent: percentFromPx(40, PAGE_HEIGHT),
-        unit: 'px',
       },
       opacity: 0.92,
       fontSize: 24,
     },
   ])
 
-  const initialSkuPosition = resolveFieldPosition(watermarkFields[0])
-  const initialOrderPosition = resolveFieldPosition(watermarkFields[1])
+  const initialSkuPosition = resolveFieldPosition(watermarkFields[0], origin.value)
+  const initialOrderPosition = resolveFieldPosition(watermarkFields[1], origin.value)
 
   const watermarkSkuText = ref<FabricTextModelValue>({
     text: 'ItemCode',
     left: initialSkuPosition.leftPx,
     top: initialSkuPosition.topPx,
-    position: initialSkuPosition.position,
     originX: 'left',
     originY: 'top',
     fontSize: watermarkFields[0].fontSize,
@@ -174,7 +153,6 @@ export function useWatermarkFields(themeMode: Ref<'light' | 'dark'>) {
     text: 'Sales Order Number',
     left: initialOrderPosition.leftPx,
     top: initialOrderPosition.topPx,
-    position: initialOrderPosition.position,
     originX: 'left',
     originY: 'top',
     fontSize: watermarkFields[1].fontSize,
@@ -206,11 +184,10 @@ export function useWatermarkFields(themeMode: Ref<'light' | 'dark'>) {
   })
 
   const syncFieldToModel = (field: WatermarkField, target: FabricTextModelValue) => {
-    const { leftPx, topPx, position } = resolveFieldPosition(field)
+    const { leftPx, topPx } = resolveFieldPosition(field, origin.value)
 
     target.left = leftPx
     target.top = topPx
-    target.position = position
     target.opacity = field.opacity
     target.fontSize = field.fontSize
     target.text = normalizeText(field.text)
@@ -224,17 +201,22 @@ export function useWatermarkFields(themeMode: Ref<'light' | 'dark'>) {
     const left = rect ? rect.left : target.left ?? pageLeft
     const topCoord = rect ? rect.top : target.top ?? pageTop
 
-    const leftPx = Math.max(0, Math.round(left - pageLeft))
-    const topPx = Math.max(0, Math.round(topCoord - pageTop))
+    const leftPx = Math.round(left - pageLeft)
+    const topPx = Math.round(topCoord - pageTop)
+    const leftPercent = typeof (target as any)?.leftPercent === 'number'
+      ? (target as any).leftPercent
+      : percentFromPx(leftPx, PAGE_WIDTH)
+    const topPercent = typeof (target as any)?.topPercent === 'number'
+      ? (target as any).topPercent
+      : percentFromPx(topPx, PAGE_HEIGHT)
 
     syncingFromModel.value = true
-    field.x.px = leftPx
-    field.x.percent = percentFromPx(leftPx, PAGE_WIDTH)
-    refreshAxis(field.x, PAGE_WIDTH)
-
-    field.y.px = topPx
-    field.y.percent = percentFromPx(topPx, PAGE_HEIGHT)
-    refreshAxis(field.y, PAGE_HEIGHT)
+    const nextX = axisFromActual(leftPx, PAGE_WIDTH, origin.value, 'x')
+    const nextY = axisFromActual(topPx, PAGE_HEIGHT, origin.value, 'y')
+    field.x.px = nextX.px
+    field.x.percent = leftPercent
+    field.y.px = nextY.px
+    field.y.percent = topPercent
 
     field.opacity = typeof target.opacity === 'number' ? target.opacity : field.opacity
     field.fontSize = typeof target.fontSize === 'number' ? target.fontSize : field.fontSize
@@ -281,7 +263,25 @@ export function useWatermarkFields(themeMode: Ref<'light' | 'dark'>) {
     { deep: true },
   )
 
+  watch(origin, (next, prev) => {
+    if (!prev || next === prev) {
+      return
+    }
+    const fields = [watermarkFields[0], watermarkFields[1]]
+    fields.forEach((field) => {
+      const actualLeft = actualFromAxis(field.x, PAGE_WIDTH, prev, 'x')
+      const actualTop = actualFromAxis(field.y, PAGE_HEIGHT, prev, 'y')
+      const nextX = axisFromActual(actualLeft, PAGE_WIDTH, next, 'x')
+      const nextY = axisFromActual(actualTop, PAGE_HEIGHT, next, 'y')
+      field.x = nextX
+      field.y = nextY
+    })
+    syncFieldToModel(watermarkFields[0], watermarkSkuText.value)
+    syncFieldToModel(watermarkFields[1], watermarkOrderText.value)
+  })
+
   return {
+    origin,
     watermarkFields,
     watermarkSkuText,
     watermarkOrderText,

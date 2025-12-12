@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { WatermarkField } from './types'
+import type { WatermarkField, WatermarkOrigin } from './types'
 import { computed } from 'vue'
 import { PAGE_HEIGHT, PAGE_WIDTH } from './constants'
 
@@ -8,57 +8,75 @@ const props = defineProps<{
   onColorEdited: () => void
   xMax: number
   yMax: number
+  origin: WatermarkOrigin
 }>()
 
 const field = defineModel<WatermarkField>({ required: true })
 
 const clampNumber = (value: number) => (Number.isFinite(value) ? value : 0)
-const percentFromPx = (px: number, total: number) => {
-  const safeTotal = total || 1
-  return Number(((px / safeTotal) * 100).toFixed(2))
+function toOriginPx(px: number, total: number, origin: WatermarkOrigin, axis: 'x' | 'y') {
+  if ((origin === 'top-right' && axis === 'x') || (origin === 'bottom-right' && axis === 'x')) {
+    return total - px
+  }
+  if ((origin === 'bottom-left' && axis === 'y') || (origin === 'bottom-right' && axis === 'y')) {
+    return total - px
+  }
+  return px
 }
-const pxFromPercent = (percent: number, total: number) => {
-  const safePercent = clampNumber(percent)
-  return Math.round((safePercent / 100) * (total || 1))
+
+function fromOriginPx(value: number, total: number, origin: WatermarkOrigin, axis: 'x' | 'y') {
+  if ((origin === 'top-right' && axis === 'x') || (origin === 'bottom-right' && axis === 'x')) {
+    return total - value
+  }
+  if ((origin === 'bottom-left' && axis === 'y') || (origin === 'bottom-right' && axis === 'y')) {
+    return total - value
+  }
+  return value
 }
 
 const xPx = computed({
-  get: () => field.value.x.px,
+  get: () => toOriginPx(field.value.x.px, PAGE_WIDTH, props.origin, 'x'),
   set: (val: number) => {
-    const px = Math.max(0, Math.round(clampNumber(val)))
-    field.value.x.px = px
-    field.value.x.percent = percentFromPx(px, PAGE_WIDTH)
-    field.value.x.unit = 'px'
+    const pxFromOrigin = Math.round(clampNumber(val))
+    const basePx = fromOriginPx(pxFromOrigin, PAGE_WIDTH, props.origin, 'x')
+    field.value.x.px = basePx
+    field.value.x.percent = clampNumber(field.value.x.percent)
   },
 })
 
 const xPercent = computed({
-  get: () => field.value.x.percent,
+  get: () => {
+    return field.value.x.percent
+  },
   set: (val: number) => {
-    const percent = Math.max(0, clampNumber(val))
+    const percent = clampNumber(val)
+    const originPx = Math.round((percent / 100) * (PAGE_WIDTH || 1))
+    const basePx = fromOriginPx(originPx, PAGE_WIDTH, props.origin, 'x')
     field.value.x.percent = percent
-    field.value.x.px = pxFromPercent(percent, PAGE_WIDTH)
-    field.value.x.unit = '%'
+    field.value.x.px = basePx
   },
 })
 
 const yPx = computed({
-  get: () => field.value.y.px,
+  get: () => toOriginPx(field.value.y.px, PAGE_HEIGHT, props.origin, 'y'),
   set: (val: number) => {
-    const px = Math.max(0, Math.round(clampNumber(val)))
-    field.value.y.px = px
-    field.value.y.percent = percentFromPx(px, PAGE_HEIGHT)
-    field.value.y.unit = 'px'
+    const pxFromOrigin = Math.round(clampNumber(val))
+    const basePx = fromOriginPx(pxFromOrigin, PAGE_HEIGHT, props.origin, 'y')
+    field.value.y.px = basePx
+    field.value.y.percent = clampNumber(field.value.y.percent)
   },
 })
 
 const yPercent = computed({
-  get: () => field.value.y.percent,
+  get: () => {
+    return field.value.y.percent
+  },
   set: (val: number) => {
-    const percent = Math.max(0, clampNumber(val))
+    const percent = clampNumber(val)
+    const originPx = Math.round((percent / 100) * (PAGE_HEIGHT || 1))
+    const basePx = fromOriginPx(originPx, PAGE_HEIGHT, props.origin, 'y')
     field.value.y.percent = percent
-    field.value.y.px = pxFromPercent(percent, PAGE_HEIGHT)
-    field.value.y.unit = '%'
+    field.value.y.px = basePx
   },
 })
 </script>
@@ -99,7 +117,6 @@ const yPercent = computed({
           v-model.number="xPx"
           class="w-full rounded-xl border border-(--fp-border-color) bg-(--fp-panel-bg) px-3 py-2.5 text-sm text-(--fp-text-primary)"
           type="number"
-          min="0"
           :max="props.xMax"
           step="1"
         >
@@ -110,8 +127,6 @@ const yPercent = computed({
           v-model.number="xPercent"
           class="w-full rounded-xl border border-(--fp-border-color) bg-(--fp-panel-bg) px-3 py-2.5 text-sm text-(--fp-text-primary)"
           type="number"
-          min="0"
-          max="100"
           step="0.25"
         >
       </label>
@@ -121,7 +136,6 @@ const yPercent = computed({
           v-model.number="yPx"
           class="w-full rounded-xl border border-(--fp-border-color) bg-(--fp-panel-bg) px-3 py-2.5 text-sm text-(--fp-text-primary)"
           type="number"
-          min="0"
           :max="props.yMax"
           step="1"
         >
@@ -132,8 +146,6 @@ const yPercent = computed({
           v-model.number="yPercent"
           class="w-full rounded-xl border border-(--fp-border-color) bg-(--fp-panel-bg) px-3 py-2.5 text-sm text-(--fp-text-primary)"
           type="number"
-          min="0"
-          max="100"
           step="0.25"
         >
       </label>
@@ -142,8 +154,5 @@ const yPercent = computed({
         <input v-model.number="field.fontSize" class="w-full rounded-xl border border-(--fp-border-color) bg-(--fp-panel-bg) px-3 py-2.5 text-sm text-(--fp-text-primary)" type="number" min="8" max="32" step="1">
       </label>
     </div>
-    <p class="mt-1 text-[11px] text-(--fp-text-muted)">
-      当前单位：X={{ field.x.unit }} · Y={{ field.y.unit }}
-    </p>
   </div>
 </template>

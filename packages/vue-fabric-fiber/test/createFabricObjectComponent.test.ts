@@ -176,7 +176,7 @@ describe('createFabricObjectComponent', () => {
     expect(updateSpy).toHaveBeenCalledWith({ left: 120 })
   })
 
-  it('applies percent-based positions and emits snapshot with preserved units', async () => {
+  it('applies percent-based positions and emits resolved coordinates', async () => {
     const instance = createStubInstance({ left: 0, top: 0 })
     const createInstance = vi.fn(() => instance)
     const mockCtx = createMockContext({
@@ -196,10 +196,8 @@ describe('createFabricObjectComponent', () => {
     mountComponent(TestObject, {
       props: {
         'modelValue': {
-          position: {
-            left: { value: 50, unit: '%' },
-            top: { value: 25, unit: '%' },
-          },
+          left: '50%',
+          top: '25%',
         },
         'onUpdate:modelValue': updateSpy,
       },
@@ -213,13 +211,49 @@ describe('createFabricObjectComponent', () => {
     instance.top = 30
     instance.trigger('modified')
 
-    expect(updateSpy).toHaveBeenCalledWith({
-      left: 120,
-      top: 30,
-      position: {
-        left: { value: 60, unit: '%', px: 120, percent: 60 },
-        top: { value: 30, unit: '%', px: 30, percent: 30 },
+    expect(updateSpy).toHaveBeenCalledWith({ left: 120, top: 30, leftPercent: 60, topPercent: 30 })
+  })
+
+  it('inherits position origin from the canvas context', async () => {
+    const instance = createStubInstance({ left: 0, top: 0 })
+    const createInstance = vi.fn(() => instance)
+    const mockCtx = createMockContext({
+      fabricCanvas: {
+        getWidth: () => 200,
+        getHeight: () => 100,
+      } as unknown as Context['fabricCanvas'],
+      positionOrigin: 'bottom-right',
+    })
+
+    const TestObject = createFabricObjectComponent({
+      name: 'StubWithOrigin',
+      defaults: () => ({ width: 10, height: 10 }),
+      createInstance,
+    })
+
+    const updateSpy = vi.fn()
+    mountComponent(TestObject, {
+      props: {
+        'modelValue': {
+          left: 10,
+          top: 5,
+        },
+        'onUpdate:modelValue': updateSpy,
       },
+      provide: [[ContextKey, mockCtx]],
+    })
+
+    await nextTick()
+    expect(createInstance).toHaveBeenCalledWith({ width: 10, height: 10, left: 190, top: 95 })
+
+    instance.left = 180
+    instance.top = 80
+    instance.trigger('modified')
+    expect(updateSpy).toHaveBeenCalledWith({
+      left: 180,
+      top: 80,
+      leftPercent: 10,
+      topPercent: 20,
     })
   })
 

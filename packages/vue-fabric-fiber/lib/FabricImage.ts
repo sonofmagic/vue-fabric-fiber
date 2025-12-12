@@ -1,7 +1,7 @@
 import type { ImageProps, TCrossOrigin } from 'fabric'
 import type { PropType } from 'vue'
 import type { FabricObjectSyncEvent } from './createFabricObject'
-import type { ObjectPosition } from './positioning'
+import type { PositionOrigin } from './positioning'
 import * as fabric from 'fabric'
 import {
   computed,
@@ -16,10 +16,7 @@ import { normalizeKeySelection, pickDefinedOptions, pickFromUnknown } from './bi
 import { bindFabricSyncEvents, DEFAULT_SYNC_EVENTS } from './createFabricObject'
 import {
   applyPositionIntent,
-  buildPositionSnapshot,
-  createPositionConflictLogger,
   getCanvasDimensions,
-
 } from './positioning'
 import { ContextKey } from './symbols'
 
@@ -40,18 +37,9 @@ type FabricImageOptionalProps = Partial<
 
 export interface FabricImageModelValue extends FabricImageOptionalProps {
   src: string
-  /**
-   * Desired rendered width. Numbers are treated as pixel values.
-   * Percentages are resolved against the canvas; e.g. `"100%"` fills the canvas width.
-   */
   width?: number | string
-  /**
-   * Desired rendered height. Numbers are treated as pixel values.
-   * Percentages are resolved against the canvas; e.g. `"100%"` fills the canvas height.
-   */
   height?: number | string
   crossOrigin?: TCrossOrigin
-  position?: ObjectPosition
   [key: string]: unknown
 }
 
@@ -120,7 +108,6 @@ export const FABRIC_IMAGE_BINDABLE_KEYS = [
   'src',
   'left',
   'top',
-  'position',
   'angle',
   'scaleX',
   'scaleY',
@@ -157,7 +144,6 @@ const DEFAULT_BOUND_KEYS: readonly FabricImageBindableKey[] = [
   'src',
   'left',
   'top',
-  'position',
   'scaleX',
   'scaleY',
   'originX',
@@ -202,7 +188,6 @@ export const FABRIC_IMAGE_PRESETS = {
       'src',
       'left',
       'top',
-      'position',
       'scaleX',
       'scaleY',
       'originX',
@@ -375,6 +360,10 @@ export const FabricImage = defineComponent({
       type: Object as PropType<FabricImageModelValue>,
       required: true,
     },
+    positionOrigin: {
+      type: String as PropType<PositionOrigin>,
+      default: undefined,
+    },
     preset: {
       type: String as PropType<FabricImagePresetId>,
       default: DEFAULT_PRESET_ID,
@@ -416,7 +405,9 @@ export const FabricImage = defineComponent({
     let imageObj: fabric.FabricImage | undefined
     let activeAbortController: AbortController | undefined
 
-    const warnPositionConflict = createPositionConflictLogger('FabricImage')
+    const resolvedOrigin = computed<PositionOrigin>(() => {
+      return props.positionOrigin ?? ctx?.positionOrigin ?? 'top-left'
+    })
 
     const presetConfig = computed<FabricImagePresetConfig>(() => {
       return FABRIC_IMAGE_PRESETS[props.preset] ?? FABRIC_IMAGE_PRESETS[DEFAULT_PRESET_ID]
@@ -426,8 +417,6 @@ export const FabricImage = defineComponent({
       return {
         ...(pickDefinedOptions(presetConfig.value.initial, FABRIC_IMAGE_OPTION_KEYS) as Partial<FabricImageModelValue>),
         ...(pickDefinedOptions(props.initial, FABRIC_IMAGE_OPTION_KEYS) as Partial<FabricImageModelValue>),
-        ...(presetConfig.value.initial?.position ? { position: presetConfig.value.initial.position } : {}),
-        ...(props.initial?.position ? { position: props.initial.position } : {}),
       }
     })
 
@@ -512,19 +501,11 @@ export const FabricImage = defineComponent({
         next.height = target.getScaledHeight()
       }
 
-      const positionSnapshot = buildPositionSnapshot(
-        modelValue.value,
-        {
-          left: target.left,
-          top: target.top,
-        },
-        ctx,
-      )
-
       return {
         ...modelValue.value,
         ...next,
-        ...positionSnapshot,
+        left: target.left,
+        top: target.top,
       } as FabricImageModelValue
     }
 
@@ -571,11 +552,10 @@ export const FabricImage = defineComponent({
           {
             ...resolvedInitialProps.value,
             ...(pickDefinedOptions(value, FABRIC_IMAGE_OPTION_KEYS) as Partial<FabricImageModelValue>),
-            ...(value.position ? { position: value.position } : {}),
           },
           ctx,
           undefined,
-          warnPositionConflict,
+          resolvedOrigin.value,
         )
 
         const instance = await fabric.FabricImage.fromURL(
@@ -593,11 +573,10 @@ export const FabricImage = defineComponent({
           {
             ...resolvedInitialProps.value,
             ...(pickDefinedOptions(latestValue, FABRIC_IMAGE_OPTION_KEYS) as Partial<FabricImageModelValue>),
-            ...(latestValue.position ? { position: latestValue.position } : {}),
           },
           ctx,
           undefined,
-          warnPositionConflict,
+          resolvedOrigin.value,
         )
 
         instance.set(hydratedOptions as Record<string, unknown>)
@@ -665,7 +644,7 @@ export const FabricImage = defineComponent({
             left: imageObj.left,
             top: imageObj.top,
           },
-          warnPositionConflict,
+          resolvedOrigin.value,
         )
 
         if (Object.keys(normalizedOptions).length > 0) {

@@ -1,10 +1,9 @@
-export type WatermarkPositionUnit = 'px' | '%'
-
 export interface WatermarkAxis {
   px: number
   percent: number
-  unit: WatermarkPositionUnit
 }
+
+export type WatermarkOrigin = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
 
 export interface WatermarkField {
   id: 'sku' | 'order'

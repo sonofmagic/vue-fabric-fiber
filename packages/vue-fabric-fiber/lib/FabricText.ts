@@ -1,7 +1,7 @@
 import type { TextProps } from 'fabric'
 import type { PropType } from 'vue'
 import type { FabricObjectSyncEvent } from './createFabricObject'
-import type { ObjectPosition } from './positioning'
+import type { PositionOrigin } from './positioning'
 import * as fabric from 'fabric'
 import {
   computed,
@@ -16,9 +16,6 @@ import { normalizeKeySelection, pickDefinedOptions, pickFromUnknown } from './bi
 import { bindFabricSyncEvents, DEFAULT_SYNC_EVENTS } from './createFabricObject'
 import {
   applyPositionIntent,
-  buildPositionSnapshot,
-  createPositionConflictLogger,
-
 } from './positioning'
 import { ContextKey } from './symbols'
 
@@ -117,7 +114,6 @@ export type FabricTextOptionKey = typeof FABRIC_TEXT_OPTION_KEYS[number]
 
 export const FABRIC_TEXT_BINDABLE_KEYS = [
   'text',
-  'position',
   ...FABRIC_TEXT_OPTION_KEYS,
 ] as const
 
@@ -125,9 +121,7 @@ export type FabricTextBindableKey = typeof FABRIC_TEXT_BINDABLE_KEYS[number]
 
 const FABRIC_TEXT_BINDABLE_KEY_SET = new Set<FabricTextBindableKey>(FABRIC_TEXT_BINDABLE_KEYS)
 
-type FabricTextOptionalProps = Partial<Pick<BaseTextProps, FabricTextOptionKey>> & {
-  position?: ObjectPosition
-}
+type FabricTextOptionalProps = Partial<Pick<BaseTextProps, FabricTextOptionKey>>
 
 export interface FabricTextModelValue extends FabricTextOptionalProps {
   text: string
@@ -161,7 +155,6 @@ const DEFAULT_BOUND_KEYS: readonly FabricTextBindableKey[] = [
   'fill',
   'textAlign',
   'lineHeight',
-  'position',
   'scaleX',
   'scaleY',
   'angle',
@@ -190,7 +183,6 @@ export const FABRIC_TEXT_PRESETS = {
       'text',
       'left',
       'top',
-      'position',
       'fontFamily',
       'fontSize',
       'fontWeight',
@@ -213,7 +205,6 @@ export const FABRIC_TEXT_PRESETS = {
       'text',
       'left',
       'top',
-      'position',
       'fontFamily',
       'fontSize',
       'fontWeight',
@@ -288,6 +279,10 @@ export const FabricText = defineComponent({
       type: Number,
       default: undefined,
     },
+    positionOrigin: {
+      type: String as PropType<PositionOrigin>,
+      default: undefined,
+    },
   },
   emits: ['update:modelValue'],
   setup(props, { emit }) {
@@ -298,7 +293,9 @@ export const FabricText = defineComponent({
 
     let textObj: fabric.Text | undefined
 
-    const warnPositionConflict = createPositionConflictLogger('FabricText')
+    const resolvedOrigin = computed<PositionOrigin>(() => {
+      return props.positionOrigin ?? ctx?.positionOrigin ?? 'top-left'
+    })
 
     const presetConfig = computed<FabricTextPresetConfig>(() => {
       return FABRIC_TEXT_PRESETS[props.preset] ?? FABRIC_TEXT_PRESETS[DEFAULT_PRESET_ID]
@@ -308,8 +305,6 @@ export const FabricText = defineComponent({
       return {
         ...(pickDefinedOptions(presetConfig.value.initial, FABRIC_TEXT_OPTION_KEYS) as Partial<FabricTextModelValue>),
         ...(pickDefinedOptions(props.initial, FABRIC_TEXT_OPTION_KEYS) as Partial<FabricTextModelValue>),
-        ...(presetConfig.value.initial?.position ? { position: presetConfig.value.initial.position } : {}),
-        ...(props.initial?.position ? { position: props.initial.position } : {}),
       }
     })
 
@@ -339,19 +334,11 @@ export const FabricText = defineComponent({
       const next = pickFromUnknown(source, resolvedBoundKeys.value) as Partial<FabricTextModelValue>
       next.text = typeof source.text === 'string' ? source.text : modelValue.value.text
 
-      const positionSnapshot = buildPositionSnapshot(
-        modelValue.value,
-        {
-          left: source.left,
-          top: source.top,
-        },
-        ctx,
-      )
-
       return {
         ...modelValue.value,
         ...next,
-        ...positionSnapshot,
+        left: source.left,
+        top: source.top,
       } as FabricTextModelValue
     }
 
@@ -362,11 +349,10 @@ export const FabricText = defineComponent({
         {
           ...resolvedInitialProps.value,
           ...(pickDefinedOptions(modelValue.value, FABRIC_TEXT_OPTION_KEYS) as Partial<FabricTextModelValue>),
-          ...(modelValue.value.position ? { position: modelValue.value.position } : {}),
         },
         ctx,
         undefined,
-        warnPositionConflict,
+        resolvedOrigin.value,
       )
 
       textObj = new fabric.FabricText(
@@ -407,7 +393,7 @@ export const FabricText = defineComponent({
             left: textObj.left,
             top: textObj.top,
           },
-          warnPositionConflict,
+          resolvedOrigin.value,
         )
 
         textObj.set(normalizedPayload as Record<string, unknown>)

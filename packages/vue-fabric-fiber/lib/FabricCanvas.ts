@@ -1,4 +1,5 @@
 import type { PropType } from 'vue'
+import type { PositionOrigin } from './positioning'
 import type { AddSequentialTaskOptions, Context, SequentialTask } from './types'
 import * as fabric from 'fabric'
 import PQueue from 'p-queue'
@@ -218,6 +219,10 @@ export const FabricCanvas = defineComponent({
       type: Number,
       default: DEFAULT_PIXEL_RATIO,
     },
+    positionOrigin: {
+      type: String as PropType<PositionOrigin>,
+      default: 'top-left',
+    },
   },
   emits: ['update:canvasOptions', 'ready'],
   setup(props, { slots, emit }) {
@@ -232,6 +237,14 @@ export const FabricCanvas = defineComponent({
     const ctx = shallowReactive<Partial<Context>>({
       taskQueue,
     })
+
+    watch(
+      () => props.positionOrigin,
+      (next) => {
+        ctx.positionOrigin = next ?? 'top-left'
+      },
+      { immediate: true },
+    )
 
     const objectMeta = new WeakMap<fabric.Object, { priority?: number, sequence: number }>()
     let nextSequenceId = 0

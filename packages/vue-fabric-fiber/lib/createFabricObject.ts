@@ -1,5 +1,6 @@
 import type { FabricObject } from 'fabric'
 import type { PropType } from 'vue'
+import type { PositionOrigin } from './positioning'
 import {
   computed,
   defineComponent,
@@ -8,11 +9,7 @@ import {
   onMounted,
   watch,
 } from 'vue'
-import {
-  applyPositionIntent,
-  buildPositionSnapshot,
-  createPositionConflictLogger,
-} from './positioning'
+import { applyPositionIntent, getCanvasDimensions } from './positioning'
 import { ContextKey } from './symbols'
 import { removeUndefined } from './utils'
 
@@ -24,6 +21,7 @@ interface FabricObjectComponentProps<TModel extends ModelRecord> {
   modelValue: TModel
   syncOn: FabricObjectSyncEvent[]
   stackOrder?: number
+  positionOrigin?: PositionOrigin
 }
 
 export function bindFabricSyncEvents<TModel extends ModelRecord, TObject extends FabricObject>(
@@ -87,6 +85,10 @@ export function createFabricObjectComponent<
         type: Number,
         default: undefined,
       },
+      positionOrigin: {
+        type: String as PropType<PositionOrigin>,
+        default: undefined,
+      },
     },
     emits: ['update:modelValue'],
     setup(
@@ -121,7 +123,9 @@ export function createFabricObjectComponent<
         return Array.from(new Set(base))
       })
 
-      const warnPositionConflict = createPositionConflictLogger(options.name)
+      const resolvedOrigin = computed<PositionOrigin>(() => {
+        return props.positionOrigin ?? ctx?.positionOrigin ?? 'top-left'
+      })
 
       function emitModelSnapshot(source: TObject) {
         const payload = removeUndefined(
@@ -133,18 +137,32 @@ export function createFabricObjectComponent<
           ),
         ) as TModel
 
-        const positionSnapshot = buildPositionSnapshot(
-          model.value,
-          {
-            left: (source as unknown as Record<'left', number>).left,
-            top: (source as unknown as Record<'top', number>).top,
-          },
-          ctx,
-        )
+        const coords = removeUndefined({
+          left: (source as unknown as Record<'left', number | undefined>).left,
+          top: (source as unknown as Record<'top', number | undefined>).top,
+        }) as { left?: number, top?: number }
+
+        const { width, height } = getCanvasDimensions(ctx)
+        const origin = resolvedOrigin.value
+
+        function axisPercent(axis: 'left' | 'top', actual: number | undefined, size: number | undefined) {
+          if (actual === undefined || typeof size !== 'number' || !Number.isFinite(size) || size === 0) {
+            return undefined
+          }
+          const offset = axis === 'left'
+            ? (origin.endsWith('right') ? size - actual : actual)
+            : (origin.startsWith('bottom') ? size - actual : actual)
+          return Number(((offset / size) * 100).toFixed(2))
+        }
+
+        const leftPercent = axisPercent('left', coords.left, width)
+        const topPercent = axisPercent('top', coords.top, height)
 
         return {
           ...payload,
-          ...positionSnapshot,
+          ...(coords as unknown as Partial<TModel>),
+          ...(leftPercent !== undefined ? { leftPercent } : {}),
+          ...(topPercent !== undefined ? { topPercent } : {}),
         } as TModel
       }
 
@@ -159,7 +177,7 @@ export function createFabricObjectComponent<
             left: (instance as unknown as Record<'left', number | undefined>).left,
             top: (instance as unknown as Record<'top', number | undefined>).top,
           },
-          warnPositionConflict,
+          resolvedOrigin.value,
         )
         if (options.applyProps) {
           options.applyProps(instance, sanitized)
@@ -175,7 +193,7 @@ export function createFabricObjectComponent<
           removeUndefined(resolvedModel.value),
           ctx,
           undefined,
-          warnPositionConflict,
+          resolvedOrigin.value,
         )
         instance = options.createInstance(initial)
 
@@ -190,6 +208,8 @@ export function createFabricObjectComponent<
           payload => emit('update:modelValue', payload),
         )
         disposers.push(...eventDisposers)
+
+        emit('update:modelValue', emitModelSnapshot(instance))
 
         if (ctx?.addSequentialTask) {
           ctx.addSequentialTask(() => {

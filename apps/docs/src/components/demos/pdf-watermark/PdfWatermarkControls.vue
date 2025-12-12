@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import type { WatermarkField } from './types'
+import type { WatermarkField, WatermarkOrigin } from './types'
 import StepCard from './StepCard.vue'
 import WatermarkFieldCard from './WatermarkFieldCard.vue'
+import { computed } from 'vue'
 
 const props = defineProps<{
   pdfLoading: boolean
@@ -23,6 +24,15 @@ const props = defineProps<{
   onColorEdited: (id: WatermarkField['id']) => void
   onUpdateField: (index: number, value: WatermarkField) => void
 }>()
+
+const originModel = defineModel<WatermarkOrigin>('origin', { required: true })
+
+const originOptions = computed(() => ([
+  { value: 'top-left', label: '左上' },
+  { value: 'top-right', label: '右上' },
+  { value: 'bottom-left', label: '左下' },
+  { value: 'bottom-right', label: '右下' },
+] satisfies { value: WatermarkOrigin, label: string }[]))
 </script>
 
 <template>
@@ -91,6 +101,25 @@ const props = defineProps<{
       </StepCard>
 
       <StepCard :index="3" title="打水印" desc="X/Y 均以左上角为原点（px/%），可同时查看和调整像素与百分比。">
+        <div class="flex flex-wrap items-center gap-2 text-xs text-(--fp-text-muted)">
+          <span class="text-(--fp-text-primary)">原点</span>
+          <div class="inline-flex flex-wrap gap-1">
+            <button
+              v-for="option in originOptions"
+              :key="option.value"
+              class="rounded-lg border px-2.5 py-1 transition"
+              :class="[
+                option.value === originModel
+                  ? 'border-sky-400 bg-sky-500/10 text-sky-200'
+                  : 'border-(--fp-border-color) bg-(--fp-panel-bg) text-(--fp-text-muted) hover:border-(--fp-border-color-strong)',
+              ]"
+              type="button"
+              @click="originModel = option.value"
+            >
+              {{ option.label }}
+            </button>
+          </div>
+        </div>
         <div class="grid gap-4">
           <WatermarkFieldCard
             v-for="(field, index) in props.watermarkFields"
@@ -99,6 +128,7 @@ const props = defineProps<{
             :resolve-color-display="props.resolveColorDisplay"
             :x-max="props.watermarkXMax"
             :y-max="props.watermarkYMax"
+            :origin="originModel"
             :on-color-edited="() => props.onColorEdited(field.id)"
             @update:model-value="(value: WatermarkField) => props.onUpdateField(index, value)"
           />

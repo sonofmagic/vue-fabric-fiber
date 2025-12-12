@@ -17,6 +17,7 @@ const {
   watermarkOrderText,
   resolveColorDisplay,
   markWatermarkColorEdited,
+  origin,
 } = useWatermarkFields(themeMode)
 const {
   pdfLayer,
@@ -54,6 +55,7 @@ function updateWatermarkField(index: number, value: WatermarkField) {
       :watermark-fields="watermarkFields"
       :watermark-x-max="watermarkXMax"
       :watermark-y-max="watermarkYMax"
+      v-model:origin="origin"
       :resolve-color-display="resolveColorDisplay"
       :exporting="exporting"
       :export-error="exportError"
@@ -70,6 +72,7 @@ function updateWatermarkField(index: number, value: WatermarkField) {
       v-model:placeholder-label="placeholderLabel"
       v-model:watermark-sku-text="watermarkSkuText"
       v-model:watermark-order-text="watermarkOrderText"
+      :origin="origin"
       :canvas-options="canvasOptions"
       :on-canvas-ready="handleCanvasReady"
     />
