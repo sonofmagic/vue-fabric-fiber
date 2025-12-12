@@ -2,7 +2,6 @@ packages:
   - apps/*
   - packages/*
   - '!**/test/**'
-
 onlyBuiltDependencies:
   - '@tailwindcss/oxide'
   - esbuild
