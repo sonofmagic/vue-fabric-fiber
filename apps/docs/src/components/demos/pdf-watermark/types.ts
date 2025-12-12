@@ -14,4 +14,6 @@ export interface WatermarkField {
   y: WatermarkAxis
   opacity: number
   fontSize: number
+  angle: number
+  scale: number
 }

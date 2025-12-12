@@ -40,7 +40,7 @@ const xPx = computed({
     const pxFromOrigin = Math.round(clampNumber(val))
     const basePx = fromOriginPx(pxFromOrigin, PAGE_WIDTH, props.origin, 'x')
     field.value.x.px = basePx
-    field.value.x.percent = clampNumber(field.value.x.percent)
+    field.value.x.percent = Math.round((basePx / (PAGE_WIDTH || 1)) * 10000) / 100
   },
 })
 
@@ -63,7 +63,7 @@ const yPx = computed({
     const pxFromOrigin = Math.round(clampNumber(val))
     const basePx = fromOriginPx(pxFromOrigin, PAGE_HEIGHT, props.origin, 'y')
     field.value.y.px = basePx
-    field.value.y.percent = clampNumber(field.value.y.percent)
+    field.value.y.percent = Math.round((basePx / (PAGE_HEIGHT || 1)) * 10000) / 100
   },
 })
 
@@ -152,6 +152,14 @@ const yPercent = computed({
       <label class="flex flex-col gap-1 text-[11px] uppercase tracking-[0.22em] text-(--fp-text-dim)">
         <span>字号</span>
         <input v-model.number="field.fontSize" class="w-full rounded-xl border border-(--fp-border-color) bg-(--fp-panel-bg) px-3 py-2.5 text-sm text-(--fp-text-primary)" type="number" min="8" max="32" step="1">
+      </label>
+      <label class="flex flex-col gap-1 text-[11px] uppercase tracking-[0.22em] text-(--fp-text-dim)">
+        <span>旋转 (°)</span>
+        <input v-model.number="field.angle" class="w-full rounded-xl border border-(--fp-border-color) bg-(--fp-panel-bg) px-3 py-2.5 text-sm text-(--fp-text-primary)" type="number" min="-180" max="180" step="1">
+      </label>
+      <label class="flex flex-col gap-1 text-[11px] uppercase tracking-[0.22em] text-(--fp-text-dim)">
+        <span>缩放</span>
+        <input v-model.number="field.scale" class="w-full rounded-xl border border-(--fp-border-color) bg-(--fp-panel-bg) px-3 py-2.5 text-sm text-(--fp-text-primary)" type="number" min="0.2" max="3" step="0.05">
       </label>
     </div>
   </div>

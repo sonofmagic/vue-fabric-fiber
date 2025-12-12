@@ -214,6 +214,48 @@ describe('createFabricObjectComponent', () => {
     expect(updateSpy).toHaveBeenCalledWith({ left: 120, top: 30, leftPercent: 60, topPercent: 30 })
   })
 
+  it('accepts leftPercent/topPercent inputs without explicit coordinates', async () => {
+    const instance = createStubInstance({ left: 0, top: 0 })
+    const createInstance = vi.fn((initial: Record<string, unknown>) => {
+      Object.assign(instance, initial)
+      return instance
+    })
+    const mockCtx = createMockContext({
+      fabricCanvas: {
+        getWidth: () => 300,
+        getHeight: () => 150,
+      } as unknown as Context['fabricCanvas'],
+    })
+
+    const TestObject = createFabricObjectComponent({
+      name: 'StubWithPercentCoords',
+      defaults: () => ({}),
+      createInstance,
+    })
+
+    const wrapper = mountComponent(TestObject, {
+      props: {
+        modelValue: {
+          leftPercent: 10,
+          topPercent: 20,
+        },
+      },
+      provide: [[ContextKey, mockCtx]],
+    })
+
+    await nextTick()
+    expect(createInstance).toHaveBeenCalledWith({ left: 30, top: 30 })
+
+    await wrapper.updateProps({
+      modelValue: {
+        leftPercent: 50,
+        topPercent: 40,
+      },
+    })
+
+    expect(instance.set).toHaveBeenCalledWith({ left: 150, top: 60 })
+  })
+
   it('inherits position origin from the canvas context', async () => {
     const instance = createStubInstance({ left: 0, top: 0 })
     const createInstance = vi.fn(() => instance)

@@ -50,6 +50,7 @@ function updateWatermarkField(index: number, value: WatermarkField) {
       :pdf-file-name="pdfFileName"
       :pdf-error="pdfError"
       :pdf-loaded="pdfLoaded"
+      v-model:pdf-layer="pdfLayer"
       :rotation-label="rotationLabel"
       :scale-label="scaleLabel"
       :watermark-fields="watermarkFields"

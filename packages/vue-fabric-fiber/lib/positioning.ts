@@ -3,6 +3,7 @@ import type { Context } from './types'
 export type PositionOrigin = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
 
 type Axis = 'left' | 'top'
+type PercentAxis = 'leftPercent' | 'topPercent'
 
 interface DimensionLike {
   width?: number
@@ -30,14 +31,31 @@ function normalizeAxis(input: unknown): { unit: 'px' | '%', value: number } | un
   return undefined
 }
 
+function resolvePercentValue(raw: unknown) {
+  if (typeof raw === 'number' && Number.isFinite(raw)) {
+    return raw
+  }
+  if (typeof raw === 'string') {
+    return parsePercent(raw)
+  }
+  return undefined
+}
+
 function resolveAxisValue(
   raw: unknown,
   size?: number,
   current?: number,
+  percent?: number,
 ): number | undefined {
   const spec = normalizeAxis(raw)
   if (!spec) {
-    return undefined
+    if (percent === undefined) {
+      return undefined
+    }
+    if (typeof size === 'number' && Number.isFinite(size)) {
+      return size * (percent / 100)
+    }
+    return current
   }
 
   if (spec.unit === '%') {
@@ -66,17 +84,24 @@ export function applyPositionIntent<T extends Record<string, any>>(
   const { width, height } = getCanvasDimensions(ctx)
   const origin: PositionOrigin = fallbackOrigin ?? 'top-left'
   const axes: readonly Axis[] = ['left', 'top']
+  const percentAxis: Record<Axis, PercentAxis> = {
+    left: 'leftPercent',
+    top: 'topPercent',
+  }
 
   axes.forEach((axis: Axis) => {
     const size = axis === 'left' ? width : height
     const raw = (model as Record<Axis, unknown>)[axis]
+    const percentValue = resolvePercentValue((model as Record<PercentAxis, unknown>)[percentAxis[axis]])
     const resolved = resolveAxisValue(
       raw,
       size,
       axis === 'left' ? current?.left : current?.top,
+      percentValue,
     )
 
     if (resolved === undefined) {
+      delete (next as Record<PercentAxis, unknown>)[percentAxis[axis]]
       return
     }
 
@@ -89,6 +114,7 @@ export function applyPositionIntent<T extends Record<string, any>>(
     }
 
     (next as Record<string, unknown>)[axis] = actual
+    delete (next as Record<PercentAxis, unknown>)[percentAxis[axis]]
   })
 
   return next

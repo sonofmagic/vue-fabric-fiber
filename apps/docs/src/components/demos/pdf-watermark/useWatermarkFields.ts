@@ -84,6 +84,8 @@ function selectFieldSnapshot(field: WatermarkField) {
     fontSize: field.fontSize,
     text: field.text,
     color: field.color,
+    angle: field.angle,
+    scale: field.scale,
   }
 }
 
@@ -109,6 +111,8 @@ export function useWatermarkFields(themeMode: Ref<'light' | 'dark'>) {
       },
       opacity: 0.92,
       fontSize: 24,
+      angle: 0,
+      scale: 1,
     },
     {
       id: 'order',
@@ -125,6 +129,8 @@ export function useWatermarkFields(themeMode: Ref<'light' | 'dark'>) {
       },
       opacity: 0.92,
       fontSize: 24,
+      angle: 0,
+      scale: 1,
     },
   ])
 
@@ -142,6 +148,9 @@ export function useWatermarkFields(themeMode: Ref<'light' | 'dark'>) {
     fontWeight: '600',
     fill: watermarkFields[0].color,
     opacity: watermarkFields[0].opacity,
+    angle: watermarkFields[0].angle,
+    scaleX: watermarkFields[0].scale,
+    scaleY: watermarkFields[0].scale,
     selectable: true,
     evented: true,
     hasControls: false,
@@ -160,6 +169,9 @@ export function useWatermarkFields(themeMode: Ref<'light' | 'dark'>) {
     fontWeight: '600',
     fill: watermarkFields[1].color,
     opacity: watermarkFields[1].opacity,
+    angle: watermarkFields[1].angle,
+    scaleX: watermarkFields[1].scale,
+    scaleY: watermarkFields[1].scale,
     selectable: true,
     evented: true,
     hasControls: false,
@@ -192,6 +204,9 @@ export function useWatermarkFields(themeMode: Ref<'light' | 'dark'>) {
     target.fontSize = field.fontSize
     target.text = normalizeText(field.text)
     target.fill = normalizeColor(field.color)
+    target.angle = field.angle
+    target.scaleX = field.scale
+    target.scaleY = field.scale
   }
 
   const syncModelToField = (target: FabricTextModelValue, field: WatermarkField) => {
@@ -222,6 +237,13 @@ export function useWatermarkFields(themeMode: Ref<'light' | 'dark'>) {
     field.fontSize = typeof target.fontSize === 'number' ? target.fontSize : field.fontSize
     field.text = normalizeText(target.text)
     field.color = normalizeColor((target as any).fill ?? (target as any).stroke ?? field.color)
+    const nextScale = typeof target.scaleX === 'number'
+      ? target.scaleX
+      : typeof target.scaleY === 'number'
+        ? target.scaleY
+        : field.scale
+    field.scale = nextScale
+    field.angle = typeof target.angle === 'number' ? target.angle : field.angle
     syncingFromModel.value = false
   }
 
