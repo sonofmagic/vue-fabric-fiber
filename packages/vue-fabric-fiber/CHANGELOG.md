@@ -1,5 +1,11 @@
 # vue-fabric-fiber
 
+## 1.0.4
+
+### Patch Changes
+
+- [`8fb894a`](https://github.com/sonofmagic/vue-fabric-fiber/commit/8fb894a14fe2613620672db3816aaa7e7a111145) Thanks [@sonofmagic](https://github.com/sonofmagic)! - chore: upgrade fabric to 6.9.1
+
 ## 1.0.3
 
 ### Patch Changes
