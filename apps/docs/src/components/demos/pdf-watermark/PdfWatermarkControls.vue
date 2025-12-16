@@ -10,6 +10,15 @@ const props = defineProps<{
   pdfLoaded: boolean
   rotationLabel: string
   scaleLabel: string
+  pdfMetrics: {
+    left: number
+    top: number
+    angle: number
+    scaleX: number
+    scaleY: number
+    renderedWidth: number
+    renderedHeight: number
+  } | null
   watermarkFields: WatermarkField[]
   watermarkXMax: number
   watermarkBottomMax: number
@@ -71,20 +80,38 @@ const props = defineProps<{
             >
               ↻ 顺时针 90°
             </button>
-            <span class="text-xs text-(--fp-text-muted)">当前角度：{{ props.rotationLabel }} · 缩放：{{ props.scaleLabel }}</span>
           </div>
-          <div class="mt-3 grid gap-2 rounded-xl border border-(--fp-border-color) bg-(--fp-panel-bg) p-3 text-xs text-(--fp-text-muted)">
-            <div class="flex gap-3 rounded-lg bg-(--fp-panel-bg-soft) px-3 py-2">
-              <span class="min-w-[52px] text-(--fp-text-primary)">旋转</span>
-              <span>点击上方图标，单次旋转 90°。</span>
+          <div class="mt-3 grid gap-2 rounded-xl border border-(--fp-border-color) bg-(--fp-panel-bg) p-3 text-xs text-(--fp-text-primary)">
+            <div class="flex items-center justify-between">
+              <span class="text-(--fp-text-muted)">实时状态</span>
+              <span v-if="!props.pdfMetrics" class="rounded-md bg-(--fp-panel-bg-soft) px-2 py-1 text-[11px] uppercase tracking-[0.18em] text-(--fp-text-dim)">未导入</span>
+              <span v-else class="rounded-md bg-emerald-500/15 px-2 py-1 text-[11px] uppercase tracking-[0.18em] text-emerald-300 ring-1 ring-emerald-400/40">已导入</span>
             </div>
-            <div class="flex gap-3 rounded-lg bg-(--fp-panel-bg-soft) px-3 py-2">
-              <span class="min-w-[52px] text-(--fp-text-primary)">移动</span>
-              <span>鼠标指向 PDF 变成手型时拖动，可移动裁剪区域。</span>
-            </div>
-            <div class="flex gap-3 rounded-lg bg-(--fp-panel-bg-soft) px-3 py-2">
-              <span class="min-w-[52px] text-(--fp-text-primary)">缩放</span>
-              <span>拖动四角圆点可实现等比例缩放。</span>
+            <div class="grid grid-cols-2 gap-2 text-[11px] sm:grid-cols-3">
+              <div class="rounded-lg bg-(--fp-panel-bg-soft) px-2 py-1.5">
+                <p class="text-(--fp-text-dim)">X / Y</p>
+                <p class="font-semibold">{{ props.pdfMetrics ? `${props.pdfMetrics.left.toFixed(0)} / ${props.pdfMetrics.top.toFixed(0)}` : '--' }}</p>
+              </div>
+              <div class="rounded-lg bg-(--fp-panel-bg-soft) px-2 py-1.5">
+                <p class="text-(--fp-text-dim)">角度</p>
+                <p class="font-semibold">{{ props.pdfMetrics ? `${props.pdfMetrics.angle}°` : '--' }}</p>
+              </div>
+              <div class="rounded-lg bg-(--fp-panel-bg-soft) px-2 py-1.5">
+                <p class="text-(--fp-text-dim)">缩放</p>
+                <p class="font-semibold">{{ props.pdfMetrics ? `${Math.round(Math.min(props.pdfMetrics.scaleX, props.pdfMetrics.scaleY) * 100)}%` : '--' }}</p>
+              </div>
+              <div class="rounded-lg bg-(--fp-panel-bg-soft) px-2 py-1.5">
+                <p class="text-(--fp-text-dim)">宽 / 高</p>
+                <p class="font-semibold">{{ props.pdfMetrics ? `${props.pdfMetrics.renderedWidth}px / ${props.pdfMetrics.renderedHeight}px` : '--' }}</p>
+              </div>
+              <div class="rounded-lg bg-(--fp-panel-bg-soft) px-2 py-1.5">
+                <p class="text-(--fp-text-dim)">ScaleX</p>
+                <p class="font-semibold">{{ props.pdfMetrics ? props.pdfMetrics.scaleX.toFixed(2) : '--' }}</p>
+              </div>
+              <div class="rounded-lg bg-(--fp-panel-bg-soft) px-2 py-1.5">
+                <p class="text-(--fp-text-dim)">ScaleY</p>
+                <p class="font-semibold">{{ props.pdfMetrics ? props.pdfMetrics.scaleY.toFixed(2) : '--' }}</p>
+              </div>
             </div>
           </div>
         </div>

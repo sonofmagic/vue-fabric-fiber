@@ -26,6 +26,7 @@ const {
   pdfLoaded,
   rotationLabel,
   scaleLabel,
+  pdfMetrics,
   handleFileChange,
   rotatePdf,
   resetPdf,
@@ -58,6 +59,7 @@ function updateWatermarkField(index: number, value: WatermarkField) {
       :exporting="exporting"
       :export-error="exportError"
       :on-file-change="handleFileChange"
+      :pdf-metrics="pdfMetrics"
       :on-reset-pdf="resetPdf"
       :on-rotate="rotatePdf"
       :on-export="exportSnapshot"

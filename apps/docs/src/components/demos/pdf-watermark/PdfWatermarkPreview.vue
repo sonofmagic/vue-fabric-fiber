@@ -50,7 +50,12 @@ const watermarkOrderText = defineModel<FabricTextModelValue>('watermarkOrderText
             方案 A
           </span>
         </header>
-        <div class="overflow-hidden rounded-[20px] border border-(--fp-border-color) bg-(--fp-panel-bg) bg-[linear-gradient(45deg,rgba(148,163,184,0.08)_25%,transparent_25%),linear-gradient(-45deg,rgba(148,163,184,0.08)_25%,transparent_25%),linear-gradient(45deg,transparent_75%,rgba(148,163,184,0.08)_75%),linear-gradient(-45deg,transparent_75%,rgba(148,163,184,0.08)_75%)] bg-size-[48px_48px] bg-position-[0_0,0_24px,24px_-24px,-24px_0]">
+        <div class="relative overflow-hidden border border-(--fp-border-color) bg-(--fp-panel-bg) bg-[linear-gradient(45deg,rgba(148,163,184,0.08)_25%,transparent_25%),linear-gradient(-45deg,rgba(148,163,184,0.08)_25%,transparent_25%),linear-gradient(45deg,transparent_75%,rgba(148,163,184,0.08)_75%),linear-gradient(-45deg,transparent_75%,rgba(148,163,184,0.08)_75%)] bg-size-[48px_48px] bg-position-[0_0,0_24px,24px_-24px,-24px_0]">
+          <span class="pointer-events-none absolute left-0 top-0 z-10 inline-flex h-3 w-3 items-center justify-center">
+            <span class="absolute inline-block h-3 w-px bg-red-500" />
+            <span class="absolute inline-block w-3 h-px bg-red-500" />
+            <span class="absolute inline-block h-1 w-1 rounded-full bg-white ring-2 ring-red-500" />
+          </span>
           <FabricCanvas class="fp-pdf-canvas" :canvas-options="props.canvasOptions" @ready="props.onCanvasReady">
             <FabricImage
               v-if="pdfLayer"
@@ -83,7 +88,12 @@ const watermarkOrderText = defineModel<FabricTextModelValue>('watermarkOrderText
             方案 B
           </span>
         </header>
-        <div class="overflow-hidden rounded-[20px] border border-(--fp-border-color) bg-(--fp-panel-bg) bg-[linear-gradient(45deg,rgba(148,163,184,0.08)_25%,transparent_25%),linear-gradient(-45deg,rgba(148,163,184,0.08)_25%,transparent_25%),linear-gradient(45deg,transparent_75%,rgba(148,163,184,0.08)_75%),linear-gradient(-45deg,transparent_75%,rgba(148,163,184,0.08)_75%)] bg-size-[48px_48px] bg-position-[0_0,0_24px,24px_-24px,-24px_0]">
+        <div class="relative overflow-hidden border border-(--fp-border-color) bg-(--fp-panel-bg) bg-[linear-gradient(45deg,rgba(148,163,184,0.08)_25%,transparent_25%),linear-gradient(-45deg,rgba(148,163,184,0.08)_25%,transparent_25%),linear-gradient(45deg,transparent_75%,rgba(148,163,184,0.08)_75%),linear-gradient(-45deg,transparent_75%,rgba(148,163,184,0.08)_75%)] bg-size-[48px_48px] bg-position-[0_0,0_24px,24px_-24px,-24px_0]">
+          <span class="pointer-events-none absolute left-0 top-0 z-10 inline-flex h-3 w-3 items-center justify-center">
+            <span class="absolute inline-block h-3 w-px bg-red-500" />
+            <span class="absolute inline-block w-3 h-px bg-red-500" />
+            <span class="absolute inline-block h-1 w-1 rounded-full bg-white ring-2 ring-red-500" />
+          </span>
           <FabricCanvas class="fp-pdf-canvas" :canvas-options="props.canvasOptions" @ready="props.onCanvasReady">
             <RenderGroup :priority="0">
               <FabricImage
