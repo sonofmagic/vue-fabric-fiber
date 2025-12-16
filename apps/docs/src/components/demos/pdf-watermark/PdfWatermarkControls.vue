@@ -89,28 +89,52 @@ const props = defineProps<{
             </div>
             <div class="grid grid-cols-2 gap-2 text-[11px] sm:grid-cols-3">
               <div class="rounded-lg bg-(--fp-panel-bg-soft) px-2 py-1.5">
-                <p class="text-(--fp-text-dim)">X / Y</p>
-                <p class="font-semibold">{{ props.pdfMetrics ? `${props.pdfMetrics.left.toFixed(0)} / ${props.pdfMetrics.top.toFixed(0)}` : '--' }}</p>
+                <p class="text-(--fp-text-dim)">
+                  X / Y
+                </p>
+                <p class="font-semibold">
+                  {{ props.pdfMetrics ? `${props.pdfMetrics.left.toFixed(0)} / ${props.pdfMetrics.top.toFixed(0)}` : '--' }}
+                </p>
               </div>
               <div class="rounded-lg bg-(--fp-panel-bg-soft) px-2 py-1.5">
-                <p class="text-(--fp-text-dim)">角度</p>
-                <p class="font-semibold">{{ props.pdfMetrics ? `${props.pdfMetrics.angle}°` : '--' }}</p>
+                <p class="text-(--fp-text-dim)">
+                  角度
+                </p>
+                <p class="font-semibold">
+                  {{ props.pdfMetrics ? `${props.pdfMetrics.angle}°` : '--' }}
+                </p>
               </div>
               <div class="rounded-lg bg-(--fp-panel-bg-soft) px-2 py-1.5">
-                <p class="text-(--fp-text-dim)">缩放</p>
-                <p class="font-semibold">{{ props.pdfMetrics ? `${Math.round(Math.min(props.pdfMetrics.scaleX, props.pdfMetrics.scaleY) * 100)}%` : '--' }}</p>
+                <p class="text-(--fp-text-dim)">
+                  缩放
+                </p>
+                <p class="font-semibold">
+                  {{ props.pdfMetrics ? `${Math.round(Math.min(props.pdfMetrics.scaleX, props.pdfMetrics.scaleY) * 100)}%` : '--' }}
+                </p>
               </div>
               <div class="rounded-lg bg-(--fp-panel-bg-soft) px-2 py-1.5">
-                <p class="text-(--fp-text-dim)">宽 / 高</p>
-                <p class="font-semibold">{{ props.pdfMetrics ? `${props.pdfMetrics.renderedWidth}px / ${props.pdfMetrics.renderedHeight}px` : '--' }}</p>
+                <p class="text-(--fp-text-dim)">
+                  宽 / 高
+                </p>
+                <p class="font-semibold">
+                  {{ props.pdfMetrics ? `${props.pdfMetrics.renderedWidth}px / ${props.pdfMetrics.renderedHeight}px` : '--' }}
+                </p>
               </div>
               <div class="rounded-lg bg-(--fp-panel-bg-soft) px-2 py-1.5">
-                <p class="text-(--fp-text-dim)">ScaleX</p>
-                <p class="font-semibold">{{ props.pdfMetrics ? props.pdfMetrics.scaleX.toFixed(2) : '--' }}</p>
+                <p class="text-(--fp-text-dim)">
+                  ScaleX
+                </p>
+                <p class="font-semibold">
+                  {{ props.pdfMetrics ? props.pdfMetrics.scaleX.toFixed(2) : '--' }}
+                </p>
               </div>
               <div class="rounded-lg bg-(--fp-panel-bg-soft) px-2 py-1.5">
-                <p class="text-(--fp-text-dim)">ScaleY</p>
-                <p class="font-semibold">{{ props.pdfMetrics ? props.pdfMetrics.scaleY.toFixed(2) : '--' }}</p>
+                <p class="text-(--fp-text-dim)">
+                  ScaleY
+                </p>
+                <p class="font-semibold">
+                  {{ props.pdfMetrics ? props.pdfMetrics.scaleY.toFixed(2) : '--' }}
+                </p>
               </div>
             </div>
           </div>
