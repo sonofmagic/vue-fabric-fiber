@@ -1,5 +1,12 @@
 # docs
 
+## 0.0.5
+
+### Patch Changes
+
+- Updated dependencies [[`8fb894a`](https://github.com/sonofmagic/vue-fabric-fiber/commit/8fb894a14fe2613620672db3816aaa7e7a111145)]:
+  - vue-fabric-fiber@1.0.4
+
 ## 0.0.4
 
 ### Patch Changes
