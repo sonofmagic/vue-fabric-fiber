@@ -264,10 +264,16 @@ function resolveDimensionValue(
 
 function applyDimensionIntent(
   instance: fabric.FabricImage,
-  value: Pick<FabricImageModelValue, 'width' | 'height'>,
+  value: Pick<FabricImageModelValue, 'width' | 'height' | 'scaleX' | 'scaleY'>,
   canvasWidth?: number,
   canvasHeight?: number,
 ) {
+  const hasScaleIntent = value.scaleX !== undefined || value.scaleY !== undefined
+
+  if (hasScaleIntent) {
+    return
+  }
+
   const currentWidth = instance.getScaledWidth()
   const currentHeight = instance.getScaledHeight()
 
@@ -496,11 +502,11 @@ export const FabricImage = defineComponent({
       }
 
       if (resolvedBoundKeys.value.includes('width')) {
-        next.width = target.getScaledWidth()
+        next.width = target.width
       }
 
       if (resolvedBoundKeys.value.includes('height')) {
-        next.height = target.getScaledHeight()
+        next.height = target.height
       }
 
       return {

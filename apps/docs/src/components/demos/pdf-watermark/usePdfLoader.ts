@@ -163,6 +163,8 @@ export function usePdfLoader() {
       return
     }
     const layer = pdfLayer.value
+    // Ensure every rotation path keeps using the object center as the pivot
+    layer.centeredRotation = true
     const delta = direction === 'cw' ? 90 : -90
     const angle = toNumber(layer.angle)
     const normalized = (angle + delta + 360) % 360
