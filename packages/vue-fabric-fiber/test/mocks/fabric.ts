@@ -40,6 +40,7 @@ class MockFabricObject {
 
 class Canvas {
   static instances: Canvas[] = []
+  element?: HTMLCanvasElement
   width: number
   height: number
   enableRetinaScaling = true
@@ -51,9 +52,10 @@ class Canvas {
   calcCalled = false
 
   constructor(
-    public element?: HTMLCanvasElement,
+    element?: HTMLCanvasElement,
     options: Record<string, unknown> = {},
   ) {
+    this.element = element
     this.width = (options.width as number | undefined) ?? element?.width ?? 300
     this.height = (options.height as number | undefined) ?? element?.height ?? 150
     Object.assign(this, options)
@@ -72,7 +74,6 @@ class Canvas {
       this.objects.splice(index, 1)
     }
     if (obj.canvas === this) {
-      // @ts-expect-error mock cleanup
       obj.canvas = undefined
     }
   }
@@ -207,7 +208,11 @@ class FabricText extends MockFabricObject {
 }
 
 class Shadow {
-  constructor(public options: Record<string, unknown>) {}
+  options: Record<string, unknown>
+
+  constructor(options: Record<string, unknown>) {
+    this.options = options
+  }
 }
 
 class Circle extends MockFabricObject {}
@@ -235,6 +240,8 @@ export interface FabricMock {
   Canvas: typeof Canvas
   FabricImage: typeof FabricImage
   FabricText: typeof FabricText
+  Object: typeof MockFabricObject
+  FabricObject: typeof MockFabricObject
   Circle: typeof Circle
   Ellipse: typeof Ellipse
   Line: typeof Line
@@ -273,6 +280,8 @@ export function createFabricMock(): FabricMock {
     Canvas,
     FabricImage,
     FabricText,
+    Object: MockFabricObject,
+    FabricObject: MockFabricObject,
     Circle,
     Ellipse,
     Line,

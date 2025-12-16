@@ -45,9 +45,11 @@ function createImageContext(overrides: Partial<Context> = {}) {
   canvasElement.width = 600
   canvasElement.height = 400
   const fabricCanvas = new mockFabric.Canvas(canvasElement, { width: 600, height: 400 })
+  const addObject = vi.fn<(obj: InstanceType<FabricMockModule['FabricImage']>, priority?: number, sequence?: number) => void>()
+  const removeObject = vi.fn<(obj: InstanceType<FabricMockModule['FabricImage']>) => void>()
   return {
-    addObject: vi.fn(),
-    removeObject: vi.fn(),
+    addObject,
+    removeObject,
     fabricCanvas,
     canvasEl: canvasElement,
     containerEl: document.createElement('div'),
@@ -55,7 +57,11 @@ function createImageContext(overrides: Partial<Context> = {}) {
     claimObjectSequence: vi.fn(() => 11),
     taskQueue: {} as any,
     ...overrides,
-  } as Context
+  } as Context & {
+    addObject: typeof addObject
+    removeObject: typeof removeObject
+    fabricCanvas: InstanceType<FabricMockModule['Canvas']>
+  }
 }
 
 describe('FabricImage', () => {
@@ -86,14 +92,16 @@ describe('FabricImage', () => {
     await nextTick()
     await flushImageTasks()
     const mockFabric: FabricMockModule = getFabricMock()
-    const [[imageInstance]] = ctx.addObject.mock.calls as [[InstanceType<FabricMockModule['FabricImage']>, number | undefined, number | undefined][]]
+    const [firstCall] = ctx.addObject.mock.calls
+    const imageInstance = firstCall?.[0] as InstanceType<FabricMockModule['FabricImage']> | undefined
     expect(imageInstance).toBeInstanceOf(mockFabric.FabricImage)
-    expect(ctx.addObject).toHaveBeenCalledWith(imageInstance, undefined, 9)
-    expect(imageInstance.scaleX).toBeGreaterThan(0)
-    expect(imageInstance.scaleY).toBeGreaterThan(0)
+    const image = imageInstance!
+    expect(ctx.addObject).toHaveBeenCalledWith(image, undefined, 9)
+    expect(image.scaleX).toBeGreaterThan(0)
+    expect(image.scaleY).toBeGreaterThan(0)
 
     await flushImageTasks()
-    imageInstance.emit('modified')
+    image.emit('modified')
     expect(updateSpy).toHaveBeenCalled()
 
     await wrapper.updateProps({
@@ -121,7 +129,7 @@ describe('FabricImage', () => {
       },
     })
     await nextTick()
-    expect(ctx.removeObject).toHaveBeenCalledWith(imageInstance)
+    expect(ctx.removeObject).toHaveBeenCalledWith(image)
 
     wrapper.unmount()
   })
