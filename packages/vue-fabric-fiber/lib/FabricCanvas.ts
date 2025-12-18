@@ -119,6 +119,16 @@ function resolvePixelRatio(value?: number) {
   return DEFAULT_PIXEL_RATIO
 }
 
+function resolveCssDimension(value?: number | string) {
+  if (value === undefined) {
+    return undefined
+  }
+  if (typeof value === 'number') {
+    return Number.isFinite(value) ? `${value}px` : undefined
+  }
+  return value
+}
+
 interface SyncResolutionOptions {
   render?: boolean
   pixelRatio?: number
@@ -210,6 +220,14 @@ export const FabricCanvas = defineComponent({
       type: Object as PropType<FabricCanvasOptions>,
       default: () => ({}),
     },
+    displayWidth: {
+      type: [Number, String] as PropType<number | string>,
+      default: undefined,
+    },
+    displayHeight: {
+      type: [Number, String] as PropType<number | string>,
+      default: undefined,
+    },
     autoResize: {
       type: Boolean,
       default: true,
@@ -220,12 +238,20 @@ export const FabricCanvas = defineComponent({
     },
   },
   emits: ['update:canvasOptions', 'ready'],
-  setup(props, { slots, emit }) {
+  setup(props, { slots, emit, attrs }) {
     const instance = getCurrentInstance()
     const canvasOptions = useModel(props, 'canvasOptions')
     const resolvedPixelRatio = computed(() => {
       return resolvePixelRatio(props.pixelRatio)
     })
+    const resolvedDisplaySize = computed(() => removeUndefined({
+      width: props.displayWidth,
+      height: props.displayHeight,
+    }))
+    const resolvedDisplayStyle = computed(() => ({
+      width: resolveCssDimension(props.displayWidth),
+      height: resolveCssDimension(props.displayHeight),
+    }))
 
     const taskQueue = new PQueue({ concurrency: 1, autoStart: false })
     let queueStartScheduled = false
@@ -235,6 +261,37 @@ export const FabricCanvas = defineComponent({
 
     const objectMeta = new WeakMap<fabric.Object, { priority?: number, sequence: number }>()
     let nextSequenceId = 0
+
+    function applyDisplaySize() {
+      if (!ctx.fabricCanvas || !ctx.canvasEl) {
+        return
+      }
+      if (resolvedDisplaySize.value.width === undefined && resolvedDisplaySize.value.height === undefined) {
+        return
+      }
+
+      const currentWidth = ctx.fabricCanvas.getWidth()
+      const currentHeight = ctx.fabricCanvas.getHeight()
+      const targetWidth = resolvedDisplaySize.value.width ?? currentWidth
+      const targetHeight = resolvedDisplaySize.value.height ?? currentHeight
+
+      ctx.fabricCanvas.setDimensions({
+        width: targetWidth,
+        height: targetHeight,
+      }, { cssOnly: true })
+
+      const cssWidth = resolveCssDimension(resolvedDisplaySize.value.width)
+      const cssHeight = resolveCssDimension(resolvedDisplaySize.value.height)
+      if (cssWidth !== undefined) {
+        ctx.canvasEl.style.width = cssWidth
+      }
+      if (cssHeight !== undefined) {
+        ctx.canvasEl.style.height = cssHeight
+      }
+
+      // Refresh cached offsets after resizing via CSS so pointer math stays in sync.
+      ctx.fabricCanvas.calcOffset?.()
+    }
 
     function ensureQueueStart() {
       if (queueStartScheduled) {
@@ -367,6 +424,7 @@ export const FabricCanvas = defineComponent({
         }
         const { width, height } = entry.contentRect
         syncCanvasResolution(canvas, width, height, { pixelRatio: resolvedPixelRatio.value })
+        applyDisplaySize()
       })
       resizeObserver.observe(container)
     }
@@ -412,8 +470,8 @@ export const FabricCanvas = defineComponent({
         height ?? containerHeight,
         { render: false, pixelRatio: resolvedPixelRatio.value },
       )
-
       applyCanvasOptions(ctx.fabricCanvas, resolvedOptions.value, resolvedPixelRatio.value)
+      applyDisplaySize()
 
       if (shouldAutoResize.value) {
         setupResizeObserver()
@@ -429,6 +487,7 @@ export const FabricCanvas = defineComponent({
           return
         }
         applyCanvasOptions(ctx.fabricCanvas, next, resolvedPixelRatio.value)
+        applyDisplaySize()
       },
       { deep: true },
     )
@@ -440,6 +499,7 @@ export const FabricCanvas = defineComponent({
       syncCanvasResolution(ctx.fabricCanvas, ctx.fabricCanvas.getWidth(), ctx.fabricCanvas.getHeight(), {
         pixelRatio: ratio,
       })
+      applyDisplaySize()
     })
 
     watch(shouldAutoResize, (enabled) => {
@@ -454,6 +514,10 @@ export const FabricCanvas = defineComponent({
       }
     })
 
+    watch(resolvedDisplaySize, () => {
+      applyDisplaySize()
+    })
+
     onBeforeUnmount(() => {
       teardownResizeObserver()
       ctx.fabricCanvas?.dispose()
@@ -462,11 +526,17 @@ export const FabricCanvas = defineComponent({
 
     provide(ContextKey, ctx as Context)
 
-    return () => {
-      return h('div', [
-        h('canvas'),
-        ctx.fabricCanvas ? (slots.default ? slots.default() : null) : null,
-      ])
-    }
+    const mergedStyle = computed(() => {
+      const style = (attrs.style ?? {}) as Record<string, unknown>
+      return {
+        ...style,
+        ...resolvedDisplayStyle.value,
+      }
+    })
+
+    return () => h('div', { ...attrs, style: mergedStyle.value }, [
+      h('canvas'),
+      ctx.fabricCanvas ? (slots.default ? slots.default() : null) : null,
+    ])
   },
 })

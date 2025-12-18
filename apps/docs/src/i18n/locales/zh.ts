@@ -178,6 +178,8 @@ const zh = {
       layers: '图层',
       shapes: '图形',
       primitives: '基础图元',
+      drawing: '绘制',
+      export: '导出',
     },
     cards: {
       basic: {
@@ -210,6 +212,11 @@ const zh = {
         description: '使用 Fabric 形状组件创建矩形、多段线、路径等基础图元。',
         tags: ['shapes', 'primitives'],
       },
+      hiResDrawing: {
+        title: '高分辨率涂鸦板',
+        description: '底层 2480 × 3508，预览 620 × 877，内置画笔/橡皮切换与 PNG 导出。',
+        tags: ['drawing', 'export'],
+      },
       pdfWatermark: {
         title: 'PDF 上传裁剪',
         description: '导入 PDF 后支持旋转、移动、等比缩放，并在左下角固定双文本水印。',
@@ -227,6 +234,7 @@ const zh = {
         textPlayground: '把滑块、输入与切换直接绑定到 FabricText 属性，每次敲击都能看到画布更新。',
         composite: 'RenderGroup 队列、异步图像与可切换图层保持同步，便于研究绑定如何编排复杂场景。',
         shapes: '从矩形、多边形到自定义路径，所有基础图元都使用同一套 Fabric 绑定，方便安全复用。',
+        hiResDrawing: '画布底层维持 2480 × 3508 分辨率，预览区域仅 620 × 877，可随时切换画笔与橡皮并导出高清 PNG。',
         pdfWatermark: '上传 PDF，拖拽或旋转处理文件，左下角的两个 FabricText 水印始终按固定坐标展示。',
       },
       notes: {

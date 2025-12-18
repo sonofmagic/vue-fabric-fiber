@@ -5,6 +5,7 @@ export type DemoCardSlug
     | 'textPlayground'
     | 'composite'
     | 'shapes'
+    | 'hiResDrawing'
     | 'pdfWatermark'
 
 export type DemoTagKey
@@ -21,6 +22,8 @@ export type DemoTagKey
     | 'layers'
     | 'shapes'
     | 'primitives'
+    | 'drawing'
+    | 'export'
 
 export interface DemoCard {
   slug: DemoCardSlug
@@ -72,6 +75,13 @@ export const demoCards: DemoCard[] = [
     titleKey: 'demos.cards.shapes.title',
     descriptionKey: 'demos.cards.shapes.description',
     tagKeys: ['shapes', 'primitives'],
+  },
+  {
+    slug: 'hiResDrawing',
+    to: '/demos/high-res-drawing',
+    titleKey: 'demos.cards.hiResDrawing.title',
+    descriptionKey: 'demos.cards.hiResDrawing.description',
+    tagKeys: ['drawing', 'export'],
   },
   {
     slug: 'pdfWatermark',

@@ -189,6 +189,8 @@ const en = {
       layers: 'Layers',
       shapes: 'Shapes',
       primitives: 'Primitives',
+      drawing: 'Drawing',
+      export: 'Export',
     },
     cards: {
       basic: {
@@ -221,6 +223,11 @@ const en = {
         description: 'Rectangles, polylines, paths, and more using the Fabric shape components.',
         tags: ['shapes', 'primitives'],
       },
+      hiResDrawing: {
+        title: 'High-Res Drawing Board',
+        description: 'Paint at 2480 × 3508 while the viewport stays at 620 × 877, with brush/eraser toggles and PNG export.',
+        tags: ['drawing', 'export'],
+      },
       pdfWatermark: {
         title: 'PDF Upload & Crop',
         description: 'Import a PDF, rotate/move/scale it, and keep paired bottom-left watermarks pinned to the page.',
@@ -243,6 +250,8 @@ const en = {
           'RenderGroup queues, async imagery, and toggled layers stay in sync so you can study how the bindings orchestrate complex scenes.',
         shapes:
           'Every primitive—from rectangles and polygons to custom paths—runs through the same Fabric bindings so you can remix them safely.',
+        hiResDrawing:
+          'The backstore stays 2480 × 3508 while the visible canvas is 620 × 877; swap between brush and eraser, then export crisp PNGs.',
         pdfWatermark:
           'Upload a PDF, rotate or drag it on the FabricCanvas, and keep dual FabricText watermarks anchored to the bottom-left edge.',
       },
