@@ -9,7 +9,7 @@ const canvasOptions = {
   height: 3508,
   backgroundColor: 'transparent',
   selection: false,
-  freeDrawingCursor: 'crosshair',
+  freeDrawingCursor: 'auto',
 } as const
 
 const canvasRef = ref<Canvas | null>(null)
@@ -22,6 +22,22 @@ const exporting = ref(false)
 const previewSizeLabel = computed(() => 'Preview: 620 × 877')
 const resolutionLabel = computed(() => 'Output: 2480 × 3508')
 
+const brushCursor = 'url(\"data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'32\' height=\'32\' viewBox=\'0 0 32 32\'%3E%3Cpath fill=\'%23e0f2fe\' stroke=\'%23038cfc\' stroke-width=\'2\' d=\'M6 20c4-1 6-3 9-7l5-7 5 5-7 5c-4 3-6 5-7 9Z\'/%3E%3Ccircle cx=\'8\' cy=\'24\' r=\'5\' fill=\'%231e293b\' stroke=\'%23038cfc\' stroke-width=\'2\'/%3E%3C/svg%3E\") 4 28, crosshair'
+const eraserCursor = 'url(\"data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'28\' height=\'28\' viewBox=\'0 0 28 28\'%3E%3Cpath fill=\'%23f8fafc\' stroke=\'%23fbbf24\' stroke-width=\'2\' d=\'M6 18.5 15.5 9c1-1 2.8-1 3.8 0l3.2 3.2c1 1 1 2.8 0 3.8l-7 7c-.9.9-2.4.9-3.3 0L6 18.5Z\'/%3E%3Cpath fill=\'none\' stroke=\'%23fbbf24\' stroke-width=\'2.2\' d=\'M6 18.5h7.5\'/%3E%3C/svg%3E\") 6 22, crosshair'
+
+function buildEraserBrush(canvas: Canvas) {
+  const EraserCtor = (fabric as any).EraserBrush ?? fabric.PencilBrush
+  const eraser = new EraserCtor(canvas)
+  eraser.width = eraserWidth.value
+  eraser.color = '#ffffff'
+  eraser.shadow = undefined
+  eraser.strokeLineCap = 'round'
+  eraser.strokeLineJoin = 'round'
+  // Use composition erasing when Fabric's EraserBrush is unavailable.
+  ;(eraser as any).globalCompositeOperation = 'destination-out'
+  return eraser
+}
+
 function applyDrawingTool() {
   const canvas = canvasRef.value
   if (!canvas) {
@@ -32,12 +48,15 @@ function applyDrawingTool() {
     const brush = new fabric.PencilBrush(canvas)
     brush.color = brushColor.value
     brush.width = brushWidth.value
+    brush.strokeLineCap = 'round'
+    brush.strokeLineJoin = 'round'
+    ;(brush as any).globalCompositeOperation = 'source-over'
+    canvas.freeDrawingCursor = brushCursor
     canvas.freeDrawingBrush = brush
   }
   else {
-    const eraser = new fabric.EraserBrush(canvas)
-    eraser.width = eraserWidth.value
-    canvas.freeDrawingBrush = eraser
+    canvas.freeDrawingCursor = eraserCursor
+    canvas.freeDrawingBrush = buildEraserBrush(canvas)
   }
 
   canvas.isDrawingMode = true
@@ -53,6 +72,9 @@ function handleCanvasReady(canvas: Canvas) {
   canvas.on('path:created', (event) => {
     if (event.path) {
       event.path.erasable = true
+      event.path.globalCompositeOperation = currentTool.value === 'eraser'
+        ? 'destination-out'
+        : 'source-over'
     }
   })
 
@@ -236,7 +258,7 @@ watch(eraserWidth, () => {
 </template>
 
 <style scoped>
-.high-res-canvas :deep(canvas) {
+/* .high-res-canvas :deep(canvas) {
   display: block;
   width: 620px;
   max-width: 100%;
@@ -244,5 +266,5 @@ watch(eraserWidth, () => {
   aspect-ratio: 620 / 877;
   margin-inline: auto;
   border-radius: 18px;
-}
+} */
 </style>
